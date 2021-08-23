@@ -3,29 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/FirstFragment">
+    app:startDestination="@id/MenuFrament">
 
     <fragment
-        android:id="@+id/FirstFragment"
-        android:name="com.example.dartapp.FirstFragment"
-        android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_first">
+        android:id="@+id/MenuFrament"
+        android:name="com.example.dartapp.MenuFrament"
+        android:label="@string/menu_fragment_label"
+        tools:layout="@layout/fragment_menu">
 
         <action
-            android:id="@+id/action_FirstFragment_to_SecondFragment"
-            app:destination="@id/SecondFragment" />
+            android:id="@+id/action_MenuFragment_to_ModiFragment"
+            app:destination="@id/ModiFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
-        android:id="@+id/SecondFragment"
-        android:name="com.example.dartapp.SecondFragment"
-        android:label="@string/second_fragment_label"
-        tools:layout="@layout/fragment_second">
-
-        <action
-            android:id="@+id/action_SecondFragment_to_FirstFragment"
-            app:destination="@id/FirstFragment" />
-        <argument
-            android:name="maxValue"
-            app:argType="integer" />
-    </fragment>
+        android:id="@+id/ModiFragment"
+        android:name="com.example.dartapp.ModiFragment"
+        android:label="@string/modi_fragment_label"
+        tools:layout="@layout/fragment_modi"/>
 </navigation>
