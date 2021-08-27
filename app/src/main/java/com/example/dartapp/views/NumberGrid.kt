@@ -15,6 +15,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.solver.widgets.Rectangle
 import androidx.core.view.marginLeft
 import com.example.dartapp.R
+import com.google.android.material.button.MaterialButton
 
 @RequiresApi(Build.VERSION_CODES.M)
 class NumberGrid @JvmOverloads constructor(
@@ -43,12 +44,13 @@ class NumberGrid @JvmOverloads constructor(
             rowLayout.weightSum = columns * 1.0f
 
             for (columnIndex in 0 until columns) {
-                val button = Button(context, attrs)
+                val button = MaterialButton(context, attrs)
                 button.text = getButtonText(rowIndex, columnIndex)
                 rowLayout.addView(button)
 
                 var params = button.layoutParams as LinearLayout.LayoutParams
                 params.weight = 1f
+                params.width = LayoutParams.MATCH_PARENT
                 params.height = LayoutParams.MATCH_PARENT
 
                 params.leftMargin = spaceHorizontally
@@ -58,7 +60,9 @@ class NumberGrid @JvmOverloads constructor(
             }
 
             this.addView(rowLayout)
-            (rowLayout.layoutParams as LinearLayout.LayoutParams).weight = 1f
+            var params = rowLayout.layoutParams as LinearLayout.LayoutParams
+            params.weight = 1f
+            params.height = LayoutParams.MATCH_PARENT
         }
 
     }
