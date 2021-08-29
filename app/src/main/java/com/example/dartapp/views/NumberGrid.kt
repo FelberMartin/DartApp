@@ -2,18 +2,12 @@ package com.example.dartapp.views
 
 
 import android.content.Context
-import android.net.LinkAddress
 import android.os.Build
 import android.util.AttributeSet
-import android.view.ContextThemeWrapper
-import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TableLayout
 import androidx.annotation.RequiresApi
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.constraintlayout.solver.widgets.Rectangle
-import androidx.core.view.marginLeft
 import com.example.dartapp.R
 import com.google.android.material.button.MaterialButton
 
@@ -24,14 +18,24 @@ class NumberGrid @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    val rows = 4
-    val columns = 3
+    private val rows = 4
+    private val columns = 3
 
-    val spaceHorizontally = 5
-    val spaceVertically = 5
+    private val spaceHorizontally = 5
+    private val spaceVertically = 5
 
     private lateinit var rowLayouts: List<LinearLayout>
     private lateinit var buttons: List<Button>
+
+
+    var number = 0
+        set(value) {
+            delegate?.numberUpdated(value)
+            field = value
+        }
+
+    var delegate: NumberGridDelegate? = null
+
 
     init {
         this.orientation = TableLayout.VERTICAL
@@ -48,15 +52,8 @@ class NumberGrid @JvmOverloads constructor(
                 button.text = getButtonText(rowIndex, columnIndex)
                 rowLayout.addView(button)
 
-                var params = button.layoutParams as LinearLayout.LayoutParams
-                params.weight = 1f
-                params.width = LayoutParams.MATCH_PARENT
-                params.height = LayoutParams.MATCH_PARENT
-
-                params.leftMargin = spaceHorizontally
-                params.rightMargin = spaceHorizontally
-                params.topMargin = spaceVertically
-                params.bottomMargin = spaceVertically
+                setButtonListener(button)
+                applyButtonLayout(button)
             }
 
             this.addView(rowLayout)
@@ -80,5 +77,49 @@ class NumberGrid @JvmOverloads constructor(
 
         return context.getString(R.string.confirm)
     }
+
+    private fun setButtonListener(button: Button) {
+        val text = button.text
+
+        // digit
+        if (text[0].isDigit()) {
+            button.setOnClickListener {
+                val digit = Integer.parseInt(text.toString())
+                val newNumber = number * 10 + digit
+
+                // avoid overflows and leading zeros
+                if (newNumber > number)
+                    number = newNumber
+
+            }
+        }
+
+        // clear
+        else if (text == resources.getString(R.string.clear)) {
+            button.setOnClickListener { number = 0 }
+        }
+
+        //confirm
+        else {
+            button.setOnClickListener {
+                delegate?.onConfirmPressed(number)
+            }
+        }
+
+    }
+
+    private fun applyButtonLayout(button: Button) {
+        var params = button.layoutParams as LinearLayout.LayoutParams
+        params.weight = 1f
+        params.width = LayoutParams.MATCH_PARENT
+        params.height = LayoutParams.MATCH_PARENT
+
+        params.leftMargin = spaceHorizontally
+        params.rightMargin = spaceHorizontally
+        params.topMargin = spaceVertically
+        params.bottomMargin = spaceVertically
+    }
+
+
 
 }

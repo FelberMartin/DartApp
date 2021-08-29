@@ -2,20 +2,15 @@ package com.example.dartapp
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.View
-import android.widget.Button
-import android.widget.TableRow
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.children
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.dartapp.databinding.ActivityTrainingBinding
+import com.example.dartapp.views.NumberGridDelegate
 
-class TrainingActivity : AppCompatActivity() {
+class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityTrainingBinding
@@ -27,6 +22,7 @@ class TrainingActivity : AppCompatActivity() {
         binding = ActivityTrainingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.numberGrid.delegate = this
     }
 
 
@@ -36,7 +32,11 @@ class TrainingActivity : AppCompatActivity() {
                 || super.onSupportNavigateUp()
     }
 
-    fun numberFieldClicked(buttonText: String) {
-        binding.labelScore.text = buttonText
+    override fun onConfirmPressed(value: Int) {
+
+    }
+
+    override fun numberUpdated(value: Int) {
+        binding.labelScore.text = value.toString()
     }
 }
