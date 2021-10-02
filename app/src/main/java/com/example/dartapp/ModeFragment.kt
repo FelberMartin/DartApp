@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.dartapp.databinding.FragmentModiBinding
@@ -13,7 +15,7 @@ import com.example.dartapp.databinding.FragmentModiBinding
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
-class ModiFragment : Fragment() {
+class ModeFragment : Fragment() {
 
     private var _binding: FragmentModiBinding? = null
 
@@ -34,8 +36,13 @@ class ModiFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonModi1.setOnClickListener {
+        binding.layout.children.filter { it is Button }.forEach {
+            val button = it as Button
+            val extraString: String = resources.getString(R.string.extra_string_mode)
+            val modeString = button.text
+
             val intent = Intent(activity, TrainingActivity::class.java)
+            intent.putExtra(extraString, modeString)
             startActivity(intent)
         }
     }

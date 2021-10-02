@@ -2,18 +2,26 @@ package com.example.dartapp
 
 import android.os.Build
 import android.os.Bundle
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.example.dartapp.databinding.ActivityTrainingBinding
+import com.example.dartapp.gameModes.GameMode
+import com.example.dartapp.gameModes.GameStatus
+import com.example.dartapp.gameModes.Mode501
 import com.example.dartapp.views.NumberGridDelegate
 
 class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityTrainingBinding
+
+    private lateinit var mode: GameMode
+    private lateinit var status: GameStatus
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +31,22 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
         setContentView(binding.root)
 
         binding.numberGrid.delegate = this
+
+
+        initGameMode()
+    }
+
+    private fun initGameMode() {
+        val extraString = resources.getString(R.string.extra_string_mode)
+        val modeString = intent.getStringExtra(extraString)
+        mode = when (modeString) {
+            resources.getString(R.string.mode_501_label) -> Mode501()
+
+            // This is the default behaviour
+            else -> Mode501()
+        }
+
+        status = mode.initGameStatus()
     }
 
 
@@ -33,8 +57,33 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     }
 
     override fun onConfirmPressed(value: Int) {
-
+        if (!mode.isServeValid(value, status)) {
+            invalidInput()
+        }
     }
+
+    private fun invalidInput() {
+        val animation = AnimationUtils.loadAnimation(this, R.anim.shake)
+        binding.labelScore.startAnimation(animation)
+        animation.setAnimationListener(object: Animation.AnimationListener {
+            override fun onAnimationStart(p0: Animation?) {
+            }
+
+            override fun onAnimationEnd(p0: Animation?) {
+                resetInput()
+            }
+
+            override fun onAnimationRepeat(p0: Animation?) {
+            }
+
+        })
+    }
+
+    private fun resetInput() {
+        binding.labelScore.text = "0"
+        binding.numberGrid.number = 0
+    }
+
 
     override fun numberUpdated(value: Int) {
         binding.labelScore.text = value.toString()

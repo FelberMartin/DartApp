@@ -4,9 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ModiFragment">
+    tools:context=".ModeFragment">
 
     <LinearLayout
+        android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -18,7 +19,7 @@
             android:id="@+id/buttonModi1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/modi_1_label"
+            android:text="@string/mode_501_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -26,7 +27,7 @@
             android:id="@+id/buttonModi2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/modi_2_label"
+            android:text="@string/mode_100_attempts_label"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
     </LinearLayout>

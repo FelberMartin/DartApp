@@ -39,6 +39,8 @@ class MenuFrament : Fragment() {
             findNavController().navigate(action)
         }
 
+
+
 //        binding.buttonFirst.setOnClickListener {
 //            val count = binding.counterTv.text.toString().toInt()
 //            val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(count)

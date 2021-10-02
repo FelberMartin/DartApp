@@ -15,9 +15,10 @@
     <string name="settings">Settings</string>
 
     <!-- ModiFragment !-->
-    <string name="modi_fragment_label">Modi Fragment</string>
-    <string name="modi_1_label">501</string>
-    <string name="modi_2_label">100 Attempts</string>
+    <string name="modes_fragment_label">Mode Fragment</string>
+    <string name="mode_501_label">501</string>
+    <string name="mode_100_attempts_label">100 Attempts</string>
+    <string name="extra_string_mode">mode</string>
 
     <!-- TrainingActivity !-->
     <string name="training_activity_label">Training Activity</string>
