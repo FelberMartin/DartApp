@@ -57,20 +57,21 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     }
 
     override fun onConfirmPressed(value: Int) {
-        if (!mode.isServeValid(value, status)) {
+        if (!mode.isServeValid(value, status))
             invalidInput()
-        }
+        else
+            validInput(value)
     }
 
     private fun invalidInput() {
         val animation = AnimationUtils.loadAnimation(this, R.anim.shake)
-        binding.labelScore.startAnimation(animation)
+        binding.pointsEnteredLabel.startAnimation(animation)
         animation.setAnimationListener(object: Animation.AnimationListener {
             override fun onAnimationStart(p0: Animation?) {
             }
 
             override fun onAnimationEnd(p0: Animation?) {
-                resetInput()
+                binding.numberGrid.number = 0
             }
 
             override fun onAnimationRepeat(p0: Animation?) {
@@ -79,12 +80,29 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
         })
     }
 
-    private fun resetInput() {
-        binding.numberGrid.number = 0
+    private fun validInput(value: Int) {
+        status.pointsLeft -= value
+        binding.pointsLeftLabel.text = "" + status.pointsLeft
+
+        val animation = AnimationUtils.loadAnimation(this, R.anim.lift_and_fade)
+        binding.pointsEnteredLabel.startAnimation(animation)
+        animation.setAnimationListener(object: Animation.AnimationListener {
+            override fun onAnimationStart(p0: Animation?) {
+            }
+
+            override fun onAnimationEnd(p0: Animation?) {
+                binding.numberGrid.number = 0
+            }
+
+            override fun onAnimationRepeat(p0: Animation?) {
+            }
+
+        })
     }
 
 
+
     override fun numberUpdated(value: Int) {
-        binding.labelScore.text = value.toString()
+        binding.pointsEnteredLabel.text = value.toString()
     }
 }

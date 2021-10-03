@@ -5,6 +5,7 @@ apply plugin: 'kotlin-kapt'
 buildscript {
     ext.kotlin_version = "1.5.20"
     ext.room_version = "2.2.5"
+    ext.gradle_version = "3.0.1"
 
     repositories {
         google()

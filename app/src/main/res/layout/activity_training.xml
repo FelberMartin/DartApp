@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <data>
+        <variable
+            android:name="viewModel"
+            android:type="com.example.dartapp.TrainingActivity"
+            />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
@@ -22,16 +29,35 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-
+            <TextView
+                android:id="@+id/lastLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginLeft="@dimen/spacing_medium"
+                android:text="--"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                />
 
             <TextView
-                android:id="@+id/labelScore"
+                android:id="@+id/pointsLeftLabel"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
-                android:text="420"
+                android:text="501"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
-                android:textSize="40dp"
+                android:textSize="40sp"
+                android:textStyle="bold"
+                android:gravity="center_horizontal" />
+
+            <TextView
+                android:id="@+id/pointsEnteredLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:text="0"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textSize="30sp"
                 android:textStyle="bold"
                 android:gravity="center_horizontal" />
 
