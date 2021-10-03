@@ -80,7 +80,6 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     }
 
     private fun resetInput() {
-        binding.labelScore.text = "0"
         binding.numberGrid.number = 0
     }
 

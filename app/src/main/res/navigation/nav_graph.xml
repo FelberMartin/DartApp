@@ -14,14 +14,31 @@
         <action
             android:id="@+id/action_MenuFragment_to_ModiFragment"
             app:destination="@id/ModeFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/ModeFragment"
         android:name="com.example.dartapp.ModeFragment"
         android:label="@string/modes_fragment_label"
-        tools:layout="@layout/fragment_modi" />
+        tools:layout="@layout/fragment_modi" >
+        <action
+            android:id="@+id/action_ModeFragment_to_trainingActivity"
+            app:destination="@id/trainingActivity"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+    <activity
+        android:id="@+id/trainingActivity"
+        android:name="com.example.dartapp.TrainingActivity"
+        android:label="TrainingActivity" >
+        <argument
+            android:name="mode"
+            app:argType="string"
+            android:defaultValue='"501"' />
+    </activity>
 </navigation>

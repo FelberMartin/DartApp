@@ -36,14 +36,20 @@ class ModeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Listeners for all Buttons
         binding.layout.children.filter { it is Button }.forEach {
             val button = it as Button
-            val extraString: String = resources.getString(R.string.extra_string_mode)
-            val modeString = button.text
+            button.setOnClickListener {
+                val extraString: String = resources.getString(R.string.extra_string_mode)
+                val modeString = button.text as String
 
-            val intent = Intent(activity, TrainingActivity::class.java)
-            intent.putExtra(extraString, modeString)
-            startActivity(intent)
+                val action = ModeFragmentDirections.actionModeFragmentToTrainingActivity(modeString)
+                findNavController().navigate(action)
+
+//                val intent = Intent(activity, TrainingActivity::class.java)
+//                intent.putExtra(extraString, modeString)
+//                startActivity(intent)
+            }
         }
     }
 
