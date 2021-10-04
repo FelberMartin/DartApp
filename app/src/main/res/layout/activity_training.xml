@@ -33,6 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:layout_marginLeft="@dimen/spacing_medium"
+                android:layout_marginTop="@dimen/spacing_medium"
                 android:text="@{@string/lastFormat(gameViewModel.last)}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 />

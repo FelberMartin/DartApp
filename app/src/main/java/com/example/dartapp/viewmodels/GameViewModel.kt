@@ -21,6 +21,10 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
         return true
     }
 
+    fun isOver(): Boolean {
+        return mode.isGameOver(game)
+    }
+
     private fun update() {
         pointsLeft.value = game.pointsLeft
         if (game.lastServe == -1)

@@ -62,12 +62,18 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
         val animation = AnimationUtils.loadAnimation(this, animationId)
         animation.setAnimationEndListener { binding.numberGrid.number = 0 }
         binding.pointsEnteredLabel.startAnimation(animation)
-    }
 
+        // Check for game over
+        if (viewModel.isOver()) {
+            this.finish()
+        }
+    }
 
     override fun numberUpdated(value: Int) {
         binding.pointsEnteredLabel.text = value.toString()
     }
+
+
 }
 
 // Extension of Animation
