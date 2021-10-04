@@ -6,22 +6,24 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.example.dartapp.databinding.ActivityTrainingBinding
-import com.example.dartapp.gameModes.GameMode
-import com.example.dartapp.gameModes.GameStatus
-import com.example.dartapp.gameModes.Mode501
+import com.example.dartapp.util.Strings
+import com.example.dartapp.viewmodels.GameViewModel
+import com.example.dartapp.viewmodels.GameViewModelFactory
 import com.example.dartapp.views.NumberGridDelegate
+
 
 class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityTrainingBinding
 
-    private lateinit var mode: GameMode
-    private lateinit var status: GameStatus
+    private lateinit var viewModel: GameViewModel
+    private lateinit var viewModelFactory: GameViewModelFactory
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,21 +34,15 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
 
         binding.numberGrid.delegate = this
 
-
-        initGameMode()
-    }
-
-    private fun initGameMode() {
-        val extraString = resources.getString(R.string.extra_string_mode)
+        val extraString = Strings.get(R.string.extra_string_mode)
         val modeString = intent.getStringExtra(extraString)
-        mode = when (modeString) {
-            resources.getString(R.string.mode_501_label) -> Mode501()
+        viewModelFactory = GameViewModelFactory(modeString)
 
-            // This is the default behaviour
-            else -> Mode501()
-        }
+        viewModel = ViewModelProvider(this, viewModelFactory)
+            .get(GameViewModel::class.java)
 
-        status = mode.initGameStatus()
+        binding.gameViewModel = viewModel
+        binding.lifecycleOwner = this
     }
 
 
@@ -57,52 +53,34 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     }
 
     override fun onConfirmPressed(value: Int) {
-        if (!mode.isServeValid(value, status))
-            invalidInput()
-        else
-            validInput(value)
-    }
+        val valid = viewModel.processServe(value)
+        var animationId = R.anim.lift_and_fade
 
-    private fun invalidInput() {
-        val animation = AnimationUtils.loadAnimation(this, R.anim.shake)
+        if (!valid)
+            animationId = R.anim.shake
+
+        val animation = AnimationUtils.loadAnimation(this, animationId)
+        animation.setAnimationEndListener { binding.numberGrid.number = 0 }
         binding.pointsEnteredLabel.startAnimation(animation)
-        animation.setAnimationListener(object: Animation.AnimationListener {
-            override fun onAnimationStart(p0: Animation?) {
-            }
-
-            override fun onAnimationEnd(p0: Animation?) {
-                binding.numberGrid.number = 0
-            }
-
-            override fun onAnimationRepeat(p0: Animation?) {
-            }
-
-        })
     }
-
-    private fun validInput(value: Int) {
-        status.pointsLeft -= value
-        binding.pointsLeftLabel.text = "" + status.pointsLeft
-
-        val animation = AnimationUtils.loadAnimation(this, R.anim.lift_and_fade)
-        binding.pointsEnteredLabel.startAnimation(animation)
-        animation.setAnimationListener(object: Animation.AnimationListener {
-            override fun onAnimationStart(p0: Animation?) {
-            }
-
-            override fun onAnimationEnd(p0: Animation?) {
-                binding.numberGrid.number = 0
-            }
-
-            override fun onAnimationRepeat(p0: Animation?) {
-            }
-
-        })
-    }
-
 
 
     override fun numberUpdated(value: Int) {
         binding.pointsEnteredLabel.text = value.toString()
     }
+}
+
+// Extension of Animation
+fun Animation.setAnimationEndListener(listener: (Animation?) -> Unit) {
+    setAnimationListener(object: Animation.AnimationListener {
+        override fun onAnimationStart(p0: Animation?) {
+        }
+
+        override fun onAnimationEnd(p0: Animation?) {
+            listener.invoke(p0)
+        }
+
+        override fun onAnimationRepeat(p0: Animation?) {
+        }
+    })
 }

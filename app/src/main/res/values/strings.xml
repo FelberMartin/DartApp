@@ -24,6 +24,7 @@
     <string name="training_activity_label">Training Activity</string>
     <string name="clear">Clear</string>
     <string name="confirm">Confirm</string>
+    <string name="lastFormat">Last: %s</string>
 
 
 </resources>

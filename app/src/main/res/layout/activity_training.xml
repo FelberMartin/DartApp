@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".TrainingActivity">
 
     <data>
         <variable
-            android:name="viewModel"
-            android:type="com.example.dartapp.TrainingActivity"
-            />
+            name="gameViewModel"
+            type="com.example.dartapp.viewmodels.GameViewModel"
+             />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -35,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:layout_marginLeft="@dimen/spacing_medium"
-                android:text="--"
+                android:text="@{@string/lastFormat(gameViewModel.last)}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 />
 
@@ -44,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="50dp"
-                android:text="501"
+                android:text="@{String.valueOf(gameViewModel.pointsLeft)}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textSize="40sp"
                 android:textStyle="bold"
@@ -71,4 +69,4 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>
