@@ -39,27 +39,11 @@ class MenuFrament : Fragment() {
             findNavController().navigate(action)
         }
 
+        binding.buttonStats.setOnClickListener {
+            val action = MenuFramentDirections.actionMenuFramentToHistoryFragment()
+            findNavController().navigate(action)
+        }
 
-
-//        binding.buttonFirst.setOnClickListener {
-//            val count = binding.counterTv.text.toString().toInt()
-//            val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(count)
-//            findNavController().navigate(action)
-//        }
-//
-//        binding.buttonToast.setOnClickListener {
-//            val myToast = Toast.makeText(context, "Toastbrot", Toast.LENGTH_SHORT)
-//            myToast.show()
-//        }
-//        binding.buttonCount.setOnClickListener {
-//            val counterStr = binding.counterTv.text.toString()
-//            val counter = counterStr.toInt() + 1
-//            binding.counterTv.text = counter.toString();
-//        }
-//        binding.buttonRandom.setOnClickListener {
-//            val rnd = Random.nextInt()
-//            binding.counterTv.text = rnd.toString()
-//        }
     }
 
     override fun onDestroyView() {

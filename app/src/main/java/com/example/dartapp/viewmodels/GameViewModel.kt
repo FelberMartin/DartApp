@@ -1,5 +1,6 @@
 package com.example.dartapp.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.dartapp.database.LegDatabase
@@ -44,6 +45,7 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
         val db = LegDatabase.getInstance(App.instance.applicationContext)
         val legDao = db.legDatabaseDao
         legDao.insert(game.toLeg())
+        Log.d("LegDatabase", "Leg stored")
     }
 
 

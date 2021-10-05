@@ -18,6 +18,9 @@
             app:exitAnim="@android:anim/slide_out_right"
             app:popEnterAnim="@android:anim/slide_in_left"
             app:popExitAnim="@android:anim/slide_out_right" />
+        <action
+            android:id="@+id/action_MenuFrament_to_historyFragment"
+            app:destination="@id/historyFragment" />
     </fragment>
     <fragment
         android:id="@+id/ModeFragment"
@@ -41,4 +44,8 @@
             app:argType="string"
             android:defaultValue='"501"' />
     </activity>
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.dartapp.HistoryFragment"
+        android:label="HistoryFragment" />
 </navigation>

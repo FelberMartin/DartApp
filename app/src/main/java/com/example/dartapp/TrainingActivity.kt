@@ -78,7 +78,9 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
         dialog.setOnBackClickedListener { this.finish() }
         dialog.setOnRestartClickedListener { viewModel.restart() }
 
-        viewModel.saveGameToDatabase()
+        Thread {
+            viewModel.saveGameToDatabase()
+        }.start()
     }
 
 

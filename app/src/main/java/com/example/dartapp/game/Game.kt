@@ -36,7 +36,7 @@ class Game (private val mode: GameMode) {
         return Leg(
             endTime = System.currentTimeMillis(),
             gameMode = mode.id.value,
-            servesCount = serves.count(),
+            servesCount = serves.size,
             servesAvg = avg
         )
     }

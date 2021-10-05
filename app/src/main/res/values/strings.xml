@@ -27,5 +27,8 @@
     <string name="lastFormat">Last: %s</string>
     <string name="legFinished">Leg Finished!</string>
 
+    <!-- HistoryFragment !-->
+    <string name="averageLabel">Avg:</string>
+    <string name="servesLabel">Serves:</string>
 
 </resources>
