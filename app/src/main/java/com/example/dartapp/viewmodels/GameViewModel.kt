@@ -2,27 +2,29 @@ package com.example.dartapp.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.dartapp.database.LegDatabase
 import com.example.dartapp.game.gameModes.GameMode
 import com.example.dartapp.game.Game
+import com.example.dartapp.util.App
 
 class GameViewModel(private val mode: GameMode) : ViewModel() {
 
-    private var game: Game = mode.initGame()
+    private var game: Game = Game(mode)
     var pointsLeft: MutableLiveData<Int> = MutableLiveData(game.pointsLeft)
     var last: MutableLiveData<String> = MutableLiveData("-")
 
-    fun processServe(value: Int): Boolean {
-        if (!mode.isServeValid(value, game)) {
+    fun processServe(serve: Int): Boolean {
+        if (!game.isServeValid(serve)) {
             return false
         }
 
-        game.serves.add(value)
+        game.serves.add(serve)
         update()
         return true
     }
 
-    fun isOver(): Boolean {
-        return mode.isGameOver(game)
+    fun isFinished(): Boolean {
+        return game.isFinished()
     }
 
     private fun update() {
@@ -34,8 +36,14 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
     }
 
     fun restart() {
-        game = mode.initGame()
+        game = Game(mode)
         update()
+    }
+
+    fun saveGameToDatabase() {
+        val db = LegDatabase.getInstance(App.instance.applicationContext)
+        val legDao = db.legDatabaseDao
+        legDao.insert(game.toLeg())
     }
 
 

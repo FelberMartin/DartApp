@@ -10,8 +10,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
+import com.example.dartapp.database.LegDatabase
 import com.example.dartapp.databinding.ActivityTrainingBinding
 import com.example.dartapp.dialogs.LegFinishedDialog
+import com.example.dartapp.util.App
 import com.example.dartapp.util.Strings
 import com.example.dartapp.viewmodels.GameViewModel
 import com.example.dartapp.viewmodels.GameViewModelFactory
@@ -65,7 +67,7 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
         binding.pointsEnteredLabel.startAnimation(animation)
 
         // Check for game over
-        if (viewModel.isOver())
+        if (viewModel.isFinished())
             legFinished()
     }
 
@@ -75,7 +77,10 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
 
         dialog.setOnBackClickedListener { this.finish() }
         dialog.setOnRestartClickedListener { viewModel.restart() }
+
+        viewModel.saveGameToDatabase()
     }
+
 
     override fun numberUpdated(value: Int) {
         binding.pointsEnteredLabel.text = value.toString()
