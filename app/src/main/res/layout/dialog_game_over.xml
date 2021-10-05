@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="280dp"
     android:layout_height="wrap_content">
 
     <LinearLayout
@@ -15,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        android:layout_margin="44dp">
+        android:layout_margin="@dimen/spacing_medium">
 
         <TextView
             android:id="@+id/textView"
@@ -36,7 +36,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:icon="@android:drawable/ic_menu_revert"
+                android:minWidth="@dimen/icon_button_size"
+                app:icon="@drawable/back"
+                app:iconSize="@dimen/icon_size_big"
                 app:iconGravity="textStart"/>
 
             <Space
@@ -49,7 +51,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                app:icon="@android:drawable/ic_menu_rotate"
+                android:minWidth="@dimen/icon_button_size"
+                app:icon="@drawable/restart"
+                app:iconSize="@dimen/icon_size_big"
                 app:iconGravity="textStart"
                  />
         </LinearLayout>
