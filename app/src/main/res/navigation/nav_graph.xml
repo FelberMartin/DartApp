@@ -23,7 +23,7 @@
         android:id="@+id/ModeFragment"
         android:name="com.example.dartapp.ModeFragment"
         android:label="@string/modes_fragment_label"
-        tools:layout="@layout/fragment_modi" >
+        tools:layout="@layout/fragment_modes" >
         <action
             android:id="@+id/action_ModeFragment_to_trainingActivity"
             app:destination="@id/trainingActivity"

@@ -10,14 +10,14 @@ import android.widget.Button
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.dartapp.databinding.FragmentModiBinding
+import com.example.dartapp.databinding.FragmentModesBinding
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
  */
 class ModeFragment : Fragment() {
 
-    private var _binding: FragmentModiBinding? = null
+    private var _binding: FragmentModesBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -28,7 +28,7 @@ class ModeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        _binding = FragmentModiBinding.inflate(inflater, container, false)
+        _binding = FragmentModesBinding.inflate(inflater, container, false)
         return binding.root
 
     }

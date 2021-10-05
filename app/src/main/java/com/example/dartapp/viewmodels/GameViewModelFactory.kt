@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.dartapp.util.App
 import com.example.dartapp.R
+import com.example.dartapp.game.gameModes.CheatMode
 import com.example.dartapp.game.gameModes.Mode501
 import com.example.dartapp.util.Strings
 
@@ -16,7 +17,7 @@ class GameViewModelFactory(private val gameModeString: String?) : ViewModelProvi
                 Strings.get(R.string.mode_501_label) -> Mode501()
 
                 // This is the default behaviour
-                else -> Mode501()
+                else -> CheatMode()
             }
 
             return GameViewModel(mode) as T

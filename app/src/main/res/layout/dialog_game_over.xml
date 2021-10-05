@@ -14,7 +14,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
+        app:layout_constraintVertical_bias="0.0"
+        android:layout_margin="44dp">
 
         <TextView
             android:id="@+id/textView"
@@ -30,24 +31,27 @@
             android:layout_margin="@dimen/spacing_medium"
             android:weightSum="2">
 
-            <Button
-                android:id="@+id/button"
-                android:layout_width="match_parent"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/backButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 app:icon="@android:drawable/ic_menu_revert"
-                android:layout_weight="1"/>
+                app:iconGravity="textStart"/>
 
             <Space
                 android:layout_width="30dp"
                 android:layout_height="0dp"
+                />
 
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="match_parent"
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/restartButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 app:icon="@android:drawable/ic_menu_rotate"
-                app:iconTint="#FFFFFF"
-                android:layout_weight="1"/>
+                app:iconGravity="textStart"
+                 />
         </LinearLayout>
 
     </LinearLayout>

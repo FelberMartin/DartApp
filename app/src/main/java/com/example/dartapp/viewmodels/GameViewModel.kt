@@ -7,7 +7,7 @@ import com.example.dartapp.game.Game
 
 class GameViewModel(private val mode: GameMode) : ViewModel() {
 
-    private val game: Game = mode.initGame()
+    private var game: Game = mode.initGame()
     var pointsLeft: MutableLiveData<Int> = MutableLiveData(game.pointsLeft)
     var last: MutableLiveData<String> = MutableLiveData("-")
 
@@ -31,6 +31,11 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
             last.value = "-"
         else
             last.value = game.lastServe.toString()
+    }
+
+    fun restart() {
+        game = mode.initGame()
+        update()
     }
 
 
