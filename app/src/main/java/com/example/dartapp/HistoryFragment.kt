@@ -41,6 +41,8 @@ class HistoryFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
+        binding.legend.linkedChart = binding.chart
+
         return binding.root
     }
 

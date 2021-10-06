@@ -9,7 +9,7 @@ class ColorManager {
         Color.MAGENTA, Color.YELLOW)
 
     fun get(index: Int) : Int {
-        return list[index]
+        return list[index % list.size]
     }
 
 }

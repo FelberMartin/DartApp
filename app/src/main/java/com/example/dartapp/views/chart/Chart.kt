@@ -14,9 +14,9 @@ abstract class Chart @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    protected var colorManager = ColorManager()
-
-
     abstract var data: DataSet
+
+    var colorManager = ColorManager()
+
 
 }

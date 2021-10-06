@@ -30,8 +30,8 @@ class PieChart @JvmOverloads constructor(
     }
 
     init {
-        if (isInEditMode) {
-            data = DataSet.Generator.randomNumbered(count=3)
+        if (true) {
+            data = DataSet.Generator.random(count=3)
         }
     }
 
