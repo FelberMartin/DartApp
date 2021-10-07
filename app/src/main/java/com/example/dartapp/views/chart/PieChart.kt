@@ -5,8 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.util.Log
-import kotlin.math.PI
+import kotlin.math.max
 import kotlin.math.min
 
 private const val PIE_OFFSET = 10f
@@ -33,6 +32,17 @@ class PieChart @JvmOverloads constructor(
         if (true) {
             data = DataSet.Generator.random(count=3)
         }
+    }
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        val requestedWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val requestedHeight = MeasureSpec.getSize(heightMeasureSpec)
+        val desiredWidth = requestedWidth + paddingLeft + paddingRight
+        val desiredHeight = requestedHeight + paddingTop + paddingBottom
+
+        val size = min(desiredWidth, desiredHeight)
+
+        setMeasuredDimension(size, size)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
