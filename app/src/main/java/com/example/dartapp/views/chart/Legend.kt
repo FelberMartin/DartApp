@@ -8,7 +8,6 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import kotlin.math.ceil
-import kotlin.math.floor
 
 private const val INDICATOR_RADIUS = 15f
 private const val INDICATOR_WIDTH = 25f
@@ -30,6 +29,9 @@ class Legend @JvmOverloads constructor(
             recalculateColumns()
         }
     private var columns: Int = 1
+    private var desiredWidth: Int = 0
+    private var desiredHeight: Int = 0
+
 
     var linkedChart: Chart? = null
         set(value) {
@@ -70,6 +72,30 @@ class Legend @JvmOverloads constructor(
         }
     }
 
+    // From: https://amryousef.me/custom-view-on-measure
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+
+        val requestedWidth = MeasureSpec.getSize(widthMeasureSpec)
+        val requestedWidthMode = MeasureSpec.getMode(widthMeasureSpec)
+
+        val requestedHeight = MeasureSpec.getSize(heightMeasureSpec)
+        val requestedHeightMode = MeasureSpec.getMode(heightMeasureSpec)
+
+        val width = when (requestedWidthMode) {
+            MeasureSpec.EXACTLY -> requestedWidth
+            MeasureSpec.UNSPECIFIED -> desiredWidth
+            else -> Math.min(requestedWidth, desiredWidth)
+        }
+
+        val height = when (requestedHeightMode) {
+            MeasureSpec.EXACTLY -> requestedHeight
+            MeasureSpec.UNSPECIFIED -> desiredHeight
+            else -> Math.min(requestedHeight, desiredHeight)
+        }
+
+        setMeasuredDimension(width, height)
+    }
+
 
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -93,24 +119,28 @@ class Legend @JvmOverloads constructor(
 
         val maxLabelWidth = labels.maxOf { string -> textPaint.measureText(string) }
         val maxEntryWidth = maxLabelWidth + INDICATOR_WIDTH
+        val newColumnWidth = maxEntryWidth + labelMinSpacingHorizontally
         var neededWidth = maxEntryWidth
 
-        columns = 0
-        while (neededWidth <= width) {
-            neededWidth += labelMinSpacingHorizontally + maxEntryWidth
-            columns++
-        }
-
-        if (columns == 0) {
+        if (neededWidth > width) {
             Log.e("Chart Legend", "The labels cannot fit into the given width")
         }
 
-        // TODO move this to onMeasure()
-        // TODO for testing make Stats with TabsHost
-        val rows = ceil(labels.size / columns.toDouble())
-        val requiredHeight = 2 * OFFSET + labelSpacingVertically * rows
+        columns = 1
+        while (true) {
+            if (neededWidth + newColumnWidth > width)
+                break
 
-        setMeasuredDimension(width, requiredHeight.toInt())
+            neededWidth += newColumnWidth
+            columns++
+        }
+
+        desiredWidth = (2 * OFFSET + neededWidth).toInt()
+
+        val rows = ceil(labels.size / columns.toDouble())
+        desiredHeight = (2 * OFFSET + labelSpacingVertically * rows).toInt()
+
+        // TODO for testing make Stats with TabsHost
     }
 
     override fun onDraw(canvas: Canvas) {
