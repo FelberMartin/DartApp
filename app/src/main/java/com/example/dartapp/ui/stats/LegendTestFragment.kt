@@ -12,8 +12,11 @@ import com.example.dartapp.databinding.FragmentLegendTestBinding
 import com.example.dartapp.databinding.FragmentPieChartBinding
 import com.example.dartapp.views.chart.DataSet
 import com.example.dartapp.views.chart.PieChart
+import com.example.dartapp.views.chart.legend.Legend
 
-
+/**
+ * Testing class for the Chart Legend
+ */
 class LegendTestFragment : Fragment(), SeekBar.OnSeekBarChangeListener{
 
     private var _binding: FragmentLegendTestBinding? = null
@@ -33,6 +36,8 @@ class LegendTestFragment : Fragment(), SeekBar.OnSeekBarChangeListener{
         val chart = PieChart(requireContext())
         chart.data = DataSet.random(type = DataSet.Type.STRING, count = 9)
         binding.legend.linkedChart = chart
+//        binding.legend.mode = Legend.Mode.STACKED
+//        binding.legend.indicatorShape = Legend.IndicatorShape.RECTANGLE
 
         binding.seekBar.setOnSeekBarChangeListener(this)
         binding.seekBar.min = 10

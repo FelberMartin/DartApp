@@ -11,7 +11,6 @@ import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.DataSet
 import com.example.dartapp.views.chart.PieChart
 import kotlin.math.ceil
-import kotlin.math.floor
 
 
 class Legend @JvmOverloads constructor(
@@ -20,10 +19,13 @@ class Legend @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
+    // Describing how the entries should be patterned
     enum class Mode {
-        STACKED, AUTO_COLUMNED
+        STACKED,            // Simply stack one entry over the other
+        AUTO_COLUMNED       // Try to make a table of entries, with as many columns as possible
     }
 
+    // Indicator is the little colored icon in front of the text
     enum class IndicatorShape {
         CIRCLE, RECTANGLE
     }
@@ -31,7 +33,7 @@ class Legend @JvmOverloads constructor(
     var mode = Mode.AUTO_COLUMNED
         set(value) {
             field = value
-            recalculateColumns()
+            recalculateLayout()
         }
 
     var indicatorShape: IndicatorShape = IndicatorShape.CIRCLE
@@ -41,6 +43,7 @@ class Legend @JvmOverloads constructor(
     private var desiredWidth: Int = 0
     private var desiredHeight: Int = 0
 
+    // Link a Chart to display the legend entries corresponding to the chart's data
     var linkedChart: Chart? = null
         set(value) {
             field = value
@@ -65,11 +68,16 @@ class Legend @JvmOverloads constructor(
 
     private var indicatorSize: Float = 20f
     private var indicatorTopMargin = 5f
+    // Spacing between the indicator and the beginning of the entry text label
     private var indicatorLabelSpacing = 10f
 
+    // Spacing between the baselines of entries
     private var entrySpacingVertically = 40f
+    // The minimum required spacing between the end of a entry text label and the next indicator
     private var entryMinSpacingHorizontally = 40f
 
+    // Pixels from the top of the text to the bottom line
+    // referring to [https://stackoverflow.com/a/27631737/13366254]
     private var textTopToBottom = 50f
 
     init {
@@ -82,6 +90,7 @@ class Legend @JvmOverloads constructor(
         }
     }
 
+    // Updates local variables depending on the new textSize
     private fun textSizeChanged() {
         textPaint.textSize = textSize
         val metrics = textPaint.fontMetrics
@@ -93,7 +102,7 @@ class Legend @JvmOverloads constructor(
         indicatorTopMargin = (textTopToBottom - indicatorSize) / 2
         indicatorLabelSpacing = 0.3f * textSize
 
-        recalculateColumns()
+        recalculateLayout()
         invalidate()
     }
 
@@ -121,24 +130,25 @@ class Legend @JvmOverloads constructor(
     }
 
 
-
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        recalculateColumns()
+        recalculateLayout()
     }
 
+    // Handles the title of the DataPoints / DataSets depending on the linked charts type
     private fun initEntryTexts() {
         entryTexts = ArrayList()
         linkedChart?.data?.forEach {
             entryTexts.add(it.x.toString())
         }
 
-        recalculateColumns()
+        recalculateLayout()
     }
 
-    private fun recalculateColumns() {
-        if (mode == Mode.STACKED) return
+    // Responds to potential changes in the legends layout and sets the new values for rows,
+    // columns and calculates the required dimensions
+    private fun recalculateLayout() {
         if (entryTexts.size == 0) return
 
         val maxLabelWidth = entryTexts.maxOf { string -> textPaint.measureText(string) }
@@ -151,12 +161,15 @@ class Legend @JvmOverloads constructor(
         }
 
         columns = 1
-        while (true) {
-            if (neededWidth + newColumnWidth > width)
-                break
+        if (mode == Mode.AUTO_COLUMNED) {
+            // Calculate the maximal possible number of rows
+            while (true) {
+                if (neededWidth + newColumnWidth > width)
+                    break
 
-            neededWidth += newColumnWidth
-            columns++
+                neededWidth += newColumnWidth
+                columns++
+            }
         }
 
         rows = ceil(entryTexts.size / columns.toDouble()).toInt()
@@ -182,16 +195,15 @@ class Legend @JvmOverloads constructor(
                 if (index >= entryTexts.size)
                     break
 
+                // Indicator
                 indicatorPaint.color = linkedChart!!.colorManager.get(index)
                 drawIndicator(canvas)
 
+                // Text Label
                 val x = indicatorSize + indicatorLabelSpacing
                 val y = - textPaint.fontMetrics.top
-
                 canvas.drawText(entryTexts[index], x, y, textPaint)
 
-//                canvas.drawLine(0f, y, 100f, y, textPaint)
-//                canvas.drawLine(20f, 0f, 20f, textSize, textPaint)
 
                 canvas.translate(columnSpacing, 0f)
             }
@@ -201,6 +213,7 @@ class Legend @JvmOverloads constructor(
         }
     }
 
+    // Draws the indicator icon
     private fun drawIndicator(canvas: Canvas) {
         canvas.save()
         canvas.translate(0f, indicatorTopMargin)
