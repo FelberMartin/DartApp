@@ -1,4 +1,4 @@
-package com.example.dartapp.recyclerViewAdapters
+package com.example.dartapp.ui.stats.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

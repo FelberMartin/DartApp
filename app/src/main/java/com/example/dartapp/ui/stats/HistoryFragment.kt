@@ -1,4 +1,4 @@
-package com.example.dartapp
+package com.example.dartapp.ui.stats
 
 import android.os.Bundle
 import android.util.Log
@@ -6,13 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dartapp.database.Leg
 import com.example.dartapp.database.LegDatabase
 import com.example.dartapp.databinding.FragmentHistoryBinding
-import com.example.dartapp.databinding.FragmentMenuBinding
-import com.example.dartapp.recyclerViewAdapters.HistoryAdapter
+import com.example.dartapp.ui.stats.adapters.HistoryAdapter
 import com.example.dartapp.util.App
 
 class HistoryFragment : Fragment() {
@@ -41,7 +39,6 @@ class HistoryFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
-        binding.legend.linkedChart = binding.chart
 
         return binding.root
     }

@@ -1,4 +1,4 @@
-package com.example.dartapp
+package com.example.dartapp.ui.training
 
 import android.os.Build
 import android.os.Bundle
@@ -10,13 +10,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import com.example.dartapp.database.LegDatabase
+import com.example.dartapp.R
 import com.example.dartapp.databinding.ActivityTrainingBinding
-import com.example.dartapp.dialogs.LegFinishedDialog
-import com.example.dartapp.util.App
+import com.example.dartapp.ui.dialogs.LegFinishedDialog
 import com.example.dartapp.util.Strings
-import com.example.dartapp.viewmodels.GameViewModel
-import com.example.dartapp.viewmodels.GameViewModelFactory
+import com.example.dartapp.ui.training.viewmodels.GameViewModel
+import com.example.dartapp.ui.training.viewmodels.GameViewModelFactory
 import com.example.dartapp.views.NumberGridDelegate
 
 

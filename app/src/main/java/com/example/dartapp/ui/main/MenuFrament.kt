@@ -1,14 +1,12 @@
-package com.example.dartapp
+package com.example.dartapp.ui.main
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.fragment.findNavController
 import com.example.dartapp.databinding.FragmentMenuBinding
-import kotlin.random.Random
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -40,7 +38,7 @@ class MenuFrament : Fragment() {
         }
 
         binding.buttonStats.setOnClickListener {
-            val action = MenuFramentDirections.actionMenuFramentToHistoryFragment()
+            val action = MenuFramentDirections.actionMenuFramentToStatsActivity()
             findNavController().navigate(action)
         }
 

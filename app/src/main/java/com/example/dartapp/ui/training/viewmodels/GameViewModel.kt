@@ -1,4 +1,4 @@
-package com.example.dartapp.viewmodels
+package com.example.dartapp.ui.training.viewmodels
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData

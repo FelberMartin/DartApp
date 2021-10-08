@@ -7,7 +7,7 @@
     <data>
         <variable
             name="gameViewModel"
-            type="com.example.dartapp.viewmodels.GameViewModel"
+            type="com.example.dartapp.ui.training.viewmodels.GameViewModel"
              />
     </data>
 

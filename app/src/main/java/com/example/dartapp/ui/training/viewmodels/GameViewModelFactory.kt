@@ -1,8 +1,7 @@
-package com.example.dartapp.viewmodels
+package com.example.dartapp.ui.training.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.dartapp.util.App
 import com.example.dartapp.R
 import com.example.dartapp.game.gameModes.CheatMode
 import com.example.dartapp.game.gameModes.Mode501

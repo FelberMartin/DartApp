@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/MenuFrament"
-        android:name="com.example.dartapp.MenuFrament"
+        android:name="com.example.dartapp.ui.main.MenuFrament"
         android:label="@string/menu_fragment_label"
         tools:layout="@layout/fragment_menu">
 
@@ -18,13 +18,14 @@
             app:exitAnim="@android:anim/slide_out_right"
             app:popEnterAnim="@android:anim/slide_in_left"
             app:popExitAnim="@android:anim/slide_out_right" />
+
         <action
-            android:id="@+id/action_MenuFrament_to_historyFragment"
-            app:destination="@id/historyFragment" />
+            android:id="@+id/action_MenuFrament_to_statsActivity"
+            app:destination="@id/statsActivity" />
     </fragment>
     <fragment
         android:id="@+id/ModeFragment"
-        android:name="com.example.dartapp.ModeFragment"
+        android:name="com.example.dartapp.ui.main.ModeFragment"
         android:label="@string/modes_fragment_label"
         tools:layout="@layout/fragment_modes" >
         <action
@@ -44,8 +45,9 @@
             app:argType="string"
             android:defaultValue='"501"' />
     </activity>
-    <fragment
-        android:id="@+id/historyFragment"
-        android:name="com.example.dartapp.HistoryFragment"
-        android:label="HistoryFragment" />
+    <activity
+        android:id="@+id/statsActivity"
+        android:name="com.example.dartapp.ui.stats.StatsActivity"
+        android:label="activity_stats"
+        tools:layout="@layout/activity_stats" />
 </navigation>
