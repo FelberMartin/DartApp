@@ -1,9 +1,12 @@
 package com.example.dartapp
 
+import java.text.DecimalFormat
+
 class PlayGround {
     companion object {
         fun all() {
             validServes()
+            formatting()
         }
 
         fun validServes() {
@@ -39,6 +42,16 @@ class PlayGround {
             valids.add(50)
             return valids
         }
+
+        fun formatting() {
+            val values = listOf(232, 0.18, 1232831821, 4.45, 0, 1.2345)
+            for (v in values) {
+                val s = DecimalFormat("#.##").format(v)
+                println(s)
+            }
+        }
     }
+
+
 
 }
