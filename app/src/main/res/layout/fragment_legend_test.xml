@@ -5,20 +5,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <com.example.dartapp.views.chart.PieChart
-        android:id="@+id/chart"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <com.example.dartapp.views.chart.legend.Legend
         android:id="@+id/legend"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/teal_200"/>
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_margin="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/legend" />
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/seekBar"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
