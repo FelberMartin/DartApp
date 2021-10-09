@@ -89,6 +89,7 @@ class PieChart @JvmOverloads constructor(
     }
 
     override fun dataChanged() {
+        super.dataChanged()
         data.forEach{ dp -> assert(dp.y.toDouble() >= 0) }
         dataSum = data.sumOf { dp -> dp.y.toDouble() }.toFloat()
 
@@ -96,6 +97,7 @@ class PieChart @JvmOverloads constructor(
         data.forEach { dp -> fractions.add(dp.y.toFloat() / dataSum) }
 
         recalculatePoints()
+        selectedIndex = -1
     }
 
     // Recalculate the points on the unit circle (all the sin and cos values)
@@ -111,6 +113,8 @@ class PieChart @JvmOverloads constructor(
             middlePoints.add(PointF(cos(middleAngle).toFloat(), sin(middleAngle).toFloat()))
             startAngle += segmentAngle
         }
+
+        invalidate()
     }
 
     // Updates the values for the selection TextBox

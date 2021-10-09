@@ -23,7 +23,7 @@ class SectionsPagerAdapter(private val fragmentActivity: FragmentActivity) :
         val fragment = when (title) {
             "History" -> HistoryFragment()
             "PieChart" -> PieChartFragment()
-            "LineChart" -> LineChartFragment()
+            "Stats" -> LineChartFragment()
             else -> LegendTestFragment()
         }
 

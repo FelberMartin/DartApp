@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.dartapp.databinding.FragmentPieChartBinding
+import com.example.dartapp.views.chart.DataSet
 
 
 /**
@@ -29,6 +30,7 @@ class PieChartFragment : Fragment() {
         _binding = FragmentPieChartBinding.inflate(inflater, container, false)
 
         binding.legend.linkedChart = binding.chart
+        binding.newData.setOnClickListener { binding.chart.data = DataSet.random(type = DataSet.Type.STRING, count = 3) }
 
         return binding.root
     }

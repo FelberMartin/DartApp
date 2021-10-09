@@ -62,6 +62,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
 
     override fun dataChanged() {
+        super.dataChanged()
         yMinValue = data.minOf { dp -> dp.y.toFloat() }
         yMaxValue = data.maxOf { dp -> dp.y.toFloat() }
 

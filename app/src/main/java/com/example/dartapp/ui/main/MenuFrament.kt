@@ -42,6 +42,11 @@ class MenuFrament : Fragment() {
             findNavController().navigate(action)
         }
 
+        binding.buttonTest.setOnClickListener {
+            val action = MenuFramentDirections.actionMenuFramentToTestFragment()
+            findNavController().navigate(action)
+        }
+
     }
 
     override fun onDestroyView() {

@@ -49,8 +49,8 @@ class Legend @JvmOverloads constructor(
     var linkedChart: Chart? = null
         set(value) {
             field = value
-            invalidate()
-            initEntryTexts()
+            value?.link(this)
+            reload()
         }
 
     private var entryTexts = ArrayList<String>()
@@ -90,6 +90,11 @@ class Legend @JvmOverloads constructor(
             chart.data = DataSet.random(type = DataSet.Type.STRING, count = 9)
             linkedChart = chart
         }
+    }
+
+    fun reload() {
+        invalidate()
+        initEntryTexts()
     }
 
     // Updates local variables depending on the new textSize

@@ -32,10 +32,10 @@ class LineChart @JvmOverloads constructor(
     }
 
     init {
-        if (true) {
+        if (isInEditMode) {
             drawCoordRect = true
-            data = DataSet.random(count = 10)
         }
+        data = DataSet.random(count = 10)
     }
 
     fun reload() {

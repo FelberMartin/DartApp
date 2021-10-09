@@ -12,8 +12,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 val TAB_TITLES = arrayOf(
     R.string.tab_text_1,
     R.string.tab_text_2,
-    R.string.tab_text_3,
-    R.string.tab_text_4
+    R.string.tab_text_3
 )
 
 class StatsActivity : AppCompatActivity() {
