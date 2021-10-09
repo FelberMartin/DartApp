@@ -1,4 +1,4 @@
-package com.example.dartapp.ui.stats
+package com.example.dartapp.views.chart.testfragments
 
 import android.os.Build
 import android.os.Bundle

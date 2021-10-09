@@ -12,26 +12,16 @@ abstract class Chart @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    abstract var data: DataSet
-
     var colorManager = ColorManager()
 
-    protected fun measureDimension(desiredSize: Int, measureSpec: Int): Int {
-        var result: Int
-        val specMode = MeasureSpec.getMode(measureSpec)
-        val specSize = MeasureSpec.getSize(measureSpec)
-        if (specMode == MeasureSpec.EXACTLY) {
-            result = specSize
-        } else {
-            result = desiredSize
-            if (specMode == MeasureSpec.AT_MOST) {
-                result = Math.min(result, specSize)
-            }
+    var data: DataSet = DataSet()
+        set(value) {
+            field = value
+            dataChanged()
         }
-        if (result < desiredSize) {
-            Log.e("ChartView", "The view is too small, the content might get cut")
-        }
-        return result
-    }
+
+    abstract fun dataChanged()
+
+
 
 }

@@ -2,7 +2,6 @@ package com.example.dartapp.views.chart
 
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.random.Random
@@ -61,6 +60,7 @@ class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
                 if (type == Type.STRING) {
                     val name = names[Random.nextInt(names.size)]
                     data.add(DataPoint(name, rnd))
+
                 } else
                     data.add(DataPoint(i, rnd))
             }

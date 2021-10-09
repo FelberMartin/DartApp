@@ -25,11 +25,6 @@ class PieChart @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : Chart(context, attrs, defStyleAttr) {
 
-    override var data: DataSet = DataSet()
-        set(value) {
-            field = value
-            dataChanged()
-        }
 
     private var dataSum: Float = 0.0f
     private lateinit var fractions: ArrayList<Float>
@@ -93,7 +88,7 @@ class PieChart @JvmOverloads constructor(
         }
     }
 
-    private fun dataChanged() {
+    override fun dataChanged() {
         data.forEach{ dp -> assert(dp.y.toDouble() >= 0) }
         dataSum = data.sumOf { dp -> dp.y.toDouble() }.toFloat()
 
@@ -151,6 +146,7 @@ class PieChart @JvmOverloads constructor(
 
     // Translation of the canvas for drawing the selection TextBox at origin 0,0
     private fun updateTextBoxTranslation() {
+        if (selectedIndex == -1) return
         val radius = 0.6f * center.x
 
         // Pointing to the middle of the textBox
@@ -241,7 +237,7 @@ class PieChart @JvmOverloads constructor(
         canvas.save()
         canvas.translate(textBoxTranslation.x, textBoxTranslation.y)
 
-        canvas.drawRoundRect(textBoxRect, 5f, 5f, selectionTextBoxPaint)
+        canvas.drawRoundRect(textBoxRect, 10f, 10f, selectionTextBoxPaint)
         canvas.drawText(titleText, textBoxRect.right / 2, titleBaseLine, selectionTitlePaint)
         canvas.drawText(descText, textBoxRect.right / 2, descBaseLine, selectionDescPaint)
 

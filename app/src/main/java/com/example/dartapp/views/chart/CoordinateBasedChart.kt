@@ -1,21 +1,48 @@
 package com.example.dartapp.views.chart
 
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.util.AttributeSet
+import com.example.dartapp.R
+import com.google.android.material.color.MaterialColors
 
 private const val ARROW_STRENGTH = 5f
 private const val ARROW_LINES_COUNT = 2 * 3     // For each axis 3 lines
 
 
-abstract class CoordinateBasedChart(
-    context: Context,
-    attrs: AttributeSet? = null,
-    defStyleAttr: Int = 0
+abstract class CoordinateBasedChart @JvmOverloads constructor(
+    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : Chart(context, attrs, defStyleAttr) {
 
+    enum class XDistribution {
+        EQUIDISTANT,
+        SCALED_BY_VALUE
+    }
+
+    enum class XMarkerDistribution {
+        EQUIDISTANT,
+        WITH_VALUES
+    }
+
+
+    var xDistribution = XDistribution.EQUIDISTANT
+    var xMarkerDistribution = XMarkerDistribution.WITH_VALUES
+    var xEdgeAutoPadding = true
+    var yEdgeAutoPadding = true
+
+    private var xMinValue = 0f
+    private var xMaxValue = 0f
+    private var yMinValue = 0f
+    private var yMaxValue = 0f
+
+    var xStartAtZero = false
+    var yStartAtZero = false
+
+    protected var coordRect = RectF()
+    protected var drawCoordRect = false
+    private val coordRectPaint = Paint().apply {
+        color = Color.LTGRAY
+    }
 
     private val arrowOffset: Float = 20f
     private var xArrowLength: Float = 0f
@@ -24,7 +51,7 @@ abstract class CoordinateBasedChart(
     private var arrowLines: FloatArray = FloatArray(ARROW_LINES_COUNT * 4)
 
     private var arrowPaint: Paint = Paint().apply {
-        color = Color.WHITE
+        color = MaterialColors.getColor(this@CoordinateBasedChart, R.attr.colorOnBackground)
         isAntiAlias = true
         isDither = true
         style = Paint.Style.STROKE // default: FILL
@@ -34,12 +61,50 @@ abstract class CoordinateBasedChart(
     }
 
 
+    override fun dataChanged() {
+        yMinValue = data.minOf { dp -> dp.y.toFloat() }
+        yMaxValue = data.maxOf { dp -> dp.y.toFloat() }
+
+        if (data.dataPointXType == DataSet.Type.STRING) {
+            xMinValue = 0f
+            xMaxValue = data.size.toFloat()
+        } else {
+            xMinValue = data.minOf { dp -> (dp.x as Number).toFloat() }
+            xMaxValue = data.maxOf { dp -> (dp.x as Number).toFloat() }
+        }
+
+        if (xStartAtZero)
+            xMinValue = 0f
+        if (yStartAtZero)
+            yMinValue = 0f
+
+        handleAutoPadding()
+    }
+
+    private fun handleAutoPadding() {
+        if (xEdgeAutoPadding) {
+            val averageDist = (xMaxValue - xMinValue) / data.size
+            xMinValue -= averageDist / 2
+            xMaxValue += averageDist / 2
+        }
+        if (yEdgeAutoPadding) {
+            val averageDist = (yMaxValue - yMinValue) / data.size
+            yMinValue -= averageDist / 2
+            yMaxValue += averageDist / 2
+        }
+    }
+
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
         xArrowLength = w - 2 * arrowOffset
         yArrowLength = h - 2 * arrowOffset
         calcArrows()
+
+        coordRect = RectF(
+            arrowOffset, arrowOffset * 2,
+            w - 2 * arrowOffset, h - arrowOffset
+        )
     }
 
     private fun calcArrows() {
@@ -95,13 +160,39 @@ abstract class CoordinateBasedChart(
         return lines
     }
 
+    
+    protected fun inCoordSystem(index: Int) : PointF {
+        val coordX = getCoordX(index)
+        val coordY = data[index].y.toFloat()
+        return PointF(coordXToPixel(coordX), coordYToPixel(coordY))
+    }
+
+    private fun getCoordX(index: Int) : Float {
+        if (data.dataPointXType == DataSet.Type.STRING)
+            return index.toFloat()
+
+        return (data[index].x as Number).toFloat()
+    }
+
+    protected fun coordXToPixel(x: Float) : Float {
+        val fraction = (x - xMinValue) / (xMaxValue - xMinValue)
+        return coordRect.left + coordRect.width() * fraction
+    }
+    protected fun coordYToPixel(y: Float) : Float {
+        val fraction = (y - yMinValue) / (yMaxValue - yMinValue)
+        return coordRect.top + coordRect.height() * (1 - fraction)
+    }
+
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        canvas.drawColor(Color.GRAY)
+        if (drawCoordRect)
+            canvas.drawRect(coordRect, coordRectPaint)
+
         drawArrows(canvas)
     }
+
 
     private fun drawArrows(canvas: Canvas) {
         canvas.drawLines(arrowLines, arrowPaint)
