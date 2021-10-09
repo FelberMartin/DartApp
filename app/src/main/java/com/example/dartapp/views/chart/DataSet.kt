@@ -25,7 +25,7 @@ class DataPoint(var x: Any, var y: Number) {
     }
 
     companion object {
-        private val decimalFormat = DecimalFormat("#.##")
+        val decimalFormat = DecimalFormat("#.##")
     }
 }
 

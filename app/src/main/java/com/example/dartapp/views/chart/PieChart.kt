@@ -68,7 +68,7 @@ class PieChart @JvmOverloads constructor(
     }
     private val selectionTextBoxPaint = Paint().apply {
         color = Color.BLACK
-        alpha = 120
+        alpha = 160
     }
 
     private var titleText = "title"
@@ -235,6 +235,7 @@ class PieChart @JvmOverloads constructor(
     }
 
     // The selection info TextBox
+    // TODO: move TextBox to the center if it wouldn't fit into the View
     private fun drawSelectionTextBox(canvas: Canvas) {
         if (selectedIndex == -1) return
 
@@ -315,6 +316,5 @@ class PieChart @JvmOverloads constructor(
 
         return -1
     }
-
 
 }

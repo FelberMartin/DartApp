@@ -35,7 +35,7 @@ class LineChart @JvmOverloads constructor(
         if (isInEditMode) {
             drawCoordRect = true
         }
-        data = DataSet.random(count = 10)
+        data = DataSet.random(count = 8)
     }
 
     fun reload() {
@@ -71,8 +71,10 @@ class LineChart @JvmOverloads constructor(
                     control.x / 2, control.y / 2)
             } else
                 linePath.lineTo(nextPoint.x, nextPoint.y)
+
             lastPoint = nextPoint
         }
+        
         if (smoothedLine)
             linePath.quadTo(control.x / 2, control.y / 2, lastPoint.x, lastPoint.y)
     }

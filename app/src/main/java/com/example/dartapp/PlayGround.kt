@@ -1,12 +1,14 @@
 package com.example.dartapp
 
+import com.example.dartapp.views.chart.CoordinateBasedChart
 import java.text.DecimalFormat
 
 class PlayGround {
     companion object {
         fun all() {
-            validServes()
-            formatting()
+//            validServes()
+//            formatting()
+//            testMarkers()
         }
 
         fun validServes() {
@@ -48,6 +50,13 @@ class PlayGround {
             for (v in values) {
                 val s = DecimalFormat("#.##").format(v)
                 println(s)
+            }
+        }
+
+        fun testMarkers() {
+            repeat(30) {
+                val v = CoordinateBasedChart.getDistance(it)
+                println("$v")
             }
         }
     }
