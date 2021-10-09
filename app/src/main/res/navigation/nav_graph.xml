@@ -38,7 +38,7 @@
     </fragment>
     <activity
         android:id="@+id/trainingActivity"
-        android:name="com.example.dartapp.TrainingActivity"
+        android:name="com.example.dartapp.ui.training.TrainingActivity"
         android:label="TrainingActivity" >
         <argument
             android:name="mode"

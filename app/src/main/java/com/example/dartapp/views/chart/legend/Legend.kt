@@ -7,9 +7,11 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import com.example.dartapp.R
 import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.DataSet
 import com.example.dartapp.views.chart.PieChart
+import com.google.android.material.color.MaterialColors
 import kotlin.math.ceil
 
 
@@ -56,7 +58,7 @@ class Legend @JvmOverloads constructor(
     private var indicatorPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var textPaint = Paint().apply {
         isAntiAlias = true
-        color = Color.BLACK
+        color = MaterialColors.getColor(this@Legend, R.attr.colorOnBackground)
         textSize = 40f
     }
 
