@@ -27,7 +27,7 @@ class LineChartFragment : Fragment() {
         _binding = FragmentLineChartBinding.inflate(inflater, container, false)
         val chart = binding.chart
 
-        binding.reload.setOnClickListener { chart.data = DataSet.random(count = 8) }
+        binding.reload.setOnClickListener { chart.data = DataSet.random(count = 8, randomX = true) }
 
         binding.xStartZero.isChecked = chart.xStartAtZero
         binding.yStartZero.isChecked = chart.yStartAtZero

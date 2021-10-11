@@ -13,19 +13,30 @@ class DataPoint(var x: Any, var y: Number) {
     }
 
     fun xString(type: DataSet.Type) : String {
-        return when (type) {
-            DataSet.Type.STRING -> x as String
-            DataSet.Type.NUMBER -> decimalFormat.format(x)
-            DataSet.Type.DATE -> {
-                val xLong = x as Long
-                val date = Date(xLong)
-                return SimpleDateFormat.getDateInstance().format(date)
-            }
-        }
+        return Companion.xString(x, type)
     }
 
     companion object {
-        val decimalFormat = DecimalFormat("#.##")
+        private val decimalFormat = DecimalFormat("#.##")
+
+        fun format(n: Number) : String {
+            val epsilon = 1e-6
+            if (n.toFloat() < epsilon && n.toFloat() > - epsilon)
+                return "0"
+            return decimalFormat.format(n)
+        }
+
+        fun xString(x: Any, type: DataSet.Type) : String {
+            return when (type) {
+                DataSet.Type.STRING -> x as String
+                DataSet.Type.NUMBER -> format((x as Number))
+                DataSet.Type.DATE -> {
+                    val xLong = x as Long
+                    val date = Date(xLong)
+                    return SimpleDateFormat.getDateInstance().format(date)
+                }
+            }
+        }
     }
 }
 
@@ -43,6 +54,14 @@ class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
 
     var dataPointXType: Type = Type.STRING
 
+    fun xString(index: Int) : String {
+        return get(index).xString(dataPointXType)
+    }
+
+    fun xStringFrom(x: Any) : String {
+        return DataPoint.xString(x, dataPointXType)
+    }
+
     companion object Generator {
 
         private val names = listOf("Apple Pie", "Silly StackOverflow questions", "Litre of Wine",
@@ -50,10 +69,12 @@ class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
             "Koks", "IQ", "Hours till you die", "ÄÖüµ€@{*|^^°ÓÈ")
 
 
-        fun random(type: Type = Type.NUMBER, count: Int = 4, min: Double = 0.0, max: Double = 100.0) : DataSet {
+        fun random(type: Type = Type.NUMBER, count: Int = 4, randomX: Boolean = false, min: Double = 0.0, max: Double = 100.0) : DataSet {
             var data = DataSet()
             data.dataPointXType = type
 
+            var xStart = 0
+            if (randomX) xStart = Random.nextInt(1000)
             for (i in 0 until count) {
                 val rnd = Random.nextDouble(min, max)
 
@@ -62,7 +83,11 @@ class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
                     data.add(DataPoint(name, rnd))
 
                 } else
-                    data.add(DataPoint(i, rnd))
+                    data.add(DataPoint(xStart, rnd))
+
+                var increase = 1
+                if (randomX) increase = Random.nextInt(100)
+                xStart += increase
             }
 
             return data

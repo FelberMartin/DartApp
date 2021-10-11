@@ -3,7 +3,6 @@ package com.example.dartapp.views.chart
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import androidx.core.graphics.minus
 import com.example.dartapp.R
 import com.google.android.material.color.MaterialColors
 import kotlin.math.ceil
@@ -13,30 +12,21 @@ private const val ARROW_STRENGTH = 8f
 private const val ARROW_TIP_SIZE = 10f
 private const val ARROW_LINES_COUNT = 2 * 3     // For each axis 3 lines
 
-private const val MARKER_SIZE = 8f
-private const val MARKER_INTERN_SPACING = 10f
+private const val MARKER_SIZE = 10f
+private const val MARKER_INTERN_SPACING = 15f
 
 abstract class CoordinateBasedChart @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : Chart(context, attrs, defStyleAttr) {
 
-    enum class XDistribution {
-        EQUIDISTANT,
-        SCALED_BY_VALUE
-    }
-
-    enum class XMarkerDistribution {
-        EQUIDISTANT,
-        WITH_VALUES
-    }
-
-    var xDistribution = XDistribution.EQUIDISTANT
-    var xMarkerDistribution = XMarkerDistribution.WITH_VALUES
+    private var xMarkers: ArrayList<Float> = arrayListOf()
+    private var xMarkerTexts: ArrayList<String> = arrayListOf()
+    private var xMarkerLabelsHeight = ARROW_TIP_SIZE
 
     private var yMarkers: ArrayList<Float> = arrayListOf()
     private var yMarkerTexts: ArrayList<String> = arrayListOf()
     private var yMarkerLabelsWidth = ARROW_TIP_SIZE
-    private var xMarkerLabelsHeight = ARROW_TIP_SIZE
+
 
     var xEdgeAutoPadding = true
     var yEdgeAutoPadding = true
@@ -56,8 +46,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     }
 
     private var arrowOffset: PointF = PointF(yMarkerLabelsWidth, xMarkerLabelsHeight)
-    private var xArrowLength: Float = 0f
-    private var yArrowLength: Float = 0f
+    private var xArrowLength: Float = 300f
+    private var yArrowLength: Float = 300f
 
     private var arrowLines: FloatArray = FloatArray(ARROW_LINES_COUNT * 4)
 
@@ -75,8 +65,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         isAntiAlias = true
         color = MaterialColors.getColor(this@CoordinateBasedChart, R.attr.colorOnBackground)
         textSize = 40f
-        textAlign = Paint.Align.RIGHT
-        strokeWidth = 6f
+        typeface = Typeface.DEFAULT_BOLD
+        strokeWidth = ARROW_STRENGTH
         strokeCap = Paint.Cap.ROUND
     }
 
@@ -100,7 +90,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
             yMinValue = 0f
 
         handleAutoPadding()
-        updateMarkers()
+        updateCoordSystem()
     }
 
     private fun handleAutoPadding() {
@@ -119,16 +109,18 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
 
-        updateMarkers()
+        updateCoordSystem()
+    }
 
-        xArrowLength = w - arrowOffset.x
-        yArrowLength = h - arrowOffset.y
+    private fun updateArrows() {
+        xArrowLength = width - arrowOffset.x - ARROW_STRENGTH / 2
+        yArrowLength = height - arrowOffset.y - ARROW_STRENGTH / 2
 
         calcArrows()
 
         coordRect = RectF(
             arrowOffset.x, ARROW_TIP_SIZE ,
-            w - ARROW_TIP_SIZE, h - arrowOffset.y
+            width - ARROW_TIP_SIZE, height - arrowOffset.y
         )
     }
 
@@ -143,7 +135,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
         // y Axis
         lines.add(arrowOffset.x)
-        lines.add(0f)
+        lines.add(ARROW_STRENGTH / 2)
         lines.add(arrowOffset.x)
         lines.add(yArrowLength)
 
@@ -171,7 +163,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
         // y Tip
         tipX = arrowOffset.x
-        tipY = 0f
+        tipY = ARROW_STRENGTH / 2
         lines.add(tipX - ARROW_TIP_SIZE)
         lines.add(tipY + ARROW_TIP_SIZE)
         lines.add(tipX)
@@ -207,35 +199,69 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         return coordRect.top + coordRect.height() * (1 - fraction)
     }
 
-    private fun updateMarkers() {
+    private fun updateCoordSystem() {
         // only if the size has been initialized
         if (width == 0) return
 
+        updateXMarkers()
         updateYMarkers()
-        updateYTexts()
+        updateMarkerTexts()
+
         updateSpacings()
+        updateArrows()
+
+        invalidate()
     }
 
-    private fun updateYTexts() {
+    private fun updateMarkerTexts() {
+        // X Markers
+        xMarkerTexts = ArrayList()
+        for (i in 0 until xMarkers.size) {
+            val text = data.xStringFrom(xMarkers[i])
+            xMarkerTexts.add(text)
+        }
+
+        // Y Markers
         yMarkerTexts = ArrayList()
         for (i in 0 until yMarkers.size) {
-            val text = DataPoint.decimalFormat.format(yMarkers[i])
+            val text = DataPoint.format(yMarkers[i])
             yMarkerTexts.add(text)
         }
     }
 
     private fun updateSpacings() {
+        xMarkerLabelsHeight = markerPaint.fontMetrics.height()
         yMarkerLabelsWidth = yMarkerTexts.maxOf { t -> markerPaint.measureText(t) }
+
         arrowOffset.x = yMarkerLabelsWidth + MARKER_INTERN_SPACING
+        arrowOffset.y = xMarkerLabelsHeight + MARKER_INTERN_SPACING
+    }
+
+    private fun updateXMarkers() {
+        xMarkers = ArrayList()
+        val maxCount = ceil(width / 150f).toInt()
+        val fullDist = xMaxValue - xMinValue
+        val dist = findMarkerDistance(maxCount, fullDist)
+        val firstMultiplier = ceil(xMinValue / dist)
+        var x = firstMultiplier * dist
+        val tipPercentage = ARROW_TIP_SIZE / xArrowLength
+        val maxMarkedValue = xMaxValue - 3 * tipPercentage * fullDist
+        while (x <= maxMarkedValue) {
+            xMarkers.add(x)
+            x += dist
+        }
     }
 
     private fun updateYMarkers() {
         yMarkers = ArrayList()
         val maxCount = ceil(height / 250f).toInt()
-        val dist = findMarkerDistance(maxCount, yMaxValue - yMinValue)
+        val fullDist = yMaxValue - yMinValue
+        val dist = findMarkerDistance(maxCount, fullDist)
         val firstMultiplier = ceil(yMinValue / dist)
         var y = firstMultiplier * dist
-        while (y <= yMaxValue) {
+        val tipPercentage = ARROW_TIP_SIZE / yArrowLength
+        val maxMarkedValue = yMaxValue - 3 * tipPercentage * fullDist
+        while (y <= maxMarkedValue) {
             yMarkers.add(y)
             y += dist
         }
@@ -248,7 +274,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         if (drawCoordRect)
             canvas.drawRect(coordRect, coordRectPaint)
 
-        drawYMarkers(canvas)
+        drawMarkers(canvas)
         drawArrows(canvas)
     }
 
@@ -257,14 +283,30 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         canvas.drawLines(arrowLines, arrowPaint)
     }
 
-    private fun drawYMarkers(canvas: Canvas) {
+    private fun drawMarkers(canvas: Canvas) {
+        // X Markers
+        markerPaint.textAlign = Paint.Align.CENTER
+        for (i in 0 until xMarkers.size) {
+            // Line
+            val x = coordXToPixel(xMarkers[i])
+            canvas.drawLine(x, yArrowLength, x, yArrowLength + MARKER_SIZE, markerPaint)
+
+            // Label
+            val text = xMarkerTexts[i]
+            val y = yArrowLength + MARKER_SIZE + MARKER_INTERN_SPACING
+            canvas.drawText(text, x, y - markerPaint.fontMetrics.top, markerPaint)
+        }
+
+        // Y Markers
+        markerPaint.textAlign = Paint.Align.RIGHT
         for (i in 0 until yMarkers.size) {
             // Line
-            val y = coordYToPixel(yMarkers[i])
+            var y = coordYToPixel(yMarkers[i])
             canvas.drawLine(arrowOffset.x, y, arrowOffset.x - MARKER_SIZE, y, markerPaint)
 
             // Label
             val text = yMarkerTexts[i]
+            y += - markerPaint.fontMetrics.baseLineCenterOffset()
             canvas.drawText(text, yMarkerLabelsWidth, y, markerPaint)
         }
     }
@@ -275,7 +317,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
      */
     companion object {
         private val markerDistances = listOf<Float>(0.1f, 0.2f, 0.5f, 1f, 2f, 5f, 10f, 20f,
-            25f, 40f, 50f, 80f, 100f, 125f, 150f, 200f, 500f)
+            25f, 40f, 50f, 100f, 125f, 150f, 200f, 500f)
 
         private val bigMarkerSteps = listOf(1f, 2f, 5f)
 
@@ -303,4 +345,14 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
     }
 
+
 }
+
+fun Paint.FontMetrics.baseLineCenterOffset() : Float {
+    return (top + bottom) / 2
+}
+
+fun Paint.FontMetrics.height() : Float {
+    return bottom - top
+}
+
