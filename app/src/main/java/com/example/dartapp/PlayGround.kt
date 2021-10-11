@@ -53,12 +53,12 @@ class PlayGround {
             }
         }
 
-        fun testMarkers() {
-            repeat(30) {
-                val v = CoordinateBasedChart.getDistance(it)
-                println("$v")
-            }
-        }
+//        fun testMarkers() {
+//            repeat(30) {
+//                val v = CoordinateBasedChart.getDistance(it)
+//                println("$v")
+//            }
+//        }
     }
 
 
