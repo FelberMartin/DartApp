@@ -10,45 +10,60 @@ import kotlin.math.pow
 
 private const val ARROW_STRENGTH = 8f
 private const val ARROW_TIP_SIZE = 10f
+
+// Number of lines needed to draw a single coordinate system arrow
 private const val ARROW_LINES_COUNT = 2 * 3     // For each axis 3 lines
 
+// How far the markers protrude from the coordinate system's arrows
 private const val MARKER_SIZE = 10f
+// Space between the Marker lines and the Labels
 private const val MARKER_INTERN_SPACING = 15f
 
 abstract class CoordinateBasedChart @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : Chart(context, attrs, defStyleAttr) {
 
+    // Markers on the x Axis
     private var xMarkers: ArrayList<Float> = arrayListOf()
     private var xMarkerTexts: ArrayList<String> = arrayListOf()
     private var xMarkerLabelsHeight = ARROW_TIP_SIZE
 
+    // Markers on the y Axis
     private var yMarkers: ArrayList<Float> = arrayListOf()
     private var yMarkerTexts: ArrayList<String> = arrayListOf()
     private var yMarkerLabelsWidth = ARROW_TIP_SIZE
 
+    // Automatically put some dynamic padding between the border of the coordinate system
+    // and the outer values
+    var horizontalAutoPadding = true
+    var verticalAutoPadding = true
 
-    var xEdgeAutoPadding = true
-    var yEdgeAutoPadding = true
-
+    // Extrema of the displayed values, not the extrema of the data points
     private var xMinValue = 0f
     private var xMaxValue = 0f
     private var yMinValue = 0f
     private var yMaxValue = 0f
 
+    // Whether the axis should start at 0 or the min value of the data points
     var xStartAtZero = false
     var yStartAtZero = false
 
-    protected var coordRect = RectF()
+    // Rectangle including all the coordinates that can be displayed on this coordinate system
+    private var coordRect = RectF()
+
+    // mostly for debugging
     protected var drawCoordRect = false
     private val coordRectPaint = Paint().apply {
         color = Color.LTGRAY
     }
 
+    // Offset of the coordinate system's arrows from the left of the view (x) and the bottom of
+    // the view (y)
     private var arrowOffset: PointF = PointF(yMarkerLabelsWidth, xMarkerLabelsHeight)
     private var xArrowLength: Float = 300f
     private var yArrowLength: Float = 300f
 
+    // The lines defining where the coordinate system's arrow are being drawn
     private var arrowLines: FloatArray = FloatArray(ARROW_LINES_COUNT * 4)
 
     private var arrowPaint: Paint = Paint().apply {
@@ -73,9 +88,12 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
     override fun dataChanged() {
         super.dataChanged()
+
+        // Y values
         yMinValue = data.minOf { dp -> dp.y.toFloat() }
         yMaxValue = data.maxOf { dp -> dp.y.toFloat() }
 
+        // X values
         if (data.dataPointXType == DataSet.Type.STRING) {
             xMinValue = 0f
             xMaxValue = data.size.toFloat()
@@ -93,13 +111,16 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         updateCoordSystem()
     }
 
+    /**
+     * Changes the extrema values for x and y if the auto padding option is enabled
+     */
     private fun handleAutoPadding() {
-        if (xEdgeAutoPadding) {
+        if (horizontalAutoPadding) {
             val averageDist = (xMaxValue - xMinValue) / data.size
             xMinValue -= averageDist / 2
             xMaxValue += averageDist / 2
         }
-        if (yEdgeAutoPadding) {
+        if (verticalAutoPadding) {
             val averageDist = (yMaxValue - yMinValue) / data.size
             yMinValue -= averageDist / 2
             yMaxValue += averageDist / 2
@@ -117,13 +138,11 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         yArrowLength = height - arrowOffset.y - ARROW_STRENGTH / 2
 
         calcArrows()
-
-        coordRect = RectF(
-            arrowOffset.x, ARROW_TIP_SIZE ,
-            width - ARROW_TIP_SIZE, height - arrowOffset.y
-        )
     }
 
+    /**
+     * Calculates the new lines for the coordinate system's arrows and stores them
+     */
     private fun calcArrows() {
         var lines: ArrayList<Float> = ArrayList()
 
@@ -146,6 +165,9 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         lines.forEachIndexed { index, fl -> arrowLines[index] = fl }
     }
 
+    /**
+     * Produces the lines of the arrow tips
+     */
     private fun getArrowTips() : List<Float> {
         var lines: ArrayList<Float> = ArrayList()
 
@@ -176,7 +198,12 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         return lines
     }
 
-    
+    /**
+     * Calculates the point in the coordinate system (NOT the pixel coordinates) of the data point
+     * at the given index.
+     * @param index Index of the DataPoint in the Chart's data set
+     * @return The Point in the coordinate system the indexed data point lays
+     */
     protected fun inCoordSystem(index: Int) : PointF {
         val coordX = getCoordX(index)
         val coordY = data[index].y.toFloat()
@@ -190,15 +217,31 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         return (data[index].x as Number).toFloat()
     }
 
+    /**
+     * This method calculates the x pixel position for a given x value in the chart's coordinate
+     * system
+     * @param x The x value in the Chart's coordinate system
+     * @return The x pixel on the View's canvas
+     */
     protected fun coordXToPixel(x: Float) : Float {
         val fraction = (x - xMinValue) / (xMaxValue - xMinValue)
         return coordRect.left + coordRect.width() * fraction
     }
+
+    /**
+     * This method calculates the y pixel position for a given y value in the chart's coordinate
+     * system
+     * @param y The y value in the Chart's coordinate system
+     * @return The y pixel on the View's canvas
+     */
     protected fun coordYToPixel(y: Float) : Float {
         val fraction = (y - yMinValue) / (yMaxValue - yMinValue)
         return coordRect.top + coordRect.height() * (1 - fraction)
     }
 
+    /**
+     * Updates all values related to the Chart's coordinate system.
+     */
     private fun updateCoordSystem() {
         // only if the size has been initialized
         if (width == 0) return
@@ -209,6 +252,11 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
         updateSpacings()
         updateArrows()
+
+        coordRect = RectF(
+            arrowOffset.x, ARROW_TIP_SIZE ,
+            width - ARROW_TIP_SIZE, height - arrowOffset.y
+        )
 
         invalidate()
     }
@@ -321,7 +369,10 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
         private val bigMarkerSteps = listOf(1f, 2f, 5f)
 
-        fun getDistance(index: Int) : Float {
+        /**
+         * This method returns the Marker distance from a preset list at the given index
+         */
+        private fun getDistance(index: Int) : Float {
             if (index < markerDistances.size)
                 return markerDistances[index]
 
@@ -331,6 +382,13 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
             return (10.0.pow(zeros.toDouble()) * multiplier).toFloat()
         }
 
+        /**
+         * This method finds the best fitting distance for the markers depending on the displayed
+         * distance and how many markers can be displayed.
+         * @param maxCount How many markers should be displayed at a maximum.
+         * @param fullDist How big is the distance from the displayed minimum to the maximum value.
+         * @return The best fitting distance for the markers
+         */
         fun findMarkerDistance(maxCount: Int, fullDist: Float) : Float {
             var index = 0
             while (true) {
@@ -348,10 +406,23 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
 }
 
+/**
+ * Extension of FontMetrics.
+ * Computes the offset between the baseline and the vertical center of the font (center between
+ * top and bottom). This offset will be a negative value!
+ * (See: https://stackoverflow.com/a/27631737/13366254)
+ * @return The offset between this FontMetric's baseline and center.
+ */
 fun Paint.FontMetrics.baseLineCenterOffset() : Float {
     return (top + bottom) / 2
 }
 
+/**
+ * Extension of FontMetrics.
+ * Computes the total height this FontMetric can occupy.
+ * (See: https://stackoverflow.com/a/27631737/13366254)
+ * @return The height of the FontMetric.
+ */
 fun Paint.FontMetrics.height() : Float {
     return bottom - top
 }
