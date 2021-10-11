@@ -36,8 +36,8 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
 
     var minDistance = 150f
 
+    var coords = arrayListOf<Float>()
     private var texts = arrayListOf<String>()
-    private var coords = arrayListOf<Float>()
 
     private val markerPaint = Paint().apply {
         isAntiAlias = true

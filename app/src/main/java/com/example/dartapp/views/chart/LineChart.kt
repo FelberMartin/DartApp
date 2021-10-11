@@ -47,7 +47,6 @@ class LineChart @JvmOverloads constructor(
 
     init {
         if (isInEditMode) {
-            drawCoordRect = true
             animated = false
         }
         data = DataSet.random(count = 8, randomX = true)
@@ -135,7 +134,7 @@ class LineChart @JvmOverloads constructor(
         // Circles around data points
         for (i in 0 until data.size) {
             val p = inCoordSystem(i)
-//            canvas.drawCircle(p.x, p.y, 5f, linePaint)
+            canvas.drawCircle(p.x, p.y, 5f, linePaint)
         }
     }
 }

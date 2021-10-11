@@ -47,6 +47,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         color = Color.LTGRAY
     }
 
+
     // Offset of the coordinate system's arrows from the left of the view (x) and the bottom of
     // the view (y)
     var arrowOffset = PointF()
@@ -66,6 +67,14 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         strokeWidth = ARROW_STRENGTH
     }
 
+    private var showGrid = true
+    private var gridLines = arrayListOf<Float>()
+    private val gridPaint = Paint().apply {
+        color = getAttrColor(R.attr.colorBackgroundFloating)
+        isAntiAlias = true
+        strokeCap = Paint.Cap.ROUND
+        strokeWidth = 2f
+    }
 
     override fun dataChanged() {
         super.dataChanged()
@@ -238,12 +247,40 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
             width - ARROW_TIP_SIZE, height - arrowOffset.y
         )
 
+        updateGrid()
+
         invalidate()
     }
 
     private fun updateSpacings() {
         arrowOffset.x = yMarkers.maxWidth + MARKER_INTERN_SPACING
         arrowOffset.y = xMarkers.maxHeight + MARKER_INTERN_SPACING
+    }
+
+    private fun updateGrid() {
+        gridLines.clear()
+
+        // Vertical
+        val yFrom = coordPixelRect.top
+        val yTo = coordPixelRect.bottom
+        for (xCoord in xMarkers.coords) {
+            val x = coordXToPixel(xCoord)
+            gridLines.add(x)
+            gridLines.add(yFrom)
+            gridLines.add(x)
+            gridLines.add(yTo)
+        }
+
+        // Horizontal
+        val xFrom = coordPixelRect.left
+        val xTo = coordPixelRect.right
+        for (yCoord in yMarkers.coords) {
+            val y = coordYToPixel(yCoord)
+            gridLines.add(xFrom)
+            gridLines.add(y)
+            gridLines.add(xTo)
+            gridLines.add(y)
+        }
     }
 
 
@@ -254,18 +291,26 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
             canvas.drawRect(coordPixelRect, coordRectPaint)
 
         drawMarkers(canvas)
+        drawGrid(canvas)
         drawArrows(canvas)
-    }
-
-
-    private fun drawArrows(canvas: Canvas) {
-        canvas.drawLines(arrowLines, arrowPaint)
     }
 
     private fun drawMarkers(canvas: Canvas) {
         xMarkers.draw(canvas)
         yMarkers.draw(canvas)
     }
+
+    private fun drawGrid(canvas: Canvas) {
+        if (!showGrid) return
+
+        canvas.drawLines(gridLines.toFloatArray(), gridPaint)
+    }
+
+    private fun drawArrows(canvas: Canvas) {
+        canvas.drawLines(arrowLines, arrowPaint)
+    }
+
+
 
 }
 
