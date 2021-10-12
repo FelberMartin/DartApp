@@ -1,0 +1,14 @@
+
+===========================================
+=========== List with tasks ===============
+===========================================
+
+TODO:
+ - Option for not showing x axis markers and arrow
+ - Generalize code for charts (reload, update, selection, animation)
+ - Tidy up animation and gradient code in LineChart
+ - Reload animation for Barchart
+ - Animation for PieChart
+ - Selection animations
+ - Multiple DataSets for bar and line charts
+ 
