@@ -21,7 +21,9 @@ private const val TAG = "LineChart"
 private const val TOUCH_RADIUS = 50f
 
 class LineChart @JvmOverloads constructor(
-    context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
 ) : CoordinateBasedChart(context, attrs, defStyleAttr) {
 
     private var points = arrayListOf<PointF>()
@@ -87,7 +89,6 @@ class LineChart @JvmOverloads constructor(
 
         updatePath()
         frame = 0
-        selectedIndex = -1
         invalidate()
     }
 
@@ -115,7 +116,9 @@ class LineChart @JvmOverloads constructor(
             linePath.quadTo(control.x / 2, control.y / 2, lastPoint.x, lastPoint.y)
     }
 
-    override fun updateSelectionInfo() {
+    override fun onSelectionUpdate() {
+        if (selectedIndex == -1) return
+
         info.title = data.xString(selectedIndex)
         info.description = data[selectedIndex].yString()
         info.update()
@@ -181,20 +184,8 @@ class LineChart @JvmOverloads constructor(
         canvas.restore()
     }
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action != ACTION_UP) return true
 
-        val index = findTouchedIndex(event.x, event.y)
-        if (index == -1 || index == selectedIndex)
-            selectedIndex = -1
-        else
-            selectedIndex = index
-
-        invalidate()
-        return true
-    }
-
-    private fun findTouchedIndex(x: Float, y: Float) : Int {
+    override fun getTouchedIndex(x: Float, y: Float) : Int {
         var index = -1
         var minSqDistance = Float.MAX_VALUE
         for ((i, p) in points.withIndex()) {
@@ -213,8 +204,3 @@ class LineChart @JvmOverloads constructor(
         return -1
     }
 }
-
-/*
-TODO
- - onTouch for LineChart
- */

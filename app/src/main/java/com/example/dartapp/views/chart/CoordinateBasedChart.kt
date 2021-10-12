@@ -27,6 +27,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     // and the outer values
     var horizontalAutoPadding = true
     var verticalAutoPadding = true
+    var topAutoPadding = true
 
     // Whether the axis should start at 0 or the min value of the data points
     var xStartAtZero = false
@@ -34,7 +35,9 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
     /**
      * Rectangle including all the coordinates that can be displayed on this coordinate system.
-     * Extrema of the displayed values, not the extrema of the data points
+     * Extrema of the displayed values, not the extrema of the data points.
+     * Caution: .top describes the minimum value and .bottom the maximum value, so inverted to
+     *          coordinate system!!
      */
     var coordRect = RectF()
 
@@ -70,8 +73,10 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         strokeWidth = ARROW_STRENGTH
     }
 
-    private var showGrid = true
-    private var gridLines = arrayListOf<Float>()
+    var showHorizontalGrid = true
+    var showVerticalGrid = true
+    private var horizontalGridLines = FloatArray(0)
+    private var verticalGridLines = FloatArray(0)
     private val gridPaint = Paint().apply {
         color = getAttrColor(R.attr.colorBackgroundFloating)
         isAntiAlias = true
@@ -82,6 +87,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     override fun dataChanged() {
         super.dataChanged()
 
+        selectedIndex = -1
+
         // Y values
         coordRect.top = data.minOf { dp -> dp.y.toFloat() }
         coordRect.bottom = data.maxOf { dp -> dp.y.toFloat() }
@@ -89,7 +96,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         // X values
         if (data.dataPointXType == DataSet.Type.STRING) {
             coordRect.left = 0f
-            coordRect.right = data.size.toFloat()
+            coordRect.right = data.size.toFloat() - 1
         } else {
             coordRect.left = data.minOf { dp -> (dp.x as Number).toFloat() }
             coordRect.right = data.maxOf { dp -> (dp.x as Number).toFloat() }
@@ -108,15 +115,19 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
      * Changes the extrema values for x and y if the auto padding option is enabled
      */
     private fun handleAutoPadding() {
+        if (data.size < 2) return
+
         if (horizontalAutoPadding) {
-            val averageDist = coordRect.width() / data.size
+            val averageDist = coordRect.width() / (data.size - 1)
             coordRect.left -= averageDist / 2
             coordRect.right += averageDist / 2
         }
         if (verticalAutoPadding) {
-            val averageDist = coordRect.height() / data.size
+            val averageDist = coordRect.height() / (data.size - 1)
             coordRect.top -= averageDist / 2
             coordRect.bottom += averageDist / 2
+        } else if (topAutoPadding) {
+            coordRect.bottom += coordRect.height() * 0.1f
         }
     }
 
@@ -127,8 +138,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     }
 
     private fun updateArrows() {
-        xArrowLength = width - arrowOffset.x - ARROW_STRENGTH / 2
-        yArrowLength = height - arrowOffset.y - ARROW_STRENGTH / 2
+        xArrowLength = width - arrowOffset.x
+        yArrowLength = height - arrowOffset.y
 
         calcArrows()
     }
@@ -149,7 +160,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         lines.add(arrowOffset.x)
         lines.add(ARROW_STRENGTH / 2)
         lines.add(arrowOffset.x)
-        lines.add(yArrowLength)
+        lines.add(yArrowLength - ARROW_STRENGTH / 2)
 
         val tips = getArrowTips()
         lines.addAll(tips)
@@ -256,14 +267,13 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     }
 
     private fun updateSpacings() {
-        arrowOffset.x = yMarkers.maxWidth + MARKER_INTERN_SPACING
-        arrowOffset.y = xMarkers.maxHeight + MARKER_INTERN_SPACING
+        arrowOffset.x = yMarkers.requiredWidth
+        arrowOffset.y = xMarkers.requiredHeight
     }
 
     private fun updateGrid() {
-        gridLines.clear()
-
         // Vertical
+        val gridLines = arrayListOf<Float>()
         val yFrom = coordPixelRect.top
         val yTo = coordPixelRect.bottom
         for (xCoord in xMarkers.coords) {
@@ -273,8 +283,10 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
             gridLines.add(x)
             gridLines.add(yTo)
         }
+        verticalGridLines = gridLines.toFloatArray()
 
         // Horizontal
+        gridLines.clear()
         val xFrom = coordPixelRect.left
         val xTo = coordPixelRect.right
         for (yCoord in yMarkers.coords) {
@@ -284,6 +296,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
             gridLines.add(xTo)
             gridLines.add(y)
         }
+        horizontalGridLines = gridLines.toFloatArray()
     }
 
 
@@ -298,18 +311,19 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         drawArrows(canvas)
     }
 
-    private fun drawMarkers(canvas: Canvas) {
+    protected fun drawMarkers(canvas: Canvas) {
         xMarkers.draw(canvas)
         yMarkers.draw(canvas)
     }
 
-    private fun drawGrid(canvas: Canvas) {
-        if (!showGrid) return
-
-        canvas.drawLines(gridLines.toFloatArray(), gridPaint)
+    protected fun drawGrid(canvas: Canvas) {
+        if (showHorizontalGrid)
+            canvas.drawLines(horizontalGridLines, gridPaint)
+        if (showVerticalGrid)
+            canvas.drawLines(verticalGridLines, gridPaint)
     }
 
-    private fun drawArrows(canvas: Canvas) {
+    protected fun drawArrows(canvas: Canvas) {
         canvas.drawLines(arrowLines, arrowPaint)
     }
 

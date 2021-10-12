@@ -32,8 +32,11 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
         X, Y
     }
 
-    var maxWidth = 0f
-    var maxHeight = 0f
+    var requiredWidth = 0f
+    var requiredHeight = 0f
+
+    private var maxTextWidth = 0f
+    private var maxTextHeight = 0f
 
     var minDistance = 150f
 
@@ -66,7 +69,7 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
     fun update() {
         updateCoords()
         updateTexts()
-        updateMaxima()
+        updateRequiredDimensions()
     }
 
     /**
@@ -74,6 +77,12 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
      */
     private fun updateCoords() {
         coords.clear()
+
+        // For strings just add a marker for each data point
+        if (axis == Axis.X && chart.data.dataPointXType == DataSet.Type.STRING) {
+            chart.data.forEachIndexed { index, _ -> coords.add(index.toFloat()) }
+            return
+        }
 
         // Setup depending on Axis orientation
         var chartSize = chart.width
@@ -110,16 +119,20 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
         texts.clear()
         for (i in 0 until coords.size) {
             val text = when (axis) {
-                Axis.X -> chart.data.xStringFrom(coords[i])
+                Axis.X ->
+                    if (chart.data.dataPointXType == DataSet.Type.STRING) chart.data.xString(i)
+                    else chart.data.xStringFrom(coords[i])
                 Axis.Y -> DataPoint.format(coords[i])
             }
             texts.add(text)
         }
     }
 
-    private fun updateMaxima() {
-        maxWidth = texts.maxOf { t -> markerPaint.measureText(t) }
-        maxHeight = markerPaint.fontMetrics.height()
+    private fun updateRequiredDimensions() {
+        maxTextWidth = texts.maxOf { t -> markerPaint.measureText(t) }
+        maxTextHeight = markerPaint.fontMetrics.height()
+        requiredWidth = maxTextWidth + MARKER_SIZE + MARKER_INTERN_SPACING
+        requiredHeight = maxTextHeight + MARKER_SIZE + MARKER_INTERN_SPACING
     }
 
     /**
@@ -154,7 +167,7 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
                 // Label
                 val text = texts[i]
                 y += - markerPaint.fontMetrics.baseLineCenterOffset()
-                canvas.drawText(text, maxWidth, y, markerPaint)
+                canvas.drawText(text, maxTextWidth , y, markerPaint)
             }
         }
     }

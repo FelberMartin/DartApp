@@ -50,7 +50,7 @@ class TestAdapter(private val fragment: Fragment) :
         // getItem is called to instantiate the fragment for the given page.
         val title: String = TEST_TAB_TITLES[position]
         val fragment = when (title) {
-            "History" -> HistoryFragment()
+            "BarChart" -> BarChartFragment()
             "PieChart" -> PieChartFragment()
             "LineChart" -> LineChartFragment()
             "Legend" -> LegendTestFragment()

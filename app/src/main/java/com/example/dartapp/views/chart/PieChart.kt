@@ -92,7 +92,9 @@ class PieChart @JvmOverloads constructor(
     }
 
     // Updates the Selection TextBox's title and description text
-    override fun updateSelectionInfo() {
+    override fun onSelectionUpdate() {
+        if (selectedIndex == -1) return
+
         info.title = data[selectedIndex].xString(data.dataPointXType)
 
         val percent = fractions[selectedIndex] * 100f
@@ -202,25 +204,11 @@ class PieChart @JvmOverloads constructor(
 
 
 
-    override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action != MotionEvent.ACTION_UP)
-            return true
-
-        val index = getSegmentIndex(event.x, event.y)
-        if (index == -1 || index == selectedIndex)
-            selectedIndex = -1
-        else
-            selectedIndex = index
-
-        invalidate()
-        return true
-    }
-
     /**
      * Checks on which segment the point lays and returns its index.
      * If the point is outside of the segments returns -1.
      */
-    private fun getSegmentIndex(x: Float, y: Float) : Int {
+    override fun getTouchedIndex(x: Float, y: Float) : Int {
         val index = getDirectionIndex(x, y)
         val dx = center.x - x
         val dy = center.y - y
