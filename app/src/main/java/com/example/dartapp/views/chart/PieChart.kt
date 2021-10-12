@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.DataSet
+import com.example.dartapp.views.chart.util.InfoTextBox
 import com.example.dartapp.views.chart.util.getAttrColor
 import com.google.android.material.color.MaterialColors
 import kotlin.math.*
@@ -17,8 +18,6 @@ private const val SELECTION_PROTRUDE = 20f
 private const val STARTING_ANGLE_GRAD = -90f
 private const val STARTING_ANGLE= - PI / 2
 
-// Padding between the edge of the TextBox rectangle and the title and description texts
-private const val TEXT_BOX_PADDING = 10f
 
 // for Logcat debugging
 private const val TAG = "PieChart"
@@ -44,8 +43,11 @@ class PieChart @JvmOverloads constructor(
     private var selectedIndex = -1
         set(value) {
             field = value
-            if (value != -1) updateTextBox()
+            if (value != -1) updateSelectionInfo()
         }
+    private var info = InfoTextBox(this)
+    private lateinit var textBoxTranslation: PointF
+
 
     private val backgroundColor = MaterialColors.getColor(this, R.attr.backgroundColor)
 
@@ -55,32 +57,6 @@ class PieChart @JvmOverloads constructor(
         strokeWidth = 8f
     }
 
-    private val selectionTitlePaint = Paint().apply {
-        isAntiAlias = true
-        textSize = 30f
-        isFakeBoldText = true
-        textAlign = Paint.Align.CENTER
-        color = Color.BLACK
-    }
-    private val selectionDescPaint = Paint().apply {
-        isAntiAlias = true
-        textSize = 24f
-        textAlign = Paint.Align.CENTER
-        color = getAttrColor(R.attr.colorOnBackground)
-    }
-    private val selectionTextBoxPaint = Paint().apply {
-        color = getAttrColor(R.attr.backgroundColor)
-        alpha = 160
-    }
-
-    private var titleText = "title"
-    private var descText = "desc"
-    private lateinit var textBoxRect: RectF
-    private lateinit var textBoxTranslation: PointF
-    
-    // Text baselines for the selection text
-    private var titleBaseLine = 0f
-    private var descBaseLine = 0f
 
 
     init {
@@ -119,36 +95,18 @@ class PieChart @JvmOverloads constructor(
         invalidate()
     }
 
-    // Updates the values for the selection TextBox
-    private fun updateTextBox() {
-        updateText()
-
-        val titleFM = selectionTitlePaint.fontMetrics
-        val descFM = selectionDescPaint.fontMetrics
-        val titleHeight = titleFM.bottom - titleFM.top
-        val descHeight = descFM.bottom - descFM.top
-
-        titleBaseLine = TEXT_BOX_PADDING - titleFM.top
-        descBaseLine = TEXT_BOX_PADDING + titleHeight + titleFM.leading - descFM.top
-
-        val textBoxWidth = 2 * TEXT_BOX_PADDING +
-                max(selectionTitlePaint.measureText(titleText),
-                    selectionDescPaint.measureText(descText))
-        val textBoxHeight = 2 * TEXT_BOX_PADDING + titleHeight + descHeight + titleFM.leading
-
-        textBoxRect = RectF(0f, 0f, textBoxWidth, textBoxHeight)
-
-        updateTextBoxTranslation()
-    }
-
     // Updates the Selection TextBox's title and description text
-    private fun updateText() {
-        titleText = data[selectedIndex].xString(data.dataPointXType)
+    private fun updateSelectionInfo() {
+        info.title = data[selectedIndex].xString(data.dataPointXType)
 
         val percent = fractions[selectedIndex] * 100f
         val value = data[selectedIndex].yString()
-        descText = String.format("%s (%.0f%%)", value, percent)
+        info.description = String.format("%s (%.0f%%)", value, percent)
+
+        info.update()
+        updateTextBoxTranslation()
     }
+
 
     // Translation of the canvas for drawing the selection TextBox at origin 0,0
     private fun updateTextBoxTranslation() {
@@ -160,10 +118,6 @@ class PieChart @JvmOverloads constructor(
             center.x + middlePoints[selectedIndex].x * radius,
             center.y + middlePoints[selectedIndex].y * radius
         )
-
-        // moving to the upper left corner
-        textBoxTranslation.x -= textBoxRect.right / 2
-        textBoxTranslation.y -= textBoxRect.bottom / 2
     }
 
 
@@ -244,9 +198,7 @@ class PieChart @JvmOverloads constructor(
         canvas.save()
         canvas.translate(textBoxTranslation.x, textBoxTranslation.y)
 
-        canvas.drawRoundRect(textBoxRect, 10f, 10f, selectionTextBoxPaint)
-        canvas.drawText(titleText, textBoxRect.right / 2, titleBaseLine, selectionTitlePaint)
-        canvas.drawText(descText, textBoxRect.right / 2, descBaseLine, selectionDescPaint)
+        info.draw(canvas)
 
         canvas.restore()
     }
