@@ -40,11 +40,7 @@ class PieChart @JvmOverloads constructor(
 
     private lateinit var circleRect: RectF
 
-    private var selectedIndex = -1
-        set(value) {
-            field = value
-            if (value != -1) updateSelectionInfo()
-        }
+
     private var info = InfoTextBox(this)
     private lateinit var textBoxTranslation: PointF
 
@@ -96,7 +92,7 @@ class PieChart @JvmOverloads constructor(
     }
 
     // Updates the Selection TextBox's title and description text
-    private fun updateSelectionInfo() {
+    override fun updateSelectionInfo() {
         info.title = data[selectedIndex].xString(data.dataPointXType)
 
         val percent = fractions[selectedIndex] * 100f
@@ -105,6 +101,7 @@ class PieChart @JvmOverloads constructor(
 
         info.update()
         updateTextBoxTranslation()
+        info.fitInto(RectF(0f, 0f, width.toFloat(), height.toFloat()), textBoxTranslation)
     }
 
 

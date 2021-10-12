@@ -27,6 +27,14 @@ abstract class Chart @JvmOverloads constructor(
         linkedLegend?.reload()
     }
 
+    protected var selectedIndex = -1
+        set(value) {
+            field = value
+            if (value != -1) updateSelectionInfo()
+        }
+
+    abstract fun updateSelectionInfo()
+
     fun link(legend: Legend) {
         linkedLegend = legend
     }

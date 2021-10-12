@@ -92,6 +92,15 @@ class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
 
             return data
         }
+
+        fun pieLargeTexts() : DataSet {
+            var data = DataSet()
+            data.dataPointXType = Type.STRING
+            data.add(DataPoint("Very large text, some may even say its as large as my ...", 100))
+            data.add(DataPoint("Lorem Ipso, deshalb geh ich Disco, pogo logo schoko schoki!", 100))
+            data.add(DataPoint("On the top", 5))
+            return data
+        }
     }
 
 }

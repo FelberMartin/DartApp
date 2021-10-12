@@ -29,16 +29,16 @@ class InfoTextBox(private val view: View) {
         textSize = 30f
         isFakeBoldText = true
         textAlign = Paint.Align.CENTER
-        color = view.getAttrColor(R.attr.colorOnBackground)
+        color = Color.WHITE
     }
     private val descPaint = Paint().apply {
         isAntiAlias = true
         textSize = 24f
         textAlign = Paint.Align.CENTER
-        color = view.getAttrColor(R.attr.colorOnBackground)
+        color = Color.LTGRAY
     }
     private val textBoxPaint = Paint().apply {
-        color = view.getAttrColor(R.attr.backgroundColor)
+        color = Color.BLACK
         alpha = 160
     }
 
@@ -69,7 +69,31 @@ class InfoTextBox(private val view: View) {
         } else {
             textBoxRect = RectF(0f, 0f, width, height)
         }
+    }
 
+    fun fitInto(bounds: RectF, translation: PointF) {
+        val left = translation.x + textBoxRect.left
+        val top = translation.y + textBoxRect.top
+        val right = translation.x + textBoxRect.right
+        val bottom = translation.y + textBoxRect.bottom
+
+        if (left < bounds.left) {
+            val offset = bounds.left - left
+            textBoxRect.left += offset
+            textBoxRect.right += offset
+        } else if (right > bounds.right) {
+            val offset = right - bounds.right
+            textBoxRect.left -= offset
+            textBoxRect.right -= offset
+        } else if (top < bounds.top) {
+            val offset = bounds.top - top
+            textBoxRect.top += offset
+            textBoxRect.bottom += offset
+        } else if (bottom > bounds.bottom) {
+            val offset = bottom - bounds.bottom
+            textBoxRect.top -= offset
+            textBoxRect.bottom -= offset
+        }
     }
 
 

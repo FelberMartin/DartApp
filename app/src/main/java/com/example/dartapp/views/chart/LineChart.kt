@@ -12,6 +12,8 @@ import androidx.annotation.RequiresApi
 import androidx.core.graphics.plus
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.DataSet
+import com.example.dartapp.views.chart.util.InfoTextBox
+import com.example.dartapp.views.chart.util.getAttrColor
 import com.google.android.material.color.MaterialColors
 
 private const val TAG = "LineChart"
@@ -26,7 +28,7 @@ class LineChart @JvmOverloads constructor(
     private var linePath = Path()
     var smoothedLine = true
 
-    private var selectedIndex = -1
+    private var info = InfoTextBox(this)
 
     var animated = true
     private var frame = 0
@@ -51,15 +53,24 @@ class LineChart @JvmOverloads constructor(
         shader = textShader
     }
 
+    private val selectionPaint = Paint().apply {
+        isAntiAlias = true
+        strokeWidth = 6f
+        color = getAttrColor(R.attr.colorBackgroundFloating)
+    }
+
+
     init {
+        data = DataSet.random(count = 8, randomX = true)
         if (isInEditMode) {
             animated = false
+            selectedIndex = 3
         }
-        data = DataSet.random(count = 8, randomX = true)
     }
 
     fun reload() {
         dataChanged()
+        selectedIndex = -1
         frame = 0
     }
 
@@ -76,6 +87,7 @@ class LineChart @JvmOverloads constructor(
 
         updatePath()
         frame = 0
+        selectedIndex = -1
         invalidate()
     }
 
@@ -103,12 +115,20 @@ class LineChart @JvmOverloads constructor(
             linePath.quadTo(control.x / 2, control.y / 2, lastPoint.x, lastPoint.y)
     }
 
+    override fun updateSelectionInfo() {
+        info.title = data.xString(selectedIndex)
+        info.description = data[selectedIndex].yString()
+        info.update()
+    }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
         drawLines(canvas)
+        drawPoints(canvas)
+        drawSelection(canvas)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -139,14 +159,26 @@ class LineChart @JvmOverloads constructor(
             invalidate()
         }
 
-        // Circles around data points
+
+    }
+
+    private fun drawPoints(canvas: Canvas) {
         for ((i, p) in points.withIndex()) {
             canvas.drawCircle(p.x, p.y, 5f, linePaint)
-            if (i == selectedIndex) {
-                canvas.drawLine(coordPixelRect.left, p.y, coordPixelRect.right, p.y, linePaint)
-                canvas.drawLine(p.x, coordPixelRect.top, p.x, coordPixelRect.bottom, linePaint)
-            }
         }
+    }
+
+    private fun drawSelection(canvas: Canvas) {
+        if (selectedIndex == -1) return
+
+        val p = inCoordSystem(selectedIndex)
+        canvas.drawLine(coordPixelRect.left, p.y, coordPixelRect.right, p.y, selectionPaint)
+        canvas.drawLine(p.x, coordPixelRect.top, p.x, coordPixelRect.bottom, selectionPaint)
+
+        canvas.save()
+        canvas.translate(p.x, p.y)
+        info.draw(canvas)
+        canvas.restore()
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
