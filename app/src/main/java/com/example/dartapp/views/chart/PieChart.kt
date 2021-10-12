@@ -5,6 +5,8 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import com.example.dartapp.R
+import com.example.dartapp.views.chart.util.DataSet
+import com.example.dartapp.views.chart.util.getAttrColor
 import com.google.android.material.color.MaterialColors
 import kotlin.math.*
 
@@ -58,16 +60,16 @@ class PieChart @JvmOverloads constructor(
         textSize = 30f
         isFakeBoldText = true
         textAlign = Paint.Align.CENTER
-        color = Color.WHITE
+        color = Color.BLACK
     }
     private val selectionDescPaint = Paint().apply {
         isAntiAlias = true
         textSize = 24f
         textAlign = Paint.Align.CENTER
-        color = Color.LTGRAY
+        color = getAttrColor(R.attr.colorOnBackground)
     }
     private val selectionTextBoxPaint = Paint().apply {
-        color = Color.BLACK
+        color = getAttrColor(R.attr.backgroundColor)
         alpha = 160
     }
 

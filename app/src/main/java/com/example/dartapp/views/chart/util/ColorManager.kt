@@ -1,4 +1,4 @@
-package com.example.dartapp.views.chart
+package com.example.dartapp.views.chart.util
 
 import android.graphics.Color
 

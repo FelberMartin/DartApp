@@ -1,4 +1,4 @@
-package com.example.dartapp.views.chart
+package com.example.dartapp.views.chart.util
 
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
@@ -13,7 +13,7 @@ class DataPoint(var x: Any, var y: Number) {
     }
 
     fun xString(type: DataSet.Type) : String {
-        return Companion.xString(x, type)
+        return xString(x, type)
     }
 
     companion object {

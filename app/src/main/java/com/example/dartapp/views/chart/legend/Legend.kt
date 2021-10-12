@@ -2,14 +2,13 @@ package com.example.dartapp.views.chart.legend
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.Chart
-import com.example.dartapp.views.chart.DataSet
+import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.PieChart
 import com.google.android.material.color.MaterialColors
 import kotlin.math.ceil

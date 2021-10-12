@@ -1,4 +1,4 @@
-package com.example.dartapp.views.chart.testfragments
+package com.example.dartapp.views.chart.test
 
 import android.os.Build
 import android.os.Bundle
@@ -9,10 +9,8 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import androidx.annotation.RequiresApi
 import com.example.dartapp.databinding.FragmentLegendTestBinding
-import com.example.dartapp.databinding.FragmentPieChartBinding
-import com.example.dartapp.views.chart.DataSet
+import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.PieChart
-import com.example.dartapp.views.chart.legend.Legend
 
 /**
  * Testing class for the Chart Legend

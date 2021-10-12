@@ -1,20 +1,14 @@
-package com.example.dartapp.views.chart.testfragments
+package com.example.dartapp.views.chart.test
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.example.dartapp.databinding.ActivityStatsBinding
-import com.example.dartapp.databinding.FragmentMenuBinding
 import com.example.dartapp.databinding.FragmentTestBinding
 import com.example.dartapp.ui.stats.HistoryFragment
-import com.example.dartapp.ui.stats.SectionsPagerAdapter
-import com.example.dartapp.ui.stats.TAB_TITLES
-import com.example.dartapp.util.Strings
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 

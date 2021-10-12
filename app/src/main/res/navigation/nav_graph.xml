@@ -55,6 +55,6 @@
         tools:layout="@layout/activity_stats" />
     <fragment
         android:id="@+id/testFragment"
-        android:name="com.example.dartapp.views.chart.testfragments.TestFragment"
+        android:name="com.example.dartapp.views.chart.test.TestFragment"
         android:label="TestFragment" />
 </navigation>

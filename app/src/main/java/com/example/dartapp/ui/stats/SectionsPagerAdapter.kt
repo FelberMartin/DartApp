@@ -5,9 +5,9 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.dartapp.util.Strings
-import com.example.dartapp.views.chart.testfragments.LegendTestFragment
-import com.example.dartapp.views.chart.testfragments.LineChartFragment
-import com.example.dartapp.views.chart.testfragments.PieChartFragment
+import com.example.dartapp.views.chart.test.LegendTestFragment
+import com.example.dartapp.views.chart.test.LineChartFragment
+import com.example.dartapp.views.chart.test.PieChartFragment
 
 
 /**

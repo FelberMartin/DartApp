@@ -4,8 +4,11 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import com.example.dartapp.R
+import com.example.dartapp.views.chart.util.CoordMarkers
+import com.example.dartapp.views.chart.util.DataSet
+import com.example.dartapp.views.chart.util.MARKER_INTERN_SPACING
+import com.example.dartapp.views.chart.util.getAttrColor
 import com.google.android.material.color.MaterialColors
-import kotlin.math.ceil
 
 const val ARROW_STRENGTH = 8f
 const val ARROW_TIP_SIZE = 10f
@@ -39,7 +42,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     private val yMarkers = CoordMarkers(this, CoordMarkers.Axis.Y)
 
     // Rectangle representing the coordinate system's occupied area on the canvas
-    private var coordPixelRect = RectF()
+    protected var coordPixelRect = RectF()
 
     // mostly for debugging
     protected var drawCoordRect = false

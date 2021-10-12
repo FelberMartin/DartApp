@@ -5,23 +5,29 @@ import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
+import android.view.MotionEvent.ACTION_UP
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.AccelerateInterpolator
 import androidx.annotation.RequiresApi
-import androidx.core.graphics.minus
 import androidx.core.graphics.plus
-import androidx.interpolator.view.animation.FastOutSlowInInterpolator
 import com.example.dartapp.R
+import com.example.dartapp.views.chart.util.DataSet
 import com.google.android.material.color.MaterialColors
 
 private const val TAG = "LineChart"
+
+private const val TOUCH_RADIUS = 50f
 
 class LineChart @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : CoordinateBasedChart(context, attrs, defStyleAttr) {
 
+    private var points = arrayListOf<PointF>()
     private var linePath = Path()
     var smoothedLine = true
+
+    private var selectedIndex = -1
+
     var animated = true
     private var frame = 0
     private var interpolator = AccelerateDecelerateInterpolator()
@@ -74,12 +80,14 @@ class LineChart @JvmOverloads constructor(
     }
 
     private fun updatePath() {
+        points.clear()
         linePath.reset()
         var lastPoint = inCoordSystem(0)
         var control = lastPoint
         linePath.moveTo(lastPoint.x, lastPoint.y)
         for (i in 0 until data.size) {
             val nextPoint = inCoordSystem(i)
+            points.add(nextPoint)
 
             if (smoothedLine) {
                 control = nextPoint.plus(lastPoint)
@@ -132,10 +140,45 @@ class LineChart @JvmOverloads constructor(
         }
 
         // Circles around data points
-        for (i in 0 until data.size) {
-            val p = inCoordSystem(i)
+        for ((i, p) in points.withIndex()) {
             canvas.drawCircle(p.x, p.y, 5f, linePaint)
+            if (i == selectedIndex) {
+                canvas.drawLine(coordPixelRect.left, p.y, coordPixelRect.right, p.y, linePaint)
+                canvas.drawLine(p.x, coordPixelRect.top, p.x, coordPixelRect.bottom, linePaint)
+            }
         }
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (event.action != ACTION_UP) return true
+
+        val index = findTouchedIndex(event.x, event.y)
+        if (index == -1 || index == selectedIndex)
+            selectedIndex = -1
+        else
+            selectedIndex = index
+
+        invalidate()
+        return true
+    }
+
+    private fun findTouchedIndex(x: Float, y: Float) : Int {
+        var index = -1
+        var minSqDistance = Float.MAX_VALUE
+        for ((i, p) in points.withIndex()) {
+            val dx = x - p.x
+            val dy = y - p.y
+            val dist = dx * dx + dy * dy
+            if (dist < minSqDistance) {
+                index = i
+                minSqDistance = dist
+            }
+        }
+
+        if (minSqDistance <= TOUCH_RADIUS * TOUCH_RADIUS)
+            return index
+
+        return -1
     }
 }
 
