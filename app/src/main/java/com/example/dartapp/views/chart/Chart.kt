@@ -18,21 +18,30 @@ abstract class Chart @JvmOverloads constructor(
     private var linkedLegend: Legend? = null
     var colorManager = ColorManager()
 
+    var animatedEnter = true
+    protected var enterDuration = 50f
+
+    var animatedSelection = true
+    protected var selectionDuration = 30f
+
     var data: DataSet = DataSet()
         set(value) {
             field = value
             dataChanged()
         }
 
-    protected open fun dataChanged() {
-        linkedLegend?.reload()
-    }
-
     protected var selectedIndex = -1
         set(value) {
             field = value
             onSelectionUpdate()
         }
+
+
+    protected open fun dataChanged() {
+        linkedLegend?.reload()
+    }
+
+
 
     abstract fun onSelectionUpdate()
 

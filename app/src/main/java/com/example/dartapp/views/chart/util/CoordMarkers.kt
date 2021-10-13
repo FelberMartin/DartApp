@@ -36,7 +36,7 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
     var requiredHeight = 0f
 
     private var maxTextWidth = 0f
-    private var maxTextHeight = 0f
+    var maxTextHeight = 0f
 
     var minDistance = 150f
 

@@ -5,8 +5,6 @@ import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
 import android.util.Log
-import android.view.MotionEvent
-import android.view.MotionEvent.ACTION_UP
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.plus
@@ -32,11 +30,10 @@ class LineChart @JvmOverloads constructor(
 
     private var info = InfoTextBox(this)
 
-    var animated = true
     private var frame = 0
     private var interpolator = AccelerateDecelerateInterpolator()
 
-    val textShader: Shader = LinearGradient(0f, 0f, 0f, 500f, intArrayOf(
+    private val lineShader: Shader = LinearGradient(0f, 0f, 0f, 500f, intArrayOf(
         Color.parseColor("#F97C3C"),
         Color.parseColor("#FDB54E"),
         Color.parseColor("#64B678"),
@@ -52,7 +49,7 @@ class LineChart @JvmOverloads constructor(
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
         color = MaterialColors.getColor(this@LineChart, R.attr.colorPrimary)
-        shader = textShader
+        shader = lineShader
     }
 
     private val selectionPaint = Paint().apply {
@@ -65,7 +62,7 @@ class LineChart @JvmOverloads constructor(
     init {
         data = DataSet.random(count = 8, randomX = true)
         if (isInEditMode) {
-            animated = false
+            animatedEnter = false
             selectedIndex = 3
         }
     }
@@ -136,7 +133,7 @@ class LineChart @JvmOverloads constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun drawLines(canvas: Canvas) {
-        val animationEnd = if (animated) 50f else 0f
+        val animationEnd = if (animatedEnter) 50f else 0f
         if (frame >= animationEnd)
             canvas.drawPath(linePath, linePaint)
         else {

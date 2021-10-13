@@ -31,6 +31,7 @@ class BarChart @JvmOverloads constructor(
     private var info = InfoTextBox(this)
 
     init {
+        plainXAxis = true
         showVerticalGrid = false
         xStartAtZero = true
         yStartAtZero = true

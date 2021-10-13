@@ -9,6 +9,7 @@ import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.util.MARKER_INTERN_SPACING
 import com.example.dartapp.views.chart.util.getAttrColor
 import com.google.android.material.color.MaterialColors
+import kotlin.math.max
 
 const val ARROW_STRENGTH = 8f
 const val ARROW_TIP_SIZE = 10f
@@ -40,6 +41,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
      *          coordinate system!!
      */
     var coordRect = RectF()
+
+    protected var plainXAxis = false
 
     private val xMarkers = CoordMarkers(this, CoordMarkers.Axis.X)
     private val yMarkers = CoordMarkers(this, CoordMarkers.Axis.Y)
@@ -166,6 +169,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         lines.addAll(tips)
 
         // Copy to Array
+        arrowLines = FloatArray(lines.size)
         lines.forEachIndexed { index, fl -> arrowLines[index] = fl }
     }
 
@@ -175,21 +179,9 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     private fun getArrowTips() : List<Float> {
         var lines: ArrayList<Float> = ArrayList()
 
-        // x Tip
-        var tipX = arrowOffset.x + xArrowLength
-        var tipY = yArrowLength
-        lines.add(tipX - ARROW_TIP_SIZE)
-        lines.add(tipY - ARROW_TIP_SIZE)
-        lines.add(tipX)
-        lines.add(tipY)
-        lines.add(tipX)
-        lines.add(tipY)
-        lines.add(tipX - ARROW_TIP_SIZE)
-        lines.add(tipY + ARROW_TIP_SIZE)
-
         // y Tip
-        tipX = arrowOffset.x
-        tipY = ARROW_STRENGTH / 2
+        var tipX = arrowOffset.x
+        var tipY = ARROW_STRENGTH / 2
         lines.add(tipX - ARROW_TIP_SIZE)
         lines.add(tipY + ARROW_TIP_SIZE)
         lines.add(tipX)
@@ -197,6 +189,20 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         lines.add(tipX)
         lines.add(tipY)
         lines.add(tipX + ARROW_TIP_SIZE)
+        lines.add(tipY + ARROW_TIP_SIZE)
+
+        if (plainXAxis) return lines
+
+        // x Tip
+        tipX = arrowOffset.x + xArrowLength
+        tipY = yArrowLength
+        lines.add(tipX - ARROW_TIP_SIZE)
+        lines.add(tipY - ARROW_TIP_SIZE)
+        lines.add(tipX)
+        lines.add(tipY)
+        lines.add(tipX)
+        lines.add(tipY)
+        lines.add(tipX - ARROW_TIP_SIZE)
         lines.add(tipY + ARROW_TIP_SIZE)
 
         return lines
@@ -269,6 +275,16 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     private fun updateSpacings() {
         arrowOffset.x = yMarkers.requiredWidth
         arrowOffset.y = xMarkers.requiredHeight
+
+        if (plainXAxis) {
+            // if there are no markers make sure that the y Markers fit into the view if they are
+            // on the really bottom
+            val lowestMarker = coordYToPixel(yMarkers.coords[0])
+            val deepestPoint = lowestMarker + yMarkers.maxTextHeight / 2
+            val lowestY = coordYToPixel(coordRect.top)
+            val overShoot = deepestPoint - lowestY
+            arrowOffset.y = max(overShoot, ARROW_STRENGTH / 2)
+        }
     }
 
     private fun updateGrid() {
@@ -312,7 +328,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     }
 
     protected fun drawMarkers(canvas: Canvas) {
-        xMarkers.draw(canvas)
+        if (!plainXAxis)
+            xMarkers.draw(canvas)
         yMarkers.draw(canvas)
     }
 
