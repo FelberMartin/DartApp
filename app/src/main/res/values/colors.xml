@@ -12,4 +12,12 @@
     <color name="lt_gray">#FFCCCCCC</color>
     <color name="dk_gray">#FF444444</color>
 
+    <color name="c1">#FFF97C3C</color>
+    <color name="c2">#FFFDB54E</color>
+    <color name="c3">#FF64B678</color>
+    <color name="c4">#FF478AEA</color>
+    <color name="c5">#FF8446CC</color>
+
+    
+
 </resources>

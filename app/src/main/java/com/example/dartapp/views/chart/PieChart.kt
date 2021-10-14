@@ -50,7 +50,7 @@ class PieChart @JvmOverloads constructor(
     private val paint: Paint = Paint().apply {
         isAntiAlias = true
         strokeCap = Paint.Cap.ROUND
-        strokeWidth = 8f
+        strokeWidth = 14f
     }
 
 

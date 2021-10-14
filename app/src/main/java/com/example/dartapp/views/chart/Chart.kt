@@ -47,6 +47,8 @@ abstract class Chart @JvmOverloads constructor(
 
     fun link(legend: Legend) {
         linkedLegend = legend
+        if (legend.linkedChart != this)
+            legend.linkedChart = this
     }
 
 

@@ -25,6 +25,7 @@ class BarChartFragment : Fragment() {
         _binding = FragmentBarChartBinding.inflate(inflater, container, false)
 
         binding.newData.setOnClickListener { binding.chart.data = DataSet.random(type = DataSet.Type.STRING, count = 4) }
+        binding.chart.link(binding.legend)
 
         return binding.root
     }
