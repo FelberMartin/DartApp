@@ -43,4 +43,5 @@ class LineChartFragment : Fragment() {
         return binding.root
     }
 
+
 }

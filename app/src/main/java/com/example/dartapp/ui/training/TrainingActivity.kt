@@ -16,7 +16,7 @@ import com.example.dartapp.ui.dialogs.LegFinishedDialog
 import com.example.dartapp.util.Strings
 import com.example.dartapp.ui.training.viewmodels.GameViewModel
 import com.example.dartapp.ui.training.viewmodels.GameViewModelFactory
-import com.example.dartapp.views.NumberGridDelegate
+import com.example.dartapp.views.numbergrid.NumberGridDelegate
 
 
 class TrainingActivity : AppCompatActivity(), NumberGridDelegate {

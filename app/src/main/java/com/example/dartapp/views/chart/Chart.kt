@@ -55,13 +55,15 @@ abstract class Chart @JvmOverloads constructor(
         linkedLegend?.reload()
 
         selectedIndex = -1
-        if (animatedEnter) enterAnimation?.start()
 
         reload()
         invalidate()
     }
 
-    abstract fun reload()
+    open fun reload() {
+        if (animatedEnter) enterAnimation?.start()
+    }
+
     abstract fun onSelectionUpdate()
 
     fun link(legend: Legend) {

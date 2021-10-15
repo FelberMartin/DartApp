@@ -56,4 +56,5 @@ class LegendTestFragment : Fragment(), SeekBar.OnSeekBarChangeListener{
     override fun onStopTrackingTouch(p0: SeekBar?) {
     }
 
+
 }

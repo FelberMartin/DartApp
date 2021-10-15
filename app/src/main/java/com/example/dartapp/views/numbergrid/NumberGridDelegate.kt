@@ -1,4 +1,4 @@
-package com.example.dartapp.views
+package com.example.dartapp.views.numbergrid
 
 interface NumberGridDelegate {
     fun onConfirmPressed(value: Int)

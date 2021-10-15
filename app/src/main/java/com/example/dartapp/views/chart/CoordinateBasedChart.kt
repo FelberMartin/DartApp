@@ -88,6 +88,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     }
 
     override fun reload() {
+        super.reload()
+
         // Y values
         coordRect.top = data.minOf { dp -> dp.y.toFloat() }
         coordRect.bottom = data.maxOf { dp -> dp.y.toFloat() }

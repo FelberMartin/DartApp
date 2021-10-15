@@ -71,9 +71,15 @@ class PieChart @JvmOverloads constructor(
         if (isInEditMode) {
             selectedIndex = 1
         }
+
+
     }
 
+
+
     override fun reload() {
+        super.reload()
+
         data.forEach{ dp -> assert(dp.y.toDouble() >= 0) }
         dataSum = data.sumOf { dp -> dp.y.toDouble() }.toFloat()
 
@@ -82,6 +88,7 @@ class PieChart @JvmOverloads constructor(
 
         recalculatePoints()
     }
+
 
     // Recalculate the points on the unit circle (all the sin and cos values)
     private fun recalculatePoints() {
