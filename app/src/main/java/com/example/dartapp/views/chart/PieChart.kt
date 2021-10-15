@@ -1,9 +1,12 @@
 package com.example.dartapp.views.chart
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.animation.doOnEnd
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.util.InfoTextBox
@@ -40,7 +43,6 @@ class PieChart @JvmOverloads constructor(
 
     private lateinit var circleRect: RectF
 
-
     private var info = InfoTextBox(this)
     private lateinit var textBoxTranslation: PointF
 
@@ -53,6 +55,15 @@ class PieChart @JvmOverloads constructor(
         strokeWidth = 14f
     }
 
+    var shownMaxAngle = STARTING_ANGLE_GRAD + 360f
+    override var enterAnimation = ObjectAnimator.ofFloat(
+        this, "shownMaxAngle", STARTING_ANGLE_GRAD, 360f + STARTING_ANGLE_GRAD
+    ). apply {
+        duration = enterAnimationDuration
+        interpolator = AccelerateDecelerateInterpolator()
+        addUpdateListener(this@PieChart)
+        if (!isInEditMode) start()
+    }
 
 
     init {
@@ -62,8 +73,7 @@ class PieChart @JvmOverloads constructor(
         }
     }
 
-    override fun dataChanged() {
-        super.dataChanged()
+    override fun reload() {
         data.forEach{ dp -> assert(dp.y.toDouble() >= 0) }
         dataSum = data.sumOf { dp -> dp.y.toDouble() }.toFloat()
 
@@ -71,7 +81,6 @@ class PieChart @JvmOverloads constructor(
         data.forEach { dp -> fractions.add(dp.y.toFloat() / dataSum) }
 
         recalculatePoints()
-        selectedIndex = -1
     }
 
     // Recalculate the points on the unit circle (all the sin and cos values)
@@ -158,6 +167,8 @@ class PieChart @JvmOverloads constructor(
         for (index in 0 until data.size) {
 
             val sweepAngle = fractions[index] * 360
+            val animatedSweepAngle = max(0f, shownMaxAngle - startAngle)
+            val shownSweepAngle = min(sweepAngle, animatedSweepAngle)
             paint.color = colorManager.get(index)
 
             // let the selected arc protrude from the center
@@ -168,7 +179,7 @@ class PieChart @JvmOverloads constructor(
                 canvas.translate(dx, dy)
             }
 
-            canvas.drawArc(circleRect, startAngle, sweepAngle, true, paint)
+            canvas.drawArc(circleRect, startAngle, shownSweepAngle, true, paint)
 
             if (index == selectedIndex)
                 canvas.restore()

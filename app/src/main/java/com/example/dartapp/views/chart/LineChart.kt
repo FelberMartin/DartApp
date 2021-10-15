@@ -1,5 +1,6 @@
 package com.example.dartapp.views.chart
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.*
 import android.os.Build
@@ -28,10 +29,17 @@ class LineChart @JvmOverloads constructor(
     private var linePath = Path()
     var smoothedLine = true
 
+    var shownLineFraction = 1f
+    override var enterAnimation: ObjectAnimator? = ObjectAnimator.ofFloat(
+        this, "shownLineFraction", 0f, 1f).apply {
+            duration = enterAnimationDuration
+            interpolator = AccelerateDecelerateInterpolator()
+            addUpdateListener(this@LineChart)
+            if (!isInEditMode) start()
+    }
+
     private var info = InfoTextBox(this)
 
-    private var frame = 0
-    private var interpolator = AccelerateDecelerateInterpolator()
 
     private val lineShader: Shader = LinearGradient(0f, 0f, 0f, 500f, intArrayOf(
         Color.parseColor("#F97C3C"),
@@ -62,15 +70,13 @@ class LineChart @JvmOverloads constructor(
     init {
         data = DataSet.random(count = 8, randomX = true)
         if (isInEditMode) {
-            animatedEnter = false
             selectedIndex = 3
         }
     }
 
-    fun reload() {
-        dataChanged()
-        selectedIndex = -1
-        frame = 0
+    override fun reload() {
+        super.reload()
+        updatePath()
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -79,15 +85,6 @@ class LineChart @JvmOverloads constructor(
         updatePath()
     }
 
-    override fun dataChanged() {
-        super.dataChanged()
-
-        data.forEach { dp -> Log.d(TAG, "${dp.x}, ${dp.y}") }
-
-        updatePath()
-        frame = 0
-        invalidate()
-    }
 
     private fun updatePath() {
         points.clear()
@@ -133,33 +130,23 @@ class LineChart @JvmOverloads constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun drawLines(canvas: Canvas) {
-        val animationEnd = if (animatedEnter) 50f else 0f
-        if (frame >= animationEnd)
-            canvas.drawPath(linePath, linePaint)
-        else {
-            val fraction = interpolator.getInterpolation(frame/animationEnd)
-            val appr = linePath.approximate(0.5f)
-            val points = appr.filterIndexed { index, _ -> index % 3 != 0 }
-            val fractions = appr.filterIndexed { index, _ -> index % 3 == 0 }
-            var lines = ArrayList<Float>()
-            for (i in 0 until points.size / 2) {
-                val x = points[2 * i]
-                val y = points[2 * i + 1]
+        val appr = linePath.approximate(0.5f)
+        val points = appr.filterIndexed { index, _ -> index % 3 != 0 }
+        val fractions = appr.filterIndexed { index, _ -> index % 3 == 0 }
+        var lines = ArrayList<Float>()
+        for (i in 0 until points.size / 2) {
+            val x = points[2 * i]
+            val y = points[2 * i + 1]
+            lines.add(x)
+            lines.add(y)
+            if (i != 0 && i != points.size / 2 - 1) {
                 lines.add(x)
                 lines.add(y)
-                if (i != 0 && i != points.size / 2 - 1) {
-                    lines.add(x)
-                    lines.add(y)
-                }
-                if (fractions[i] > fraction)
-                    break
             }
-            canvas.drawLines(lines.toFloatArray(), linePaint)
-            frame++
-            invalidate()
+            if (fractions[i] > shownLineFraction)
+                break
         }
-
-
+        canvas.drawLines(lines.toFloatArray(), linePaint)
     }
 
     private fun drawPoints(canvas: Canvas) {

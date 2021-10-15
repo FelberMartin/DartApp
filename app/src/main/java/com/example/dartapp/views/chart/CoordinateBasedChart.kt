@@ -87,11 +87,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         strokeWidth = 2f
     }
 
-    override fun dataChanged() {
-        super.dataChanged()
-
-        selectedIndex = -1
-
+    override fun reload() {
         // Y values
         coordRect.top = data.minOf { dp -> dp.y.toFloat() }
         coordRect.bottom = data.maxOf { dp -> dp.y.toFloat() }

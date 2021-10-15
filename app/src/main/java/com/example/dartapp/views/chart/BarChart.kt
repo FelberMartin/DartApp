@@ -1,6 +1,7 @@
 package com.example.dartapp.views.chart
 
 
+import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -12,6 +13,8 @@ import com.example.dartapp.views.chart.ARROW_STRENGTH
 import com.example.dartapp.views.chart.CoordinateBasedChart
 import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.util.InfoTextBox
+import kotlin.math.max
+import kotlin.math.min
 
 
 class BarChart @JvmOverloads constructor(
@@ -22,6 +25,8 @@ class BarChart @JvmOverloads constructor(
 
 
     private val barRects = arrayListOf<RectF>()
+    var barMaxHeight = Float.MAX_VALUE
+
 
     private val barDefaultSize = 0.7f
     private val barSelectedSize = 0.85f
@@ -42,20 +47,24 @@ class BarChart @JvmOverloads constructor(
         topAutoPadding = true
         data = DataSet.random(type = DataSet.Type.STRING)
 
-
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        update()
+
+        enterAnimation = ObjectAnimator.ofFloat(
+            this, "barMaxHeight", 0f, coordPixelRect.height()
+        ).apply {
+            duration = enterAnimationDuration
+            addUpdateListener(this@BarChart)
+            if (!isInEditMode) start()
+        }
+
+        reload()
     }
 
-    override fun dataChanged() {
-        super.dataChanged()
-        update()
-    }
-
-    private fun update() {
+    override fun reload() {
+        super.reload()
         updateBarRects()
     }
 
@@ -101,7 +110,11 @@ class BarChart @JvmOverloads constructor(
     private fun drawBars(canvas: Canvas) {
         for (i in 0 until barRects.size) {
             barPaint.color = colorManager.get(i)
-            canvas.drawRect(barRects[i], barPaint)
+            val rect = barRects[i]
+
+            val height = min(barMaxHeight, rect.height())
+            canvas.drawRect(rect.left, rect.bottom - height,
+                rect.right, rect.bottom, barPaint)
         }
     }
 
