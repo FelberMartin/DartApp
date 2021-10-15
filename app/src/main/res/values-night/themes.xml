@@ -12,8 +12,10 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
-        <item name="backgroundColor">#121212</item>
+        <item name="backgroundColor">?android:colorBackground</item>
         <item name="colorOnBackground">@color/lt_gray</item>
         <item name="colorBackgroundFloating">@color/dk_gray</item>
     </style>
 </resources>
+
+<!-- Material Color Tool: https://material.io/resources/color/#!/?view.left=0&view.right=0&primary.color=9C27B0&secondary.color=FFD54F !-->

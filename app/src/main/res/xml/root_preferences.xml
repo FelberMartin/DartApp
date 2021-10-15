@@ -1,0 +1,22 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <PreferenceCategory app:title="@string/theme_header">
+
+        <SwitchPreferenceCompat
+            app:key="auto_theme"
+            app:title="@string/auto_theme_title"
+            app:defaultValue="true"
+            app:disableDependentsState="true"
+            />
+
+        <SwitchPreferenceCompat
+            app:dependency="auto_theme"
+            app:key="dark_theme"
+            app:title="@string/dark_theme_title" />
+
+    </PreferenceCategory>
+
+
+
+</PreferenceScreen>

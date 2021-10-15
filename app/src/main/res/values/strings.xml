@@ -35,5 +35,10 @@
     <string name="tab_text_2">History</string>
     <string name="tab_text_3">Table</string>
 
+    <!-- Settings -->
+    <string name="theme_header">Appearance</string>
+    <string name="auto_theme_title">Use system appearance</string>
+    <string name="dark_theme_title">Use dark theme</string>
+
 
 </resources>
