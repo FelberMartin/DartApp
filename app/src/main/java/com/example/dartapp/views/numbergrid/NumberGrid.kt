@@ -3,6 +3,8 @@ package com.example.dartapp.views.numbergrid
 
 import android.content.Context
 import android.os.Build
+import android.os.Bundle
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.widget.Button
 import android.widget.LinearLayout
@@ -10,6 +12,7 @@ import android.widget.TableLayout
 import androidx.annotation.RequiresApi
 import com.example.dartapp.R
 import com.google.android.material.button.MaterialButton
+
 
 @RequiresApi(Build.VERSION_CODES.M)
 class NumberGrid @JvmOverloads constructor(
@@ -43,14 +46,14 @@ class NumberGrid @JvmOverloads constructor(
 
 
         for (rowIndex in 0 until rows) {
-            val rowLayout = LinearLayout(context)
+            val rowLayout = LinearLayout(context).apply { id = generateViewId() }
             rowLayout.orientation = LinearLayout.HORIZONTAL
             rowLayout.weightSum = columns * 1.0f
 
             for (columnIndex in 0 until columns) {
                 val button = MaterialButton(context, attrs)
                 button.text = getButtonText(rowIndex, columnIndex)
-                button.id
+                button.id = generateViewId()
                 rowLayout.addView(button)
 
                 setButtonListener(button)
@@ -119,6 +122,32 @@ class NumberGrid @JvmOverloads constructor(
         params.rightMargin = spaceHorizontally
         params.topMargin = spaceVertically
         params.bottomMargin = spaceVertically
+    }
+
+    /**
+     * Save the number typed into the grid on e.g. screen rotations or theme changes.
+     * See: https://stackoverflow.com/a/8127813/13366254
+     */
+    override fun onSaveInstanceState(): Parcelable? {
+        val bundle = Bundle()
+        bundle.putParcelable("superState", super.onSaveInstanceState())
+        bundle.putInt("number", this.number) // ... save stuff
+
+        return bundle
+    }
+
+
+    /**
+     * Restore the number entered before recreating the view
+     */
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        var superState = state
+        if (state is Bundle) { // implicit null check
+            val bundle = state
+            this.number = bundle.getInt("number") // ... load stuff
+            superState = bundle.getParcelable("superState")
+        }
+        super.onRestoreInstanceState(superState)
     }
 
 
