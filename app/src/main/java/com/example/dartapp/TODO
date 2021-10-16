@@ -4,9 +4,11 @@
 ===========================================
 
 TODO:
+ - Training save state
+ - Ask for double attempts
+ - Undo in Training
  - NumberGrid different configs
  - Menu design
- - Ask for double attempts
  - Fix animations between Fragments / Activities
  - Multiple DataSets for bar and line charts
  - gradient code in LineChart

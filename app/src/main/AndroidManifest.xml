@@ -24,7 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.training.TrainingActivity" />
+        <activity
+            android:name=".ui.training.TrainingActivity"
+            android:label="@string/training"
+            android:theme="@style/Theme.DartApp.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

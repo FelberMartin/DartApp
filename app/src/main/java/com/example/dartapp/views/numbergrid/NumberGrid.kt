@@ -50,6 +50,7 @@ class NumberGrid @JvmOverloads constructor(
             for (columnIndex in 0 until columns) {
                 val button = MaterialButton(context, attrs)
                 button.text = getButtonText(rowIndex, columnIndex)
+                button.id
                 rowLayout.addView(button)
 
                 setButtonListener(button)

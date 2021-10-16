@@ -10,9 +10,13 @@ import com.example.dartapp.util.App
 
 class GameViewModel(private val mode: GameMode) : ViewModel() {
 
+    private val NO_DATA = "--"
+
     private var game: Game = Game(mode)
     var pointsLeft: MutableLiveData<Int> = MutableLiveData(game.pointsLeft)
-    var last: MutableLiveData<String> = MutableLiveData("-")
+    var last: MutableLiveData<String> = MutableLiveData(NO_DATA)
+    var avg: MutableLiveData<String> = MutableLiveData(NO_DATA)
+    var dartCount: MutableLiveData<Int> = MutableLiveData(0)
 
     fun processServe(serve: Int): Boolean {
         if (!game.isServeValid(serve)) {
@@ -29,11 +33,24 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
     }
 
     private fun update() {
+        // Points Left
         pointsLeft.value = game.pointsLeft
+
+        // Last Serve
         if (game.lastServe == -1)
-            last.value = "-"
+            last.value = NO_DATA
         else
             last.value = game.lastServe.toString()
+
+        // Average Points per Serve
+        if (game.lastServe == -1)
+            avg.value = NO_DATA
+        else
+            avg.value = String.format("%.1f" ,game.avg)
+
+        // Dart Count
+        dartCount.value = game.serves.size * 3
+
     }
 
     fun restart() {

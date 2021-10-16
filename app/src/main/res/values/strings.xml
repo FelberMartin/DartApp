@@ -25,6 +25,8 @@
     <string name="clear">Clear</string>
     <string name="confirm">Confirm</string>
     <string name="lastFormat">Last: %s</string>
+    <string name="avgFormat">Avg: %s</string>
+    <string name="dartCountFormat">Darts: %d</string>
     <string name="legFinished">Leg Finished!</string>
 
     <!-- HistoryFragment !-->

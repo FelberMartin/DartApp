@@ -65,7 +65,7 @@ class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
     companion object Generator {
 
         private val names = listOf("Apple Pie", "Silly StackOverflow questions", "Litre of Wine",
-            "Fluffy Puppies", "Pfannenkuchen", "UwU", "Money", "Kilos of Elaphant's shit", "Beer",
+            "Fluffy Puppies", "Pfannkuchen", "UwU", "Money", "Kilos of Elephant's shit", "Beer",
             "Koks", "IQ", "Hours till you die", "ÄÖüµ€@{*|^^°ÓÈ")
 
 
