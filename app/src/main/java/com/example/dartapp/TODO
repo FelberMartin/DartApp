@@ -4,8 +4,11 @@
 ===========================================
 
 TODO:
- - Undo in Training
- - NumberGrid different configs
+ - Stats: 60+, 100+, 140+, 180 | Double quote | Checkout
+ - Stats selection
+ - History facelift
+ - History stats for each game (if possible)
+ - Ask before leaving training
  - Menu design
  - Fix animations between Fragments / Activities
  - Multiple DataSets for bar and line charts
