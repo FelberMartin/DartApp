@@ -17,12 +17,11 @@ import com.google.android.material.button.MaterialButton
 @RequiresApi(Build.VERSION_CODES.M)
 class NumberGrid @JvmOverloads constructor(
     context: Context,
-    attrs: AttributeSet? = null,
+    private val attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : LinearLayout(context, attrs, defStyleAttr) {
 
-    private val rows = 4
-    private val columns = 3
+    private lateinit var config: NumberGridConfig
 
     private val spaceHorizontally = 5
     private val spaceVertically = 5
@@ -41,18 +40,48 @@ class NumberGrid @JvmOverloads constructor(
 
 
     init {
-        this.orientation = TableLayout.VERTICAL
-        this.weightSum = rows * 1.0f
+        config = parseConfig()
+        initLayout()
+    }
 
+    private fun parseConfig() : NumberGridConfig {
+        val default = 1
+        var enumValue = default
+
+        if (attrs != null) {
+            val a = context
+                .obtainStyledAttributes(
+                    attrs,
+                    R.styleable.NumberGrid,
+                    0, 0
+                )
+
+            enumValue = a.getInt(R.styleable.NumberGrid_layoutConfig, default)
+            a.recycle()
+        }
+
+        return when (enumValue) {
+            1 -> NumberGridConfig.default3x4()
+            2 -> NumberGridConfig.simple2x2()
+            else -> NumberGridConfig.default3x4()
+        }
+    }
+
+    private fun initLayout() {
+        val rows = config.rows
+        val columns = config.columns
+
+        this.orientation = TableLayout.VERTICAL
+        this.weightSum = rows * 1f
 
         for (rowIndex in 0 until rows) {
             val rowLayout = LinearLayout(context).apply { id = generateViewId() }
             rowLayout.orientation = LinearLayout.HORIZONTAL
-            rowLayout.weightSum = columns * 1.0f
+            rowLayout.weightSum = columns * 1f
 
             for (columnIndex in 0 until columns) {
-                val button = MaterialButton(context, attrs)
-                button.text = getButtonText(rowIndex, columnIndex)
+                val button = MaterialButton(context)
+                button.text = config.tileAt(rowIndex, columnIndex).text
                 button.id = generateViewId()
                 rowLayout.addView(button)
 
@@ -65,22 +94,8 @@ class NumberGrid @JvmOverloads constructor(
             params.weight = 1f
             params.height = LayoutParams.MATCH_PARENT
         }
-
     }
 
-    private fun getButtonText(rowIndex: Int, columnIndex: Int) : String {
-        if (rowIndex < 3) {
-            val number = 7 + columnIndex - rowIndex * 3
-            return number.toString()
-        }
-
-        if (columnIndex == 0)
-            return context.getString(R.string.clear)
-        if (columnIndex == 1)
-            return "0"
-
-        return context.getString(R.string.confirm)
-    }
 
     private fun setButtonListener(button: Button) {
         val text = button.text

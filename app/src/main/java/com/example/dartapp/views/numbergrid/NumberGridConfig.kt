@@ -1,33 +1,43 @@
 package com.example.dartapp.views.numbergrid
 
-import com.example.dartapp.views.numbergrid.NumberGridConfig.Tile.*
 
-class NumberGridConfig(val columns: Int, val rows: Int, val layout: Array<Array<Tile>>) {
-    enum class Tile(stringValue: String) {
-        ZERO("0"),
-        ONE("1"),
-        TWO("2"),
-        THREE("3"),
-        FOUR("4"),
-        FIVE("5"),
-        SIX("6"),
-        SEVEN("7"),
-        EIGHT("8"),
-        NINE("9"),
-        CLEAR("Clear"),
-        CONFIRM("Confirm"),
-        BACK("Back"),
-        DOUBLE("x2"),
-        TRIPLE("x3")
+class NumberGridConfig(val columns: Int, val rows: Int, private val layout: List<Tile>) {
+
+    fun tileAt(index: Int) : Tile {
+        return layout[index]
     }
 
+    fun tileAt(row: Int, column: Int) : Tile {
+        val index = row * columns + column
+        return tileAt(index)
+    }
 
-    companion object {
-        val DEFAULT_3x4 = NumberGridConfig(3, 4, arrayOf(
-            arrayOf(SEVEN, EIGHT, NINE),
-            arrayOf(FOUR, FIVE, SIX),
-            arrayOf(ONE, TWO, THREE),
-            arrayOf(CLEAR, ZERO, CONFIRM)
-        ))
+    companion object Generator {
+        fun default3x4() : NumberGridConfig {
+            val layout = ArrayList<Tile>()
+
+            // Upper 3x3
+            for (row in 0..2) {
+                for (column in 0..2) {
+                    val number = 7 + column - row * 3
+                    layout.add(NumberTile(number))
+                }
+            }
+
+            // Bottom row
+            layout.add(ActionTile(ActionTile.Action.CLEAR))
+            layout.add(NumberTile(0))
+            layout.add(ActionTile(ActionTile.Action.CONFIRM))
+
+            return NumberGridConfig(3, 4, layout)
+        }
+
+        fun simple2x2() : NumberGridConfig {
+            val layout = ArrayList<Tile>()
+            for (i in 0..3)
+                layout.add(NumberTile(i))
+
+            return NumberGridConfig(2, 2, layout)
+        }
     }
 }
