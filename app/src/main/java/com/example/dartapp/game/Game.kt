@@ -21,10 +21,20 @@ class Game (private val mode: GameMode) {
     var avg: Double = 0.0
         get() = serves.average()
 
+    var doubleAttempts: Int = 0
+    set(value) {
+        field = value
+        println("Double attempts: $value")
+    }
+
 
 
     fun isFinished() : Boolean {
         return mode.isGameFinished(this)
+    }
+
+    fun askForDoubleAttempts() : Boolean {
+        return mode.askForDoubleAttempts(this)
     }
 
     fun isServeValid(serve: Int) : Boolean {
@@ -37,7 +47,8 @@ class Game (private val mode: GameMode) {
             endTime = System.currentTimeMillis(),
             gameMode = mode.id.value,
             servesCount = serves.size,
-            servesAvg = avg
+            servesAvg = avg,
+            doubleAttempts = doubleAttempts
         )
     }
 

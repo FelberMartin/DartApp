@@ -8,28 +8,34 @@
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
-    <!-- MenuFragment !-->
+    <!-- MenuFragment -->
     <string name="menu_fragment_label">Menu Fragment</string>
     <string name="training">Training</string>
     <string name="stats">Statistics</string>
     <string name="settings">Settings</string>
 
-    <!-- ModiFragment !-->
+    <!-- ModiFragment -->
     <string name="modes_fragment_label">Mode Fragment</string>
     <string name="mode_501_label">501</string>
     <string name="mode_100_attempts_label">100 Attempts</string>
     <string name="extra_string_mode">mode</string>
 
-    <!-- TrainingActivity !-->
+    <!-- TrainingActivity -->
     <string name="training_activity_label">Training Activity</string>
     <string name="clear">Clear</string>
     <string name="confirm">Confirm</string>
     <string name="lastFormat">Last: %s</string>
     <string name="avgFormat">Avg: %s</string>
     <string name="dartCountFormat">Darts: %d</string>
+    
+    <!-- LegFinishedDialog -->
     <string name="legFinished">Leg Finished!</string>
 
-    <!-- HistoryFragment !-->
+    <!-- DoubleAttemptsDialog -->
+    <string name="double_attempts_question">How many darts of this serve were attempted double-finishes?</string>
+    <string name="double_attempts_explanation">(Used for tracking your double rate)</string>
+
+    <!-- HistoryFragment -->
     <string name="averageLabel">Avg:</string>
     <string name="servesLabel">Serves:</string>
     <string name="title_activity_stats">StatsActivity</string>

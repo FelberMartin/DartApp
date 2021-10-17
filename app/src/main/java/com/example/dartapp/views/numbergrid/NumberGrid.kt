@@ -80,12 +80,13 @@ class NumberGrid @JvmOverloads constructor(
             rowLayout.weightSum = columns * 1f
 
             for (columnIndex in 0 until columns) {
+                val tile = config.tileAt(rowIndex, columnIndex)
                 val button = MaterialButton(context)
-                button.text = config.tileAt(rowIndex, columnIndex).text
+                button.text = tile.text
                 button.id = generateViewId()
                 rowLayout.addView(button)
 
-                setButtonListener(button)
+                button.setOnClickListener { onButtonPress(tile) }
                 applyButtonLayout(button)
             }
 
@@ -97,34 +98,27 @@ class NumberGrid @JvmOverloads constructor(
     }
 
 
-    private fun setButtonListener(button: Button) {
-        val text = button.text
+    private fun onButtonPress(tile: Tile) {
+        if (tile is DigitTile)
+            onNumberPress((tile as DigitTile).digit)
+        else if (tile is ActionTile)
+            onActionPress((tile as ActionTile).action)
+    }
 
-        // digit
-        if (text[0].isDigit()) {
-            button.setOnClickListener {
-                val digit = Integer.parseInt(text.toString())
-                val newNumber = number * 10 + digit
+    private fun onNumberPress(digit: Int) {
+        val newNumber = number * 10 + digit
 
-                // avoid overflows and leading zeros
-                if (newNumber > number)
-                    number = newNumber
+        // avoid overflows
+        if (newNumber >= number)
+            number = newNumber
+    }
 
-            }
+    private fun onActionPress(action: ActionTile.Action) {
+        if (action == ActionTile.Action.CONFIRM) {
+            delegate?.onConfirmPressed(number)
+        } else if (action == ActionTile.Action.CLEAR) {
+            number = 0
         }
-
-        // clear
-        else if (text == resources.getString(R.string.clear)) {
-            button.setOnClickListener { number = 0 }
-        }
-
-        //confirm
-        else {
-            button.setOnClickListener {
-                delegate?.onConfirmPressed(number)
-            }
-        }
-
     }
 
     private fun applyButtonLayout(button: Button) {

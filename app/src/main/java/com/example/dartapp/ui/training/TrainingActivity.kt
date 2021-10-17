@@ -12,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.example.dartapp.R
 import com.example.dartapp.databinding.ActivityTrainingBinding
+import com.example.dartapp.ui.dialogs.DoubleAttemptsDialog
 import com.example.dartapp.ui.dialogs.LegFinishedDialog
 import com.example.dartapp.util.Strings
 import com.example.dartapp.ui.training.viewmodels.GameViewModel
@@ -55,13 +56,27 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     }
 
     override fun onConfirmPressed(value: Int) {
-        val valid = viewModel.processServe(value)
-        var animationId = R.anim.lift_and_fade
+        if (!viewModel.isServeValid(value)) {
+            invalidServe()
+            return
+        }
 
-        if (!valid)
-            animationId = R.anim.shake
+        if (viewModel.askForDoubleAttempts())
+            showDoubleAttemptsDialog(value)
+        else
+            validServeFinished(value)
+    }
 
-        val animation = AnimationUtils.loadAnimation(this, animationId)
+    private fun invalidServe() {
+        val animation = AnimationUtils.loadAnimation(this, R.anim.shake)
+        animation.setAnimationEndListener { binding.numberGrid.number = 0 }
+        binding.pointsEnteredLabel.startAnimation(animation)
+    }
+
+    private fun validServeFinished(value: Int) {
+        viewModel.processServe(value)
+
+        val animation = AnimationUtils.loadAnimation(this, R.anim.lift_and_fade)
         animation.setAnimationEndListener { binding.numberGrid.number = 0 }
         binding.pointsEnteredLabel.startAnimation(animation)
 
@@ -71,15 +86,30 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     }
 
     private fun legFinished() {
+        showLegFinishedDialog()
+
+        Thread {
+            viewModel.saveGameToDatabase()
+        }.start()
+    }
+
+    private fun showLegFinishedDialog() {
         val dialog = LegFinishedDialog(this)
         dialog.show()
 
         dialog.setOnBackClickedListener { this.finish() }
         dialog.setOnRestartClickedListener { viewModel.restart() }
+    }
 
-        Thread {
-            viewModel.saveGameToDatabase()
-        }.start()
+    private fun showDoubleAttemptsDialog(serveValue: Int){
+        val dialog = DoubleAttemptsDialog(this)
+        dialog.show()
+
+        dialog.setClickListener {
+            viewModel.addDoubleAttempts(it)
+            dialog.dismiss()
+            validServeFinished(serveValue)
+        }
     }
 
 

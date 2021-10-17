@@ -18,18 +18,25 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
     var avg: MutableLiveData<String> = MutableLiveData(NO_DATA)
     var dartCount: MutableLiveData<Int> = MutableLiveData(0)
 
-    fun processServe(serve: Int): Boolean {
-        if (!game.isServeValid(serve)) {
-            return false
-        }
+    fun isServeValid(serve: Int) : Boolean {
+        return game.isServeValid(serve)
+    }
 
+    fun processServe(serve: Int) {
         game.serves.add(serve)
         update()
-        return true
     }
 
     fun isFinished(): Boolean {
         return game.isFinished()
+    }
+
+    fun askForDoubleAttempts(): Boolean {
+        return game.askForDoubleAttempts()
+    }
+
+    fun addDoubleAttempts(count: Int) {
+        game.doubleAttempts += count
     }
 
     private fun update() {

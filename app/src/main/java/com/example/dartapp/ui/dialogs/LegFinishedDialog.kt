@@ -18,7 +18,7 @@ class LegFinishedDialog(context: Context) : Dialog(context) {
 
         requestWindowFeature(Window.FEATURE_NO_TITLE)
         setCancelable(false)
-        setContentView(R.layout.dialog_game_over)
+        setContentView(R.layout.dialog_leg_finished)
 
         backButton = findViewById(R.id.backButton)
         restartButton = findViewById(R.id.restartButton)

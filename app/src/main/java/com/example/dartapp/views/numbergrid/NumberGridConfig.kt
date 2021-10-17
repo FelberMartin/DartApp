@@ -20,13 +20,13 @@ class NumberGridConfig(val columns: Int, val rows: Int, private val layout: List
             for (row in 0..2) {
                 for (column in 0..2) {
                     val number = 7 + column - row * 3
-                    layout.add(NumberTile(number))
+                    layout.add(DigitTile(number))
                 }
             }
 
             // Bottom row
             layout.add(ActionTile(ActionTile.Action.CLEAR))
-            layout.add(NumberTile(0))
+            layout.add(DigitTile(0))
             layout.add(ActionTile(ActionTile.Action.CONFIRM))
 
             return NumberGridConfig(3, 4, layout)
@@ -35,7 +35,7 @@ class NumberGridConfig(val columns: Int, val rows: Int, private val layout: List
         fun simple2x2() : NumberGridConfig {
             val layout = ArrayList<Tile>()
             for (i in 0..3)
-                layout.add(NumberTile(i))
+                layout.add(DigitTile(i))
 
             return NumberGridConfig(2, 2, layout)
         }

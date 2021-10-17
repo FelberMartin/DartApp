@@ -4,7 +4,7 @@ abstract class Tile(val text: String) {
 
 }
 
-class NumberTile(val number: Int) : Tile(number.toString()) {
+class DigitTile(val digit: Int) : Tile(digit.toString()) {
 
 }
 

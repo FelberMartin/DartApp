@@ -13,6 +13,10 @@ abstract class GameMode {
         return game.pointsLeft == 0
     }
 
+    open fun askForDoubleAttempts(game: Game) : Boolean {
+        return game.pointsLeft <= 170
+    }
+
 
     enum class ID(val value: Int) {
         X01(1), CHEAT(69)

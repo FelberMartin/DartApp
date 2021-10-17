@@ -22,6 +22,9 @@ data class Leg(
     @ColumnInfo(name = "serves_avg")
     var servesAvg: Double = 0.0,
 
+    @ColumnInfo(name = "double_attempts")
+    var doubleAttempts: Int = 0,
+
 
 
 
