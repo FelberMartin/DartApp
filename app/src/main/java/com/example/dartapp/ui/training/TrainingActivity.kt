@@ -46,6 +46,8 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
 
         binding.gameViewModel = viewModel
         binding.lifecycleOwner = this
+
+        binding.buttonUndo.setOnClickListener { viewModel.undo() }
     }
 
 

@@ -21,11 +21,9 @@ class Game (private val mode: GameMode) {
     var avg: Double = 0.0
         get() = serves.average()
 
+    var doubleAttemptsList = ArrayList<Int>()
     var doubleAttempts: Int = 0
-    set(value) {
-        field = value
-        println("Double attempts: $value")
-    }
+        get() = doubleAttemptsList.sum()
 
 
 
@@ -39,6 +37,11 @@ class Game (private val mode: GameMode) {
 
     fun isServeValid(serve: Int) : Boolean {
         return mode.isServeValid(serve, this)
+    }
+
+    fun undo() {
+        serves.removeLastOrNull()
+        doubleAttemptsList.removeLastOrNull()
     }
 
 

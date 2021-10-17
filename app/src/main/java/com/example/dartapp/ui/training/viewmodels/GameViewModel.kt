@@ -36,7 +36,12 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
     }
 
     fun addDoubleAttempts(count: Int) {
-        game.doubleAttempts += count
+        game.doubleAttemptsList.add(count)
+    }
+
+    fun undo() {
+        game.undo()
+        update()
     }
 
     private fun update() {
