@@ -40,7 +40,7 @@ class MenuFrament : Fragment() {
 
         binding.buttonStats.setOnClickListener {
             val action = MenuFramentDirections.actionMenuFramentToStatsActivity()
-            findNavController().navigate(action, getNavOptions())
+            findNavController().navigate(action)
         }
 
         binding.buttonTest.setOnClickListener {

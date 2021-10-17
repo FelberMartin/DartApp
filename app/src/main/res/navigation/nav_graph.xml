@@ -13,11 +13,7 @@
 
         <action
             android:id="@+id/action_MenuFragment_to_ModiFragment"
-            app:destination="@id/ModeFragment"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@android:anim/slide_in_left"
-            app:popExitAnim="@android:anim/slide_out_right" />
+            app:destination="@id/ModeFragment" />
 
         <action
             android:id="@+id/action_MenuFrament_to_statsActivity"
@@ -27,11 +23,7 @@
             app:destination="@id/testFragment" />
         <action
             android:id="@+id/action_MenuFrament_to_settingsFragment"
-            app:destination="@id/settingsFragment"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/ModeFragment"
@@ -40,11 +32,7 @@
         tools:layout="@layout/fragment_modes" >
         <action
             android:id="@+id/action_ModeFragment_to_trainingActivity"
-            app:destination="@id/trainingActivity"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+            app:destination="@id/trainingActivity" />
     </fragment>
     <activity
         android:id="@+id/trainingActivity"

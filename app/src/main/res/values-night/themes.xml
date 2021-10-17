@@ -16,10 +16,6 @@
         <item name="colorOnBackground">@color/lt_gray</item>
         <item name="colorBackgroundFloating">@color/dk_gray</item>
 
-        <item name="enterAnim">@anim/slide_in_right</item>
-        <item name="exitAnim">@anim/slide_out_left</item>
-        <item name="popEnterAnim">@android:anim/slide_in_left</item>
-        <item name="popExitAnim">@android:anim/slide_out_right</item>
     </style>
 </resources>
 

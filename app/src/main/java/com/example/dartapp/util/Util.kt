@@ -5,11 +5,9 @@ import android.graphics.Color
 import android.os.Build
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
-import android.R
 
 import androidx.navigation.NavOptions
-
-
+import com.example.dartapp.R
 
 
 object Strings {
@@ -36,8 +34,8 @@ fun getStringByIdName(context: Context, name: String): String {
 
 fun getNavOptions(): NavOptions? {
     return NavOptions.Builder()
-        .setEnterAnim(R.anim.slide_in_left)
-        .setExitAnim(R.anim.slide_out_right)
+        .setEnterAnim(R.anim.slide_in_right)
+        .setExitAnim(R.anim.slide_out_left)
         .setPopEnterAnim(R.anim.slide_in_left)
         .setPopExitAnim(R.anim.slide_out_right)
         .build()
