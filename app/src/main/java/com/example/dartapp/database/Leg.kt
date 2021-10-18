@@ -25,9 +25,14 @@ data class Leg(
     @ColumnInfo(name = "double_attempts")
     var doubleAttempts: Int = 0,
 
+    @ColumnInfo(name = "checkout")
+    var checkout: Int = 0,
 
+    @ColumnInfo(name = "serve_list")
+    var servesList: String = "",
 
-
+    @ColumnInfo(name = "double_attempts_list")
+    var doubleAttemptsList: String = "",
 
 
 )

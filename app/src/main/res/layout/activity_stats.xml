@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary"
             app:tabIndicatorColor="?attr/colorOnPrimary"
+            app:tabIndicatorFullWidth="false"
             app:tabSelectedTextColor="?attr/colorOnPrimary">
 
 

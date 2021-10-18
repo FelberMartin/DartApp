@@ -1,5 +1,6 @@
 package com.example.dartapp.game
 
+import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
 import com.example.dartapp.game.gameModes.GameMode
 
@@ -55,7 +56,9 @@ class Game (private val mode: GameMode) {
             gameMode = mode.id.value,
             dartCount = dartCount,
             servesAvg = avg,
-            doubleAttempts = doubleAttempts
+            doubleAttempts = doubleAttempts,
+            servesList = Converters.fromArrayListOfInts(serves),
+            doubleAttemptsList = Converters.fromArrayListOfInts(doubleAttemptsList)
         )
     }
 
