@@ -39,6 +39,7 @@ class HistoryFragment : Fragment() {
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(context)
 
+        binding.recyclerView.setEmptyView(binding.emptyLabel)
 
         return binding.root
     }

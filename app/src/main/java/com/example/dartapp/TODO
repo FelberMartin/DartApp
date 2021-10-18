@@ -5,11 +5,10 @@
 
 TODO:
  - Stats selection
- - History facelift
  - History stats for each game (if possible)
  - Ask before leaving training
+ - Table for Nerds
  - Menu design
- - Fix animations between Fragments / Activities
  - Multiple DataSets for bar and line charts
  - gradient code in LineChart
  - Selection animations

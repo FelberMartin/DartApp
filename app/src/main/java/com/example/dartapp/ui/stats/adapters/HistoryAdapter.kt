@@ -7,6 +7,7 @@ import com.example.dartapp.database.Leg
 import com.example.dartapp.databinding.ItemHistoryBinding
 import com.example.dartapp.game.gameModes.GameMode
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -35,6 +36,9 @@ class HistoryAdapter(private var legs: ArrayList<Leg>) : RecyclerView.Adapter<Hi
                 val dateString = SimpleDateFormat.getDateInstance().format(date)
                 binding.timeTextView.text = timeString
                 binding.dateTextView.text = dateString
+
+                val weekday = SimpleDateFormat("EE").format(date)
+                binding.weekdayTextView.text = weekday
             }
         }
     }

@@ -47,6 +47,7 @@
     <string name="averageLabel">Avg:</string>
     <string name="dartCountLabel">Darts:</string>
     <string name="title_activity_stats">StatsActivity</string>
+    <string name="no_data">No data.\nComplete a training session first!</string>
     <string name="tab_text_1">Graphs</string>
     <string name="tab_text_2">History</string>
     <string name="tab_text_3">Table</string>
