@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.DartApp">
         <activity
-            android:name=".ui.stats.StatsActivity"
+            android:name=".ui.stats.DataFragment"
             android:label="@string/title_activity_stats"
             android:theme="@style/Theme.DartApp.NoActionBar"></activity>
         <activity

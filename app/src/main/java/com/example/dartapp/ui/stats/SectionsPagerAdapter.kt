@@ -1,7 +1,6 @@
 package com.example.dartapp.ui.stats
 
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.dartapp.util.Strings
@@ -14,8 +13,8 @@ import com.example.dartapp.views.chart.test.PieChartFragment
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-class SectionsPagerAdapter(private val fragmentActivity: FragmentActivity) :
-    FragmentStateAdapter(fragmentActivity) {
+class SectionsPagerAdapter(private val fragment: Fragment) :
+    FragmentStateAdapter(fragment) {
 
     override fun createFragment(position: Int): Fragment {
         // getItem is called to instantiate the fragment for the given page.

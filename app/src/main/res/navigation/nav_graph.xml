@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/MenuFrament"
-        android:name="com.example.dartapp.ui.main.MenuFrament"
+        android:name="com.example.dartapp.ui.main.MenuFragment"
         android:label="@string/menu_fragment_label"
         tools:layout="@layout/fragment_menu">
 
@@ -16,8 +16,8 @@
             app:destination="@id/ModeFragment" />
 
         <action
-            android:id="@+id/action_MenuFrament_to_statsActivity"
-            app:destination="@id/statsActivity" />
+            android:id="@+id/action_MenuFrament_to_statsFragment"
+            app:destination="@id/statsFragment" />
         <action
             android:id="@+id/action_MenuFrament_to_testFragment"
             app:destination="@id/testFragment" />
@@ -37,17 +37,17 @@
     <activity
         android:id="@+id/trainingActivity"
         android:name="com.example.dartapp.ui.training.TrainingActivity"
-        android:label="TrainingActivity" >
+        android:label="@string/training_activity_label" >
         <argument
             android:name="mode"
             app:argType="string"
             android:defaultValue='"501"' />
     </activity>
-    <activity
-        android:id="@+id/statsActivity"
-        android:name="com.example.dartapp.ui.stats.StatsActivity"
-        android:label="activity_stats"
-        tools:layout="@layout/activity_stats" />
+    <fragment
+        android:id="@+id/statsFragment"
+        android:name="com.example.dartapp.ui.stats.StatsFragment"
+        android:label="@string/stats_fragment_label"
+        tools:layout="@layout/fragment_stats" />
     <fragment
         android:id="@+id/testFragment"
         android:name="com.example.dartapp.views.chart.test.TestFragment"
@@ -55,5 +55,5 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.dartapp.ui.settings.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="@string/settings" />
 </navigation>

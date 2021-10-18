@@ -9,19 +9,19 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <!-- MenuFragment -->
-    <string name="menu_fragment_label">Menu Fragment</string>
+    <string name="menu_fragment_label">Welcome</string>
     <string name="training">Training</string>
     <string name="stats">Statistics</string>
     <string name="settings">Settings</string>
 
-    <!-- ModiFragment -->
-    <string name="modes_fragment_label">Mode Fragment</string>
+    <!-- ModesFragment -->
+    <string name="modes_fragment_label">Training</string>
     <string name="mode_501_label">501</string>
     <string name="mode_100_attempts_label">100 Attempts</string>
     <string name="extra_string_mode">mode</string>
 
     <!-- TrainingActivity -->
-    <string name="training_activity_label">Training Activity</string>
+    <string name="training_activity_label">Training</string>
     <string name="clear">Clear</string>
     <string name="confirm">Confirm</string>
     <string name="noScore">No Score</string>
@@ -40,15 +40,19 @@
     <string name="checkout_question">How many darts did you throw?</string>
     <string name="checkout_explanation">(Used for statistics)</string>
 
+    <!-- StatsFragment -->
+    <string name="stats_fragment_label">Stats</string>
+
     <!-- HistoryFragment -->
     <string name="averageLabel">Avg:</string>
     <string name="dartCountLabel">Darts:</string>
     <string name="title_activity_stats">StatsActivity</string>
-    <string name="tab_text_1">Stats</string>
+    <string name="tab_text_1">Graphs</string>
     <string name="tab_text_2">History</string>
     <string name="tab_text_3">Table</string>
 
     <!-- Settings -->
+    <string name="settings_fragment_label">Settings</string>
     <string name="theme_header">Appearance</string>
     <string name="auto_theme_title">Use system appearance</string>
     <string name="dark_theme_title">Use dark theme</string>
