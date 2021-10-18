@@ -57,7 +57,7 @@ class LineChart @JvmOverloads constructor(
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
         color = MaterialColors.getColor(this@LineChart, R.attr.colorPrimary)
-        shader = lineShader
+//        shader = lineShader
     }
 
     private val selectionPaint = Paint().apply {
@@ -68,9 +68,9 @@ class LineChart @JvmOverloads constructor(
 
 
     init {
-        data = DataSet.random(count = 8, randomX = true)
+        data = DataSet.random(count = 7, randomX = true)
         if (isInEditMode) {
-            selectedIndex = 3
+            selectedIndex = -1
         }
     }
 

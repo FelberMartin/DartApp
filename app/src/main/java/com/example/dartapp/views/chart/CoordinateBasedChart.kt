@@ -116,6 +116,10 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
      * Changes the extrema values for x and y if the auto padding option is enabled
      */
     private fun handleAutoPadding() {
+        if (coordRect.height() == 0f || coordRect.width() == 0f) {
+            handleConstantData()
+        }
+
         if (data.size < 2) return
 
         if (horizontalAutoPadding) {
@@ -130,6 +134,13 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         } else if (topAutoPadding) {
             coordRect.bottom += coordRect.height() * 0.1f
         }
+    }
+
+    private fun handleConstantData() {
+        if (coordRect.width() == 0f)
+            coordRect.inset(-1f, 0f)
+        if (coordRect.height() == 0f)
+            coordRect.inset(0f, -1f)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {

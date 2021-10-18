@@ -101,6 +101,15 @@ class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
             data.add(DataPoint("On the top", 5))
             return data
         }
+
+        fun line() : DataSet {
+            var data = DataSet()
+            data.dataPointXType = Type.NUMBER
+            data.add(DataPoint(0f, 10f))
+            data.add(DataPoint(1f, 10f))
+            data.add(DataPoint(2f, 10f))
+            return data
+        }
     }
 
 }
