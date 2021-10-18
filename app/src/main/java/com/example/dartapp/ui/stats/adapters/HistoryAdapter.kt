@@ -28,7 +28,7 @@ class HistoryAdapter(private var legs: ArrayList<Leg>) : RecyclerView.Adapter<Hi
                 binding.title.text = fromRaw.toString()
 
                 binding.avgTextView.text = String.format("%.2f", servesAvg)
-                binding.servesCountTextView.text = servesCount.toString()
+                binding.servesCountTextView.text = dartCount.toString()
 
                 val date = Date(endTime)
                 val timeString = SimpleDateFormat("HH:mm").format(date)

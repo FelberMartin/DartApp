@@ -18,13 +18,22 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
     var avg: MutableLiveData<String> = MutableLiveData(NO_DATA)
     var dartCount: MutableLiveData<Int> = MutableLiveData(0)
 
+
     fun isServeValid(serve: Int) : Boolean {
         return game.isServeValid(serve)
     }
 
-    fun processServe(serve: Int) {
+    fun processServe(serve: Int, dartCount: Int = 3) {
+        // Normally zero unused darts, only used for checkout
+        val unused = 3 - dartCount
+        game.unusedDartCount += unused
+
         game.serves.add(serve)
         update()
+    }
+
+    fun wouldBeFinished(serve: Int) : Boolean {
+        return game.pointsLeft - serve == 0
     }
 
     fun isFinished(): Boolean {
@@ -61,8 +70,7 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
             avg.value = String.format("%.1f" ,game.avg)
 
         // Dart Count
-        dartCount.value = game.serves.size * 3
-
+        dartCount.value = game.dartCount
     }
 
     fun restart() {

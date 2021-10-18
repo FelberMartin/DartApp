@@ -12,13 +12,12 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.example.dartapp.R
 import com.example.dartapp.databinding.ActivityTrainingBinding
-import com.example.dartapp.ui.dialogs.DoubleAttemptsDialog
+import com.example.dartapp.ui.dialogs.FourChoicesDialog
 import com.example.dartapp.ui.dialogs.LegFinishedDialog
 import com.example.dartapp.util.Strings
 import com.example.dartapp.ui.training.viewmodels.GameViewModel
 import com.example.dartapp.ui.training.viewmodels.GameViewModelFactory
 import com.example.dartapp.views.numbergrid.NumberGridDelegate
-import com.google.android.material.button.MaterialButton
 
 
 class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
@@ -76,8 +75,8 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
         binding.pointsEnteredLabel.startAnimation(animation)
     }
 
-    private fun validServeFinished(value: Int) {
-        viewModel.processServe(value)
+    private fun validServeFinished(value: Int, dartCount: Int = 3) {
+        viewModel.processServe(value, dartCount)
 
         val animation = AnimationUtils.loadAnimation(this, R.anim.lift_and_fade)
         animation.setAnimationEndListener { binding.numberGrid.number = 0 }
@@ -105,13 +104,31 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     }
 
     private fun showDoubleAttemptsDialog(serveValue: Int){
-        val dialog = DoubleAttemptsDialog(this)
+        val dialog = FourChoicesDialog(this)
+        dialog.titleText = Strings.get(R.string.double_attempts_question)
+        dialog.infoText = Strings.get(R.string.double_attempts_explanation)
         dialog.show()
 
         dialog.setClickListener {
             viewModel.addDoubleAttempts(it)
             dialog.dismiss()
-            validServeFinished(serveValue)
+
+            if (viewModel.wouldBeFinished(serveValue))
+                showCheckoutDialog(serveValue)
+            else
+                validServeFinished(serveValue)
+        }
+    }
+
+    private fun showCheckoutDialog(serveValue: Int){
+        val dialog = FourChoicesDialog(this)
+        dialog.titleText = Strings.get(R.string.checkout_question)
+        dialog.infoText = Strings.get(R.string.checkout_explanation)
+        dialog.show()
+
+        dialog.setClickListener {
+            dialog.dismiss()
+            validServeFinished(serveValue, dartCount = it)
         }
     }
 

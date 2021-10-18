@@ -16,8 +16,8 @@ data class Leg(
     @ColumnInfo(name = "end_time_milli")
     var endTime: Long = System.currentTimeMillis(),
 
-    @ColumnInfo(name = "serves_count")
-    var servesCount: Int = 0,
+    @ColumnInfo(name = "dart_count")
+    var dartCount: Int = 0,
 
     @ColumnInfo(name = "serves_avg")
     var servesAvg: Double = 0.0,

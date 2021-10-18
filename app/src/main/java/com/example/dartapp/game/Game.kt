@@ -25,6 +25,10 @@ class Game (private val mode: GameMode) {
     var doubleAttempts: Int = 0
         get() = doubleAttemptsList.sum()
 
+    var unusedDartCount = 0
+
+    var dartCount = 0
+        get() = serves.size * 3 - unusedDartCount
 
 
     fun isFinished() : Boolean {
@@ -49,7 +53,7 @@ class Game (private val mode: GameMode) {
         return Leg(
             endTime = System.currentTimeMillis(),
             gameMode = mode.id.value,
-            servesCount = serves.size,
+            dartCount = dartCount,
             servesAvg = avg,
             doubleAttempts = doubleAttempts
         )

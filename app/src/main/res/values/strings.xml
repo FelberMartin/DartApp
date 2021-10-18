@@ -36,9 +36,13 @@
     <string name="double_attempts_question">How many darts of this serve were attempted double-finishes?</string>
     <string name="double_attempts_explanation">(Used for tracking your double rate)</string>
 
+    <!-- CheckoutDialog -->
+    <string name="checkout_question">How many darts did you throw?</string>
+    <string name="checkout_explanation">(Used for statistics)</string>
+
     <!-- HistoryFragment -->
     <string name="averageLabel">Avg:</string>
-    <string name="servesLabel">Serves:</string>
+    <string name="dartCountLabel">Darts:</string>
     <string name="title_activity_stats">StatsActivity</string>
     <string name="tab_text_1">Stats</string>
     <string name="tab_text_2">History</string>
