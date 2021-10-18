@@ -27,7 +27,7 @@ class NumberGridConfig(val columns: Int, val rows: Int, private val layout: List
             // Bottom row
             layout.add(ActionTile(ActionTile.Action.CLEAR))
             layout.add(DigitTile(0))
-            layout.add(ActionTile(ActionTile.Action.CONFIRM))
+            layout.add(ConfirmNoScoreTile())
 
             return NumberGridConfig(3, 4, layout)
         }

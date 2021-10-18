@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TableLayout
 import androidx.annotation.RequiresApi
 import com.example.dartapp.R
+import com.example.dartapp.util.Strings
 import com.google.android.material.button.MaterialButton
 
 
@@ -28,12 +29,13 @@ class NumberGrid @JvmOverloads constructor(
 
     private lateinit var rowLayouts: List<LinearLayout>
     private lateinit var buttons: List<Button>
+    private var confirmTile: ConfirmNoScoreTile? = null
 
 
     var number = 0
         set(value) {
-            delegate?.numberUpdated(value)
             field = value
+            numberUpdated()
         }
 
     var delegate: NumberGridDelegate? = null
@@ -86,6 +88,11 @@ class NumberGrid @JvmOverloads constructor(
                 button.id = generateViewId()
                 rowLayout.addView(button)
 
+                if (tile is ConfirmNoScoreTile) {
+                    confirmTile = tile
+                    confirmTile!!.button = button
+                }
+
                 button.setOnClickListener { onButtonPress(tile) }
                 applyButtonLayout(button)
             }
@@ -131,6 +138,11 @@ class NumberGrid @JvmOverloads constructor(
         params.rightMargin = spaceHorizontally
         params.topMargin = spaceVertically
         params.bottomMargin = spaceVertically
+    }
+
+    private fun numberUpdated() {
+        confirmTile?.updateDynamicText(number)
+        delegate?.numberUpdated(number)
     }
 
     /**
