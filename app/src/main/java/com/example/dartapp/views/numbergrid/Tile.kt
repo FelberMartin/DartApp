@@ -1,42 +1,44 @@
 package com.example.dartapp.views.numbergrid
 
+import android.content.Context
 import android.widget.Button
 import androidx.annotation.StringRes
+import androidx.core.content.contentValuesOf
 import com.example.dartapp.R
 import com.example.dartapp.util.Strings
 
-abstract class Tile(var text: String) {
+abstract class Tile(val context: Context, var text: String) {
 
 }
 
-class DigitTile(val digit: Int) : Tile(digit.toString()) {
+class DigitTile(context: Context, val digit: Int) : Tile(context, digit.toString()) {
 
 }
 
-open class ActionTile(val action: Action) : Tile(action.buttonString()) {
+open class ActionTile(context: Context, val action: Action) : Tile(context, action.buttonString(context)) {
     enum class Action(@StringRes val stringResId: Int) {
         CLEAR(R.string.clear),
         CONFIRM(R.string.confirm),
         NO_SCORE(R.string.noScore);
 
-        fun buttonString() : String {
-            return Strings.get(stringResId)
+        fun buttonString(context: Context) : String {
+            return Strings.get(stringResId, context)
         }
     }
 }
 
-class ConfirmNoScoreTile : ActionTile(Action.CONFIRM) {
+class ConfirmNoScoreTile(context: Context) : ActionTile(context, Action.CONFIRM) {
 
     var button: Button? = null
 
     init {
-        text = Action.NO_SCORE.buttonString()
+        text = Action.NO_SCORE.buttonString(context)
     }
 
     fun updateDynamicText(number: Int) {
         val buttonText = when (number) {
-            0 -> Action.NO_SCORE.buttonString()
-            else -> Action.CONFIRM.buttonString()
+            0 -> Action.NO_SCORE.buttonString(context)
+            else -> Action.CONFIRM.buttonString(context)
         }
 
         button?.text = buttonText

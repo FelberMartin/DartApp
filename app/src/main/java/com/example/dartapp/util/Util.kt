@@ -11,8 +11,8 @@ import com.example.dartapp.R
 
 
 object Strings {
-    fun get(@StringRes stringRes: Int, vararg formatArgs: Any = emptyArray()): String {
-        return App.instance.getString(stringRes, *formatArgs)
+    fun get(@StringRes stringRes: Int, context: Context = App.instance, vararg formatArgs: Any = emptyArray()): String {
+        return context.getString(stringRes, *formatArgs)
     }
 }
 

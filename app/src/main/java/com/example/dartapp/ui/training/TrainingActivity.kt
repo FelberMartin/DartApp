@@ -12,6 +12,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.example.dartapp.R
 import com.example.dartapp.databinding.ActivityTrainingBinding
+import com.example.dartapp.ui.dialogs.CheckoutDialog
+import com.example.dartapp.ui.dialogs.DoubleAttemptsDialog
 import com.example.dartapp.ui.dialogs.FourChoicesDialog
 import com.example.dartapp.ui.dialogs.LegFinishedDialog
 import com.example.dartapp.util.Strings
@@ -104,9 +106,7 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     }
 
     private fun showDoubleAttemptsDialog(serveValue: Int){
-        val dialog = FourChoicesDialog(this)
-        dialog.titleText = Strings.get(R.string.double_attempts_question)
-        dialog.infoText = Strings.get(R.string.double_attempts_explanation)
+        val dialog = DoubleAttemptsDialog(this)
         dialog.show()
 
         dialog.setClickListener {
@@ -121,9 +121,7 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     }
 
     private fun showCheckoutDialog(serveValue: Int){
-        val dialog = FourChoicesDialog(this)
-        dialog.titleText = Strings.get(R.string.checkout_question)
-        dialog.infoText = Strings.get(R.string.checkout_explanation)
+        val dialog = CheckoutDialog(this)
         dialog.show()
 
         dialog.setClickListener {

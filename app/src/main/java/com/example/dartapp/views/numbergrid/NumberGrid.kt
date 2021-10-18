@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.TableLayout
 import androidx.annotation.RequiresApi
 import com.example.dartapp.R
+import com.example.dartapp.util.App
 import com.example.dartapp.util.Strings
 import com.google.android.material.button.MaterialButton
 
@@ -28,7 +29,7 @@ class NumberGrid @JvmOverloads constructor(
     private val spaceVertically = 5
 
     private lateinit var rowLayouts: List<LinearLayout>
-    private lateinit var buttons: List<Button>
+    private var buttons = arrayListOf<Button>()
     private var confirmTile: ConfirmNoScoreTile? = null
 
 
@@ -47,7 +48,7 @@ class NumberGrid @JvmOverloads constructor(
     }
 
     private fun parseConfig() : NumberGridConfig {
-        val default = 1
+        val default = 2
         var enumValue = default
 
         if (attrs != null) {
@@ -63,9 +64,9 @@ class NumberGrid @JvmOverloads constructor(
         }
 
         return when (enumValue) {
-            1 -> NumberGridConfig.default3x4()
-            2 -> NumberGridConfig.simple2x2()
-            else -> NumberGridConfig.default3x4()
+            1 -> NumberGridConfig.default3x4(context)
+            2 -> NumberGridConfig.simple2x2(context)
+            else -> NumberGridConfig.default3x4(context)
         }
     }
 
@@ -95,6 +96,8 @@ class NumberGrid @JvmOverloads constructor(
 
                 button.setOnClickListener { onButtonPress(tile) }
                 applyButtonLayout(button)
+
+                buttons.add(button)
             }
 
             this.addView(rowLayout)
@@ -143,6 +146,10 @@ class NumberGrid @JvmOverloads constructor(
     private fun numberUpdated() {
         confirmTile?.updateDynamicText(number)
         delegate?.numberUpdated(number)
+    }
+
+    fun disableButtonAt(index: Int) {
+        buttons[index].isEnabled = false
     }
 
     /**

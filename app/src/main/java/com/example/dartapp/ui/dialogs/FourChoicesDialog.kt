@@ -9,12 +9,12 @@ import com.example.dartapp.R
 import com.example.dartapp.views.numbergrid.NumberGrid
 import com.example.dartapp.views.numbergrid.NumberGridDelegate
 
-class FourChoicesDialog(context: Context) : Dialog(context), NumberGridDelegate {
+open class FourChoicesDialog(context: Context) : Dialog(context), NumberGridDelegate {
 
-    var titleText = "Title"
-    var infoText = "Info"
+    protected var titleText = "Title"
+    protected var infoText = "Info"
 
-    private lateinit var numberGrid: NumberGrid
+    protected lateinit var numberGrid: NumberGrid
     private var listener: ((Int) -> Unit)? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,3 +43,4 @@ class FourChoicesDialog(context: Context) : Dialog(context), NumberGridDelegate 
     }
 
 }
+
