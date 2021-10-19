@@ -52,6 +52,13 @@
     <string name="tab_text_2">History</string>
     <string name="tab_text_3">Table</string>
 
+    <!-- HistoryDetailsFragment -->
+    <string name="average_label">Avg. per serve:</string>
+    <string name="dart_count_label">Darts:</string>
+    <string name="double_quote_label">Double quote:</string>
+    <string name="checkout_label">Checkout:</string>
+
+
     <!-- Settings -->
     <string name="settings_fragment_label">Settings</string>
     <string name="theme_header">Appearance</string>

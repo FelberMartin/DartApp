@@ -47,7 +47,11 @@
         android:id="@+id/statsFragment"
         android:name="com.example.dartapp.ui.stats.StatsFragment"
         android:label="@string/stats_fragment_label"
-        tools:layout="@layout/fragment_stats" />
+        tools:layout="@layout/fragment_stats" >
+        <action
+            android:id="@+id/action_statsFragment_to_historyDetailsFragment"
+            app:destination="@id/historyDetailsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/testFragment"
         android:name="com.example.dartapp.views.chart.test.TestFragment"
@@ -56,4 +60,8 @@
         android:id="@+id/settingsFragment"
         android:name="com.example.dartapp.ui.settings.SettingsFragment"
         android:label="@string/settings" />
+    <fragment
+        android:id="@+id/historyDetailsFragment"
+        android:name="com.example.dartapp.ui.stats.HistoryDetailsFragment"
+        android:label="HistoryDetailsFragment" />
 </navigation>

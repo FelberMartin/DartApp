@@ -26,4 +26,5 @@ interface LegDatabaseDao {
 
     @Query("SELECT * FROM legs_table ORDER BY end_time_milli DESC LIMIT 1")
     fun getLatestLeg(): Leg?
+
 }
