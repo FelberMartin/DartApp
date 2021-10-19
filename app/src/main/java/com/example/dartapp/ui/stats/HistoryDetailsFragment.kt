@@ -25,6 +25,16 @@ class HistoryDetailsFragment() : Fragment() {
         _binding = FragmentHistoryDetailsBinding.inflate(inflater, container, false)
 
         val viewModel: LegsViewModel by activityViewModels()
+        binding.viewModel = viewModel
+
+        binding.legend.linkedChart = binding.pieChart
+        viewModel.categoryData.observe(viewLifecycleOwner) {
+            binding.pieChart.data = it
+        }
+
+        viewModel.servesData.observe(viewLifecycleOwner) {
+            binding.lineChart.data = it
+        }
 
         return binding.root
     }

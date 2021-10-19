@@ -9,10 +9,10 @@ import com.example.dartapp.database.Leg
 import com.example.dartapp.databinding.ItemHistoryBinding
 import com.example.dartapp.game.gameModes.GameMode
 import com.example.dartapp.ui.stats.LegsViewModel
-import java.text.SimpleDateFormat
-import java.time.LocalDate
+import com.example.dartapp.util.dateString
+import com.example.dartapp.util.timeString
+import com.example.dartapp.util.weekDay
 import java.util.*
-import kotlin.collections.ArrayList
 
 class HistoryAdapter(private val lifecycleOwner: LifecycleOwner, private val viewModel: LegsViewModel) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
@@ -23,6 +23,10 @@ class HistoryAdapter(private val lifecycleOwner: LifecycleOwner, private val vie
     init {
         viewModel.legs.observe(lifecycleOwner) {
             this.notifyDataSetChanged()
+        }
+
+        viewModel.doublePercent.observe(lifecycleOwner) {
+            Log.d("History", "percent updated")
         }
     }
 
@@ -44,13 +48,9 @@ class HistoryAdapter(private val lifecycleOwner: LifecycleOwner, private val vie
                 binding.servesCountTextView.text = dartCount.toString()
 
                 val date = Date(endTime)
-                val timeString = SimpleDateFormat("HH:mm").format(date)
-                val dateString = SimpleDateFormat.getDateInstance().format(date)
-                binding.timeTextView.text = timeString
-                binding.dateTextView.text = dateString
-
-                val weekday = SimpleDateFormat("EE").format(date)
-                binding.weekdayTextView.text = weekday
+                binding.timeTextView.text = date.timeString()
+                binding.dateTextView.text = date.dateString()
+                binding.weekdayTextView.text = date.weekDay()
 
                 binding.layout.setOnClickListener { listener?.invoke(this) }
             }

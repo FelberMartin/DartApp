@@ -58,7 +58,8 @@ class Game (private val mode: GameMode) {
             servesAvg = avg,
             doubleAttempts = doubleAttempts,
             servesList = Converters.fromArrayListOfInts(serves),
-            doubleAttemptsList = Converters.fromArrayListOfInts(doubleAttemptsList)
+            doubleAttemptsList = Converters.fromArrayListOfInts(doubleAttemptsList),
+            checkout = serves.last()
         )
     }
 

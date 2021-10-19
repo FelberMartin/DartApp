@@ -1,6 +1,5 @@
 package com.example.dartapp.ui.stats
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,22 +7,30 @@ import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
 import com.example.dartapp.database.LegDatabase
 import com.example.dartapp.util.App
+import com.example.dartapp.util.dateString
+import com.example.dartapp.util.timeString
+import com.example.dartapp.util.weekDay
 import com.example.dartapp.views.chart.util.DataPoint
 import com.example.dartapp.views.chart.util.DataSet
+import java.util.*
 
 class LegsViewModel : ViewModel() {
 
-    private val categoryLimits = listOf(60, 100, 140, 180)
+    private val categoryLimits = listOf(0, 60, 100, 140, 180)
 
     lateinit var legs: LiveData<List<Leg>>
     val detailedLeg = MutableLiveData(Leg())
 
     val doublePercent = MutableLiveData("0%")
+    val average = MutableLiveData("0.0")
     private var servesList = arrayListOf<Int>()
 
     val servesData = MutableLiveData(DataSet())
     val categoryData = MutableLiveData(DataSet())
 
+    val weekDay = MutableLiveData("Mo")
+    val timeString = MutableLiveData("04:20")
+    val dateString = MutableLiveData("Jan 12, 2001")
 
     init {
         loadAll()
@@ -42,12 +49,19 @@ class LegsViewModel : ViewModel() {
 
         var doubleCount = leg.doubleAttempts
         if (doubleCount == 0) doubleCount = 1
-        doublePercent.value = String.format("%d%%", 100 * doubleCount / 100)
+        doublePercent.value = String.format("%d%%", 100 / (doubleCount))
+
+        average.value = String.format("%.1f", leg.servesAvg)
 
         servesList = Converters.toArrayListOfInts(leg.servesList)
 
         servesData.value = lineChartDataSet()
         categoryData.value = pieChartDataSet()
+
+        val date = Date(leg.endTime)
+        weekDay.value = date.weekDay()
+        timeString.value = date.timeString()
+        dateString.value = date.dateString()
     }
 
 

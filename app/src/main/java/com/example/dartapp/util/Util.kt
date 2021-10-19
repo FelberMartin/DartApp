@@ -8,6 +8,8 @@ import androidx.annotation.StringRes
 
 import androidx.navigation.NavOptions
 import com.example.dartapp.R
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 object Strings {
@@ -39,4 +41,16 @@ fun getNavOptions(): NavOptions? {
         .setPopEnterAnim(R.anim.slide_in_left)
         .setPopExitAnim(R.anim.slide_out_right)
         .build()
+}
+
+fun Date.weekDay() : String {
+    return SimpleDateFormat("EE").format(this)
+}
+
+fun Date.timeString() : String {
+    return SimpleDateFormat("HH:mm").format(this)
+}
+
+fun Date.dateString() : String {
+    return SimpleDateFormat.getDateInstance().format(this)
 }
