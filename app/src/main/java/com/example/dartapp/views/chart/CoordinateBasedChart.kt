@@ -203,7 +203,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         if (plainXAxis) return lines
 
         // x Tip
-        tipX = arrowOffset.x + xArrowLength
+        tipX = arrowOffset.x + xArrowLength - ARROW_STRENGTH / 2
         tipY = yArrowLength
         lines.add(tipX - ARROW_TIP_SIZE)
         lines.add(tipY - ARROW_TIP_SIZE)
