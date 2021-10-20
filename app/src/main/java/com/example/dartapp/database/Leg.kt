@@ -16,6 +16,9 @@ data class Leg(
     @ColumnInfo(name = "end_time_milli")
     var endTime: Long = System.currentTimeMillis(),
 
+    @ColumnInfo(name = "duration_milli")
+    var durationMilli: Long = 1000L * 60 * 10, // 10 Minutes
+
     @ColumnInfo(name = "dart_count")
     var dartCount: Int = 0,
 

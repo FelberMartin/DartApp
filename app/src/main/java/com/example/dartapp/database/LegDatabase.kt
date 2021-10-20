@@ -2,11 +2,15 @@ package com.example.dartapp.database
 
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Leg::class], version = 4, exportSchema = false)
+@Database(
+    entities = [Leg::class],
+    version = 6
+)
 abstract class LegDatabase: RoomDatabase() {
 
     abstract val legDatabaseDao: LegDatabaseDao
@@ -23,7 +27,6 @@ abstract class LegDatabase: RoomDatabase() {
                     instance = Room.databaseBuilder(context.applicationContext,
                         LegDatabase::class.java,
                         "leg_history_database")
-                        .fallbackToDestructiveMigration()
                         .build()
 
                     INSTANCE = instance

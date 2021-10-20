@@ -31,6 +31,8 @@ class Game (private val mode: GameMode) {
     var dartCount = 0
         get() = serves.size * 3 - unusedDartCount
 
+    private val startTimeMilli = System.currentTimeMillis()
+
 
     fun isFinished() : Boolean {
         return mode.isGameFinished(this)
@@ -51,8 +53,10 @@ class Game (private val mode: GameMode) {
 
 
     fun toLeg() : Leg {
+        val time = System.currentTimeMillis()
         return Leg(
-            endTime = System.currentTimeMillis(),
+            endTime = time,
+            durationMilli = time - startTimeMilli,
             gameMode = mode.id.value,
             dartCount = dartCount,
             servesAvg = avg,
