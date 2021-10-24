@@ -13,14 +13,54 @@
     </data>
 
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorBackgroundFloating"
+            android:text="Serve Distribution"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            >
+
+            <com.example.dartapp.views.chart.PieChart
+                android:id="@+id/pieChart"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.example.dartapp.views.chart.legend.Legend
+                android:id="@+id/legend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginLeft="@dimen/spacing_medium"
+                app:layout_constraintStart_toEndOf="@+id/pieChart"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorBackgroundFloating"
+            android:text="Numbers and Data"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             >
 
@@ -30,6 +70,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="4dp"
+                android:layout_marginLeft="50dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
@@ -43,7 +84,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     android:textColor="?attr/colorPrimary"
                     android:textStyle="bold"
-                    tools:text="Mo"/>
+                    tools:text="Mo" />
 
                 <TextView
                     android:id="@+id/dateTextView"
@@ -63,97 +104,91 @@
 
             </LinearLayout>
 
-            <com.example.dartapp.views.chart.PieChart
-                android:id="@+id/pieChart"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toEndOf="@id/linearLayout"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.example.dartapp.views.chart.legend.Legend
-                android:id="@+id/legend"
+            <TableLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:padding="@dimen/spacing_medium"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginLeft="@dimen/spacing_medium"
-                app:layout_constraintStart_toEndOf="@+id/pieChart"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/linearLayout">
 
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/dart_count_label" />
+
+                    <TextView
+                        android:id="@+id/servesCountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginLeft="@dimen/spacing_medium"
+                        android:text="@{String.valueOf(viewModel.detailedLeg.dartCount)}"
+                        tools:text="24" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/average_label" />
+
+                    <TextView
+                        android:id="@+id/avgTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginLeft="@dimen/spacing_medium"
+                        android:text="@{viewModel.average}"
+                        tools:text="27.4" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/double_quote_label" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginLeft="@dimen/spacing_medium"
+                        android:text="@{viewModel.doublePercent}"
+                        tools:text="14%" />
+                </TableRow>
+
+                <TableRow>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/checkout_label" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="right"
+                        android:layout_marginLeft="@dimen/spacing_medium"
+                        android:text="@{String.valueOf(viewModel.detailedLeg.checkout)}"
+                        tools:text="40" />
+                </TableRow>
+
+
+            </TableLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-        <TableLayout
-            android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/spacing_medium"
-            >
-
-            <TableRow>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/dart_count_label" />
-
-                <TextView
-                    android:id="@+id/servesCountTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_marginLeft="@dimen/spacing_medium"
-                    android:text="@{String.valueOf(viewModel.detailedLeg.dartCount)}"
-                    tools:text="24"/>
-            </TableRow>
-
-            <TableRow>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/average_label" />
-
-                <TextView
-                    android:id="@+id/avgTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_marginLeft="@dimen/spacing_medium"
-                    android:text="@{viewModel.average}"
-                    tools:text="27.4"/>
-            </TableRow>
-
-            <TableRow>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/double_quote_label" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_marginLeft="@dimen/spacing_medium"
-                    android:text="@{viewModel.doublePercent}"
-                    tools:text="14%" />
-            </TableRow>
-
-            <TableRow>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/checkout_label" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_marginLeft="@dimen/spacing_medium"
-                    android:text="@{String.valueOf(viewModel.detailedLeg.checkout)}"
-                    tools:text="40" />
-            </TableRow>
-
-
-
-        </TableLayout>
+            android:background="?attr/colorBackgroundFloating"
+            android:text="Serves over Time"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            />
 
         <com.example.dartapp.views.chart.LineChart
             android:id="@+id/lineChart"

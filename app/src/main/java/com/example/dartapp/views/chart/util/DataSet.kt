@@ -1,6 +1,6 @@
 package com.example.dartapp.views.chart.util
 
-import java.text.DecimalFormat
+import com.example.dartapp.util.decimalToString
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -9,7 +9,7 @@ import kotlin.random.Random
 
 class DataPoint(var x: Any, var y: Number) {
     fun yString() : String {
-        return decimalFormat.format(y)
+        return decimalToString(y)
     }
 
     fun xString(type: DataSet.Type) : String {
@@ -17,13 +17,8 @@ class DataPoint(var x: Any, var y: Number) {
     }
 
     companion object {
-        private val decimalFormat = DecimalFormat("#.##")
-
         fun format(n: Number) : String {
-            val epsilon = 1e-6
-            if (n.toFloat() < epsilon && n.toFloat() > - epsilon)
-                return "0"
-            return decimalFormat.format(n)
+            return decimalToString(n)
         }
 
         fun xString(x: Any, type: DataSet.Type) : String {

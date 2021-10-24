@@ -6,7 +6,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.example.dartapp.util.Strings
 import com.example.dartapp.views.chart.test.LegendTestFragment
 import com.example.dartapp.views.chart.test.LineChartFragment
-import com.example.dartapp.views.chart.test.PieChartFragment
 
 
 /**
@@ -21,7 +20,7 @@ class SectionsPagerAdapter(private val fragment: Fragment) :
         val title: String = Strings.get(TAB_TITLES[position])
         val fragment = when (title) {
             "History" -> HistoryFragment()
-            "PieChart" -> PieChartFragment()
+            "Table" -> TableFragment()
             "Graphs" -> LineChartFragment()
             else -> LegendTestFragment()
         }

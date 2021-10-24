@@ -58,6 +58,15 @@
     <string name="double_quote_label">Double quote:</string>
     <string name="checkout_label">Checkout:</string>
 
+    <!-- TableFragment -->
+    <string-array name="dropdown_modes">
+        <item>All</item>
+        <item>501</item>
+        <item>100 Attempts</item>
+        <item>Cheat</item>
+    </string-array>
+
+
 
     <!-- Settings -->
     <string name="settings_fragment_label">Settings</string>

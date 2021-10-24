@@ -8,6 +8,7 @@ import androidx.annotation.StringRes
 
 import androidx.navigation.NavOptions
 import com.example.dartapp.R
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -53,4 +54,38 @@ fun Date.timeString() : String {
 
 fun Date.dateString() : String {
     return SimpleDateFormat.getDateInstance().format(this)
+}
+
+private val decimalFormat = DecimalFormat("#.##")
+
+fun decimalToString(n: Number) : String {
+    val epsilon = 1e-6
+    if (n.toFloat() < epsilon && n.toFloat() > - epsilon)
+        return "0"
+    return decimalFormat.format(n)
+}
+
+fun milliToDurationString(millis: Long, unitCount: Int = 2): String {
+    val units = listOf("d", "h", "m", "s")
+    val unitsInMilli = listOf(
+        24 * 60 * 60 * 1000,
+        60 * 60 * 1000,
+        60 * 1000,
+        1000
+    )
+
+    var valuesPerUnit = arrayListOf<Long>()
+    for (i in units.indices) {
+        var v = millis / unitsInMilli[i]
+        if (i > 0) v %= unitsInMilli[i - 1]
+        valuesPerUnit.add(v)
+    }
+
+    var s = ""
+    var unitsUsed = 0
+    while (unitsUsed < unitCount) {
+
+    }
+
+    return s
 }
