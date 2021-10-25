@@ -33,7 +33,7 @@ class TableItemAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
         holder.nameView.text = item.name
-        holder.valueView.text = decimalToString(item.getValue(viewModel.legs.value))
+        holder.valueView.text = item.getValue(viewModel.legs.value)
     }
 
     override fun getItemCount(): Int = values.size

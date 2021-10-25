@@ -1,5 +1,6 @@
 package com.example.dartapp
 
+import com.example.dartapp.util.milliToDurationString
 import com.example.dartapp.views.chart.CoordinateBasedChart
 import java.text.DecimalFormat
 
@@ -9,6 +10,7 @@ class PlayGround {
 //            validServes()
 //            formatting()
 //            testMarkers()
+//            textTimeFormat()
         }
 
         fun validServes() {
@@ -59,6 +61,10 @@ class PlayGround {
 //                println("$v")
 //            }
 //        }
+
+        fun textTimeFormat() {
+            println(milliToDurationString(415646423585L))
+        }
     }
 
 

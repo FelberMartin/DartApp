@@ -1,6 +1,7 @@
 package com.example.dartapp.ui.stats.adapters
 
 import com.example.dartapp.database.Leg
+import com.example.dartapp.util.milliToDurationString
 
 class TableItem(
     val name: String,
@@ -26,8 +27,23 @@ class TableItem(
             TableItem("#Darts") { (it.sumOf { leg -> leg.dartCount }).toString() },
 
             TableItem("Time spent training", category = Category.TIME) {
-              it.sumOf { leg -> leg.durationMilli }.toString()
+              milliToDurationString(it.sumOf { leg -> leg.durationMilli })
             },
+
+            TableItem("Points/Serve", category = Category.AVERAGES) {
+                String.format("%.1f", it.map { leg -> leg.servesAvg }.average())
+            },
+            TableItem("Double Quote", category = Category.AVERAGES) {
+                String.format("%.0f%%", it.map { leg -> 100f / leg.doubleAttempts }.average())
+            },
+            TableItem("Avg. Checkout", category = Category.AVERAGES) {
+                String.format("%.1f", it.map { leg -> leg.checkout }.average())
+            },
+            TableItem("Avg. Duration", category = Category.AVERAGES) {
+                milliToDurationString(it.map { leg -> leg.durationMilli }.average().toLong())
+            },
+
         )
+
     }
 }

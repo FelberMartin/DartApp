@@ -25,7 +25,6 @@
         android:layout_height="wrap_content"
         app:layoutManager="LinearLayoutManager"
         app:layout_constraintTop_toBottomOf="@+id/spinner"
-        android:background="@color/c2"
         tools:context=".ui.stats.TableFragment"
         tools:listitem="@layout/item_table" />
 

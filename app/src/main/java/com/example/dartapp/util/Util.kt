@@ -77,15 +77,21 @@ fun milliToDurationString(millis: Long, unitCount: Int = 2): String {
     var valuesPerUnit = arrayListOf<Long>()
     for (i in units.indices) {
         var v = millis / unitsInMilli[i]
-        if (i > 0) v %= unitsInMilli[i - 1]
+        if (i > 0) v %= unitsInMilli[i - 1] / unitsInMilli[i]
         valuesPerUnit.add(v)
     }
 
     var s = ""
     var unitsUsed = 0
-    while (unitsUsed < unitCount) {
+    for (i in units.indices) {
+        if (unitsUsed >= unitCount) break
 
+        val v = valuesPerUnit[i]
+        if (v == 0L) continue
+
+        s += " $v${units[i]}"
+        unitsUsed++
     }
 
-    return s
+    return s.trim()
 }
