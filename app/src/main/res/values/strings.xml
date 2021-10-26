@@ -65,6 +65,7 @@
         <item>100 Attempts</item>
         <item>Cheat</item>
     </string-array>
+    <string name="mode_selection">Mode selection:</string>
 
 
 

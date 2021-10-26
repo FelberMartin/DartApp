@@ -4,10 +4,11 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.dartapp.databinding.HeaderTableBinding
 
 import com.example.dartapp.databinding.ItemTableBinding
 import com.example.dartapp.ui.stats.LegsViewModel
-import com.example.dartapp.util.decimalToString
+
 
 /**
  * [RecyclerView.Adapter] that can display a [PlaceholderItem].
@@ -16,35 +17,61 @@ import com.example.dartapp.util.decimalToString
 class TableItemAdapter(
     private val values: List<TableItem>,
     private val viewModel: LegsViewModel
-) : RecyclerView.Adapter<TableItemAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    val HEADER_VIEW = 0
+    val CONTENT_VIEW = 1
 
-        return ViewHolder(
-            ItemTableBinding.inflate(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
+        if (viewType == CONTENT_VIEW) {
+            return ItemViewHolder(ItemTableBinding.inflate(
                 LayoutInflater.from(parent.context),
                 parent,
                 false
-            )
-        )
+            ))
+        }
 
+        return HeaderViewHolder(HeaderTableBinding.inflate(
+            LayoutInflater.from(parent.context),
+            parent,
+            false
+        ))
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun getItemViewType(position: Int): Int {
+        return if (values[position] is TableHeader) {
+            HEADER_VIEW
+        } else {
+            CONTENT_VIEW
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = values[position]
-        holder.nameView.text = item.name
-        holder.valueView.text = item.getValue(viewModel.legs.value)
+
+        if (item is TableHeader) {
+            with (holder as HeaderViewHolder) {
+                nameView.text = item.name
+            }
+        } else {
+            with (holder as ItemViewHolder) {
+                holder.nameView.text = item.name
+                holder.valueView.text = item.getValue(viewModel.legs.value)
+            }
+        }
+
     }
 
     override fun getItemCount(): Int = values.size
 
-    inner class ViewHolder(binding: ItemTableBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ItemViewHolder(binding: ItemTableBinding) : RecyclerView.ViewHolder(binding.root) {
         val nameView: TextView = binding.itemNumber
         val valueView: TextView = binding.content
+    }
 
-        override fun toString(): String {
-            return super.toString() + " '" + valueView.text + "'"
-        }
+    inner class HeaderViewHolder(binding: HeaderTableBinding) : RecyclerView.ViewHolder(binding.root) {
+        val nameView: TextView = binding.headerTitleTextview
     }
 
 }

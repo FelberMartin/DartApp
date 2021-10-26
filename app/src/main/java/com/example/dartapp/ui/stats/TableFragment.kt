@@ -41,7 +41,7 @@ class TableFragment : Fragment() {
 
         with(binding.list) {
             layoutManager = LinearLayoutManager(context)
-            adapter = TableItemAdapter(TableItem.items ,vm)
+            adapter = TableItemAdapter(TableItem.items() ,vm)
         }
 
         return binding.root

@@ -27,6 +27,7 @@ abstract class LegDatabase: RoomDatabase() {
                     instance = Room.databaseBuilder(context.applicationContext,
                         LegDatabase::class.java,
                         "leg_history_database")
+                        .fallbackToDestructiveMigration()
                         .build()
 
                     INSTANCE = instance

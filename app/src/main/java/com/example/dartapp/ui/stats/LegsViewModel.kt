@@ -1,15 +1,14 @@
 package com.example.dartapp.ui.stats
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
 import com.example.dartapp.database.LegDatabase
-import com.example.dartapp.util.App
-import com.example.dartapp.util.dateString
-import com.example.dartapp.util.timeString
-import com.example.dartapp.util.weekDay
+import com.example.dartapp.util.*
 import com.example.dartapp.views.chart.util.DataPoint
 import com.example.dartapp.views.chart.util.DataSet
 import java.util.*
@@ -40,10 +39,10 @@ class LegsViewModel : ViewModel() {
         val context = App.instance.applicationContext
         val legTable = LegDatabase.getInstance(context).legDatabaseDao
         legs = legTable.getAllLegs()
-
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.N)
     fun setDetailed(leg: Leg) {
         detailedLeg.value = leg
 
@@ -72,22 +71,12 @@ class LegsViewModel : ViewModel() {
         return data
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun pieChartDataSet() : DataSet {
         val data = DataSet()
         data.dataPointXType = DataSet.Type.STRING
 
-        for ((index, limit) in categoryLimits.withIndex()) {
-            var string = "$limit+"
-            var count = 0
-            if (limit != 180)
-                count = servesList.count { s -> limit <= s && s < categoryLimits[index + 1] }
-            else {
-                string = "$limit"
-                count = servesList.count { s -> s == 180 }
-            }
-
-            data.add(DataPoint(string, count))
-        }
+        categorizeServes(categoryLimits, servesList).forEach { (k, v) -> data.add(DataPoint(k, v)) }
 
         return data
     }
