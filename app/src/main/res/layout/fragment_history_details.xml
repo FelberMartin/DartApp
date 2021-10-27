@@ -19,11 +19,8 @@
         android:gravity="center_horizontal">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorBackgroundFloating"
-            android:text="Serve Distribution"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:text="@string/header_serve_distr"
+            style="@style/Base.Widget.AppCompat.TextView.HistoryDetailsHeader"
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -52,11 +49,8 @@
 
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorBackgroundFloating"
-            android:text="Numbers and Data"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:text="@string/header_numbers_and_data"
+            style="@style/Base.Widget.AppCompat.TextView.HistoryDetailsHeader"
             />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -183,15 +177,13 @@
 
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorBackgroundFloating"
-            android:text="Serves over Time"
-            android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+            android:text="@string/header_serves_over_time"
+            style="@style/Base.Widget.AppCompat.TextView.HistoryDetailsHeader"
             />
 
         <com.example.dartapp.views.chart.LineChart
             android:id="@+id/lineChart"
+            android:layout_margin="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             />

@@ -59,10 +59,15 @@
     <string name="dart_count_label">Darts:</string>
     <string name="double_quote_label">Double quote:</string>
     <string name="checkout_label">Checkout:</string>
+    <string name="header_serve_distr">Serve Distribution</string>
+    <string name="header_numbers_and_data">Numbers and Data</string>
+    <string name="header_serves_over_time">Serves over time</string>
 
     <!-- TableFragment -->
     <string name="mode_selection">Mode selection:</string>
-
+    <string name="totals">TOTALS</string>
+    <string name="averages">AVERAGES</string>
+    <string name="serve_distribution">SERVE DISTRIBUTION</string>
 
 
     <!-- Settings -->

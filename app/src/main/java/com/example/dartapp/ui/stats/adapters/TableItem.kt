@@ -1,7 +1,10 @@
 package com.example.dartapp.ui.stats.adapters
 
+import androidx.annotation.StringRes
+import com.example.dartapp.R
 import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
+import com.example.dartapp.util.Strings
 import com.example.dartapp.util.categorizeServes
 import com.example.dartapp.util.milliToDurationString
 
@@ -73,10 +76,10 @@ open class TableItem(
     }
 }
 
-class TableHeader(category: Category) : TableItem(category.toString(), null) {
-    enum class Category {
-        TOTALS,
-        SERVE_DISTRIBUTION,
-        AVERAGES,
+class TableHeader(category: Category) : TableItem(Strings.get(category.stringRes), null) {
+    enum class Category(@StringRes val stringRes: Int) {
+        TOTALS(R.string.totals),
+        SERVE_DISTRIBUTION(R.string.serve_distribution),
+        AVERAGES(R.string.averages),
     }
 }

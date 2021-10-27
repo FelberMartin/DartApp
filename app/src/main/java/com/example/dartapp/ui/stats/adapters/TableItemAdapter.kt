@@ -1,11 +1,9 @@
 package com.example.dartapp.ui.stats.adapters
 
-import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
-import com.example.dartapp.database.Leg
 import com.example.dartapp.databinding.HeaderTableBinding
 
 import com.example.dartapp.databinding.ItemTableBinding
@@ -85,7 +83,7 @@ class TableItemAdapter(
     fun applyFilter(filter: GameMode.ID) {
         filteredLegs = viewModel.legs.value ?: listOf()
         if (filter != GameMode.ID.ALL)
-            filteredLegs = filteredLegs.filter { leg -> leg.gameMode == filter.value }
+            filteredLegs = filteredLegs.filter { leg -> leg.gameMode == filter.id }
 
         notifyDataSetChanged()
     }

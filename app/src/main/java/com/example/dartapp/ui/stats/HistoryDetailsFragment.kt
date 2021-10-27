@@ -4,9 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.example.dartapp.databinding.FragmentHistoryDetailsBinding
+import com.example.dartapp.game.gameModes.GameMode
+import com.example.dartapp.util.Strings
 
 class HistoryDetailsFragment() : Fragment() {
 
@@ -35,6 +39,11 @@ class HistoryDetailsFragment() : Fragment() {
         viewModel.servesData.observe(viewLifecycleOwner) {
             binding.lineChart.data = it
         }
+
+        // The title shown in the navigation controller on the top
+        val gameModeId = viewModel.detailedLeg.value?.gameMode ?: GameMode.ID.X01.id
+        val gameMode = GameMode.ID.fromId(gameModeId)
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = Strings.get(gameMode.stringRes)
 
         return binding.root
     }

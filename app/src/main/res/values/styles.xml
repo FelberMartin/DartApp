@@ -9,5 +9,13 @@
         <item name="android:minWidth">48dp</item>
         <item name="android:minHeight">48dp</item>
     </style>
+    
+    <style name="Base.Widget.AppCompat.TextView.HistoryDetailsHeader" parent="Base.Widget.AppCompat.TextView">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">@dimen/spacing_medium</item>
+        <item name="android:background">?attr/colorBackgroundFloating</item>
+        <item name="android:textAppearance">@style/TextAppearance.AppCompat.Body1</item>
+    </style>
 
 </resources>
