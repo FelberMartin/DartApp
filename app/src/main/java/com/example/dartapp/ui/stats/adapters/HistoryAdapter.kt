@@ -9,6 +9,7 @@ import com.example.dartapp.database.Leg
 import com.example.dartapp.databinding.ItemHistoryBinding
 import com.example.dartapp.game.gameModes.GameMode
 import com.example.dartapp.ui.stats.LegsViewModel
+import com.example.dartapp.util.Strings
 import com.example.dartapp.util.dateString
 import com.example.dartapp.util.timeString
 import com.example.dartapp.util.weekDay
@@ -42,7 +43,7 @@ class HistoryAdapter(private val lifecycleOwner: LifecycleOwner, private val vie
             val leg = viewModel.legs.value?.get(position) ?: Leg()
             with (leg) {
                 val fromRaw = GameMode.ID.values().firstOrNull { it.value == gameMode }
-                binding.title.text = fromRaw.toString()
+                binding.title.text = fromRaw?.stringRes?.let { Strings.get(it) }
 
                 binding.avgTextView.text = String.format("%.2f", servesAvg)
                 binding.servesCountTextView.text = dartCount.toString()

@@ -76,7 +76,10 @@ class LegsViewModel : ViewModel() {
         val data = DataSet()
         data.dataPointXType = DataSet.Type.STRING
 
-        categorizeServes(categoryLimits, servesList).forEach { (k, v) -> data.add(DataPoint(k, v)) }
+        categorizeServes(categoryLimits, servesList).forEach { (limit, count) ->
+            val s = if (limit != 180) "$limit+" else "180"
+            data.add(DataPoint(s, count))
+        }
 
         return data
     }

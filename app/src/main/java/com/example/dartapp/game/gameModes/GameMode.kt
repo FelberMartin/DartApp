@@ -1,5 +1,7 @@
 package com.example.dartapp.game.gameModes
 
+import androidx.annotation.StringRes
+import com.example.dartapp.R
 import com.example.dartapp.game.Game
 
 abstract class GameMode {
@@ -18,7 +20,9 @@ abstract class GameMode {
     }
 
 
-    enum class ID(val value: Int) {
-        X01(1), CHEAT(69)
+    enum class ID(val value: Int, @StringRes val stringRes: Int) {
+        ALL(-1, R.string.mode_all),     // Used for selection modes in the stats table
+        X01(1, R.string.mode_501_label),
+        CHEAT(69, R.string.mode_cheat_label)
     }
 }

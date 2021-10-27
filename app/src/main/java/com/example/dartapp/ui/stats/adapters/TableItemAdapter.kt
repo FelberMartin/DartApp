@@ -1,12 +1,15 @@
 package com.example.dartapp.ui.stats.adapters
 
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import com.example.dartapp.database.Leg
 import com.example.dartapp.databinding.HeaderTableBinding
 
 import com.example.dartapp.databinding.ItemTableBinding
+import com.example.dartapp.game.gameModes.GameMode
 import com.example.dartapp.ui.stats.LegsViewModel
 
 
@@ -21,6 +24,8 @@ class TableItemAdapter(
 
     val HEADER_VIEW = 0
     val CONTENT_VIEW = 1
+
+    private var filteredLegs = viewModel.legs.value ?: listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
@@ -50,6 +55,7 @@ class TableItemAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val item = values[position]
 
+
         if (item is TableHeader) {
             with (holder as HeaderViewHolder) {
                 nameView.text = item.name
@@ -57,7 +63,8 @@ class TableItemAdapter(
         } else {
             with (holder as ItemViewHolder) {
                 holder.nameView.text = item.name
-                holder.valueView.text = item.getValue(viewModel.legs.value)
+                val v = item.getValue(filteredLegs)
+                holder.valueView.text = v
             }
         }
 
@@ -72,6 +79,15 @@ class TableItemAdapter(
 
     inner class HeaderViewHolder(binding: HeaderTableBinding) : RecyclerView.ViewHolder(binding.root) {
         val nameView: TextView = binding.headerTitleTextview
+    }
+
+
+    fun applyFilter(filter: GameMode.ID) {
+        filteredLegs = viewModel.legs.value ?: listOf()
+        if (filter != GameMode.ID.ALL)
+            filteredLegs = filteredLegs.filter { leg -> leg.gameMode == filter.value }
+
+        notifyDataSetChanged()
     }
 
 }

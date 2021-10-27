@@ -17,20 +17,18 @@ open class TableItem(
 
     companion object {
         private val upperItems = arrayListOf(
-            // GENERAL
-            TableHeader(TableHeader.Category.GENERAL),
+            // TOTALS
+            TableHeader(TableHeader.Category.TOTALS),
             TableItem("#Games") { it.size.toString() },
             TableItem("#Darts") { (it.sumOf { leg -> leg.dartCount }).toString() },
 
-            // TIME
-            TableHeader(TableHeader.Category.TIME),
             TableItem("Time spent training") {
               milliToDurationString(it.sumOf { leg -> leg.durationMilli })
             },
 
             // AVERAGES
             TableHeader(TableHeader.Category.AVERAGES),
-            TableItem("Points/Serve") {
+            TableItem("Avg. Points/Serve") {
                 String.format("%.1f", it.map { leg -> leg.servesAvg }.average())
             },
             TableItem("Double Quote") {
@@ -42,18 +40,19 @@ open class TableItem(
             TableItem("Avg. Duration") {
                 milliToDurationString(it.map { leg -> leg.durationMilli }.average().toLong())
             },
-
-            // SERVE DISTRIBUTION
-
+            TableItem("Avg. Darts/Game") {
+                String.format("%.1f", it.map { leg -> leg.dartCount }.average())
+            }
         )
 
         fun items() : List<TableItem> {
-            val items = upperItems
+            val items = ArrayList(upperItems)
             items.add(TableHeader(TableHeader.Category.SERVE_DISTRIBUTION))
             items.addAll(distroItems())
             return items
         }
 
+        // TODO: pls fix this code below, its so fking inefficient
         private fun distroItems() : List<TableItem> {
             val categories = arrayListOf<Int>()
             repeat(10) { categories.add(it * 20) }
@@ -64,8 +63,7 @@ open class TableItem(
                 val item = TableItem(s) {
                     it.sumOf { leg ->
                         val list = Converters.toArrayListOfInts(leg.servesList)
-                        categorizeServes(categories, list)[s]!!}.toString()
-
+                        categorizeServes(categories, list)[limit]!!}.toString()
                 }
                 items.add(item)
             }
@@ -77,8 +75,7 @@ open class TableItem(
 
 class TableHeader(category: Category) : TableItem(category.toString(), null) {
     enum class Category {
-        GENERAL,
-        TIME,
+        TOTALS,
         SERVE_DISTRIBUTION,
         AVERAGES,
     }

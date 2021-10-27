@@ -98,20 +98,18 @@ fun milliToDurationString(millis: Long, unitCount: Int = 2): String {
     return s.trim()
 }
 
-fun categorizeServes(categories: List<Int>, serves: List<Int>) : Map<String, Int> {
-    val map = HashMap<String, Int>()
+fun categorizeServes(categories: List<Int>, serves: List<Int>) : SortedMap<Int, Int> {
+    val map = HashMap<Int, Int>()
     for ((index, limit) in categories.withIndex()) {
-        var string = "$limit+"
         var count = 0
         if (limit != 180)
             count = serves.count { s -> limit <= s && s < categories[index + 1] }
         else {
-            string = "$limit"
             count = serves.count { s -> s == 180 }
         }
 
-        map[string] = count
+        map[limit] = count
     }
 
-    return map
+    return map.toSortedMap()
 }

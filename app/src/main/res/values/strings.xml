@@ -16,8 +16,10 @@
 
     <!-- ModesFragment -->
     <string name="modes_fragment_label">Training</string>
+    <string name="mode_all">All</string>
     <string name="mode_501_label">501</string>
     <string name="mode_100_attempts_label">100 Attempts</string>
+    <string name="mode_cheat_label">Cheat</string>
     <string name="extra_string_mode">mode</string>
 
     <!-- TrainingActivity -->
@@ -59,12 +61,6 @@
     <string name="checkout_label">Checkout:</string>
 
     <!-- TableFragment -->
-    <string-array name="dropdown_modes">
-        <item>All</item>
-        <item>501</item>
-        <item>100 Attempts</item>
-        <item>Cheat</item>
-    </string-array>
     <string name="mode_selection">Mode selection:</string>
 
 

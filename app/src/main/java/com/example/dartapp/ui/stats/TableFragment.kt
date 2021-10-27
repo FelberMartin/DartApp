@@ -2,28 +2,34 @@ package com.example.dartapp.ui.stats
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
 import androidx.fragment.app.activityViewModels
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.dartapp.R
 import com.example.dartapp.databinding.FragmentTableBinding
 import com.example.dartapp.ui.stats.adapters.TableItem
 import com.example.dartapp.ui.stats.adapters.TableItemAdapter
 
+import android.widget.ArrayAdapter
+import com.example.dartapp.game.gameModes.GameMode
+import com.example.dartapp.util.Strings
+
+
 /**
  * A fragment representing a list of Items.
  */
-class TableFragment : Fragment() {
+class TableFragment : Fragment(), AdapterView.OnItemSelectedListener {
+
 
     private var _binding: FragmentTableBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private lateinit var tableAdapter: TableItemAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,10 +45,19 @@ class TableFragment : Fragment() {
 
         val vm: LegsViewModel by activityViewModels()
 
+        tableAdapter = TableItemAdapter(TableItem.items() ,vm)
         with(binding.list) {
             layoutManager = LinearLayoutManager(context)
-            adapter = TableItemAdapter(TableItem.items() ,vm)
+            adapter = tableAdapter
         }
+
+        val spinnerAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+            requireContext(),
+            android.R.layout.simple_spinner_item, GameMode.ID.values().map { Strings.get(it.stringRes) }
+        )
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.spinner.adapter = spinnerAdapter
+        binding.spinner.onItemSelectedListener = this
 
         return binding.root
     }
@@ -51,5 +66,14 @@ class TableFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
+    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+        val selectedItem = GameMode.ID.values()[position]
+        val filter = GameMode.ID.values().first { it == selectedItem }
+        tableAdapter.applyFilter(filter)
+    }
+
+    override fun onNothingSelected(parent: AdapterView<*>) {}
 
 }
