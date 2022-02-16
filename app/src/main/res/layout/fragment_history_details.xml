@@ -127,7 +127,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/average_label" />
+                        android:text="@string/average_per_serve_label" />
 
                     <TextView
                         android:id="@+id/avgTextView"

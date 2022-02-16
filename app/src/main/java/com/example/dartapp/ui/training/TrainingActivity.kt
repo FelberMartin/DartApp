@@ -39,17 +39,21 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
 
         binding.numberGrid.delegate = this
 
+        initViewModel()
+
+        binding.gameViewModel = viewModel
+        binding.lifecycleOwner = this
+
+        binding.buttonUndo.setOnClickListener { viewModel.undo() }
+    }
+
+    private fun initViewModel() {
         val extraString = Strings.get(R.string.extra_string_mode)
         val modeString = intent.getStringExtra(extraString)
         viewModelFactory = GameViewModelFactory(modeString)
 
         viewModel = ViewModelProvider(this, viewModelFactory)
             .get(GameViewModel::class.java)
-
-        binding.gameViewModel = viewModel
-        binding.lifecycleOwner = this
-
-        binding.buttonUndo.setOnClickListener { viewModel.undo() }
     }
 
 
@@ -80,18 +84,23 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     private fun validServeFinished(value: Int, dartCount: Int = 3) {
         viewModel.processServe(value, dartCount)
 
+        animatePointsEnteredLabel()
+        checkLegFinished()
+    }
+
+    private fun animatePointsEnteredLabel() {
         val animation = AnimationUtils.loadAnimation(this, R.anim.lift_and_fade)
         animation.setAnimationEndListener { binding.numberGrid.number = 0 }
         binding.pointsEnteredLabel.startAnimation(animation)
+    }
 
-        // Check for game over
+    private fun checkLegFinished() {
         if (viewModel.isFinished())
             legFinished()
     }
 
     private fun legFinished() {
         showLegFinishedDialog()
-
         Thread {
             viewModel.saveGameToDatabase()
         }.start()

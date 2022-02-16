@@ -38,7 +38,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/spacing_medium"
-                    android:text="@{@string/lastFormat(gameViewModel.last)}"
+                    android:text="@{@string/last_format(gameViewModel.last)}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -63,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/spacing_medium"
-                    android:text="@{@string/avgFormat(gameViewModel.avg)}"
+                    android:text="@{@string/avg_format(gameViewModel.avg)}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -73,7 +73,7 @@
                     android:id="@+id/dartCountLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@{@string/dartCountFormat(gameViewModel.dartCount)}"
+                    android:text="@{@string/dart_count_format(gameViewModel.dartCount)}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small"
                     app:layout_constraintEnd_toEndOf="@id/avgLabel"
                     app:layout_constraintTop_toBottomOf="@id/avgLabel"
@@ -114,10 +114,17 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/optimalFinishLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Optimal Finish:\nT20, T18, D20"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    android:visibility="@{gameViewModel.suggestionVisibility}"
+                    android:text="@{@string/optimal_finish_template(gameViewModel.finishSuggestion)}"
+                    android:textAlignment="textEnd"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Optimal Finish:\nT20, T18, D20"
+                    />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

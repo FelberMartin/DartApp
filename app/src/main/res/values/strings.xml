@@ -26,10 +26,11 @@
     <string name="training_activity_label">Training</string>
     <string name="clear">Clear</string>
     <string name="confirm">Confirm</string>
-    <string name="noScore">No Score</string>
-    <string name="lastFormat">Last: %s</string>
-    <string name="avgFormat">Avg: %s</string>
-    <string name="dartCountFormat">Darts: %d</string>
+    <string name="no_score">No Score</string>
+    <string name="last_format">Last: %s</string>
+    <string name="avg_format">Avg: %s</string>
+    <string name="dart_count_format">Darts: %d</string>
+    <string name="optimal_finish_template">Optimal Finish:\n%s</string>
 
     <!-- LegFinishedDialog -->
     <string name="legFinished">Leg Finished!</string>
@@ -46,8 +47,7 @@
     <string name="stats_fragment_label">Stats</string>
 
     <!-- HistoryFragment -->
-    <string name="averageLabel">Avg:</string>
-    <string name="dartCountLabel">Darts:</string>
+    <string name="average_label">Avg:</string>
     <string name="title_activity_stats">StatsActivity</string>
     <string name="no_data">No data.\nComplete a training session first!</string>
     <string name="tab_text_1">Graphs</string>
@@ -55,7 +55,7 @@
     <string name="tab_text_3">Table</string>
 
     <!-- HistoryDetailsFragment -->
-    <string name="average_label">Avg. per serve:</string>
+    <string name="average_per_serve_label">Avg. per serve:</string>
     <string name="dart_count_label">Darts:</string>
     <string name="double_quote_label">Double quote:</string>
     <string name="checkout_label">Checkout:</string>

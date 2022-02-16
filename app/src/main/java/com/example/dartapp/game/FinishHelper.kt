@@ -2,7 +2,7 @@ package com.example.dartapp.game
 
 object FinishHelper {
 
-    val dict = mapOf<Int, String>(
+    val finishSuggestions = mapOf<Int, String>(
         170 to "T20,T20,Bullseye",
         167 to "T20,T19,Bullseye",
         164 to "T20,T18,Bullseye",

@@ -3,7 +3,6 @@ package com.example.dartapp.views.numbergrid
 import android.content.Context
 import android.widget.Button
 import androidx.annotation.StringRes
-import androidx.core.content.contentValuesOf
 import com.example.dartapp.R
 import com.example.dartapp.util.Strings
 
@@ -19,7 +18,7 @@ open class ActionTile(context: Context, val action: Action) : Tile(context, acti
     enum class Action(@StringRes val stringResId: Int) {
         CLEAR(R.string.clear),
         CONFIRM(R.string.confirm),
-        NO_SCORE(R.string.noScore);
+        NO_SCORE(R.string.no_score);
 
         fun buttonString(context: Context) : String {
             return Strings.get(stringResId, context)

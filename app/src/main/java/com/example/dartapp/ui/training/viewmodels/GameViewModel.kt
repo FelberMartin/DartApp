@@ -1,9 +1,11 @@
 package com.example.dartapp.ui.training.viewmodels
 
 import android.util.Log
+import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.dartapp.database.LegDatabase
+import com.example.dartapp.game.FinishHelper
 import com.example.dartapp.game.gameModes.GameMode
 import com.example.dartapp.game.Game
 import com.example.dartapp.util.App
@@ -17,9 +19,10 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
     var last: MutableLiveData<String> = MutableLiveData(NO_DATA)
     var avg: MutableLiveData<String> = MutableLiveData(NO_DATA)
     var dartCount: MutableLiveData<Int> = MutableLiveData(0)
+    var finishSuggestion: MutableLiveData<String> = MutableLiveData(NO_DATA)
+    var suggestionVisibility: MutableLiveData<Int> = MutableLiveData(View.GONE)
 
-
-    fun isServeValid(serve: Int) : Boolean {
+    fun isServeValid(serve: Int): Boolean {
         return game.isServeValid(serve)
     }
 
@@ -32,7 +35,7 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
         update()
     }
 
-    fun wouldBeFinished(serve: Int) : Boolean {
+    fun wouldBeFinished(serve: Int): Boolean {
         return game.pointsLeft - serve == 0
     }
 
@@ -71,6 +74,18 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
 
         // Dart Count
         dartCount.value = game.dartCount
+
+        // Finish Suggestion
+        finishSuggestion.value = getFinishSuggestion()
+        suggestionVisibility.value = if (canFinish()) View.VISIBLE else View.GONE
+    }
+
+    private fun getFinishSuggestion(): String {
+        return FinishHelper.finishSuggestions[game.pointsLeft] ?: "No Suggestion"
+    }
+
+    private fun canFinish(): Boolean {
+        return FinishHelper.finishSuggestions.containsKey(game.pointsLeft)
     }
 
     fun restart() {
@@ -84,6 +99,7 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
         legDao.insert(game.toLeg())
         Log.d("LegDatabase", "Leg stored")
     }
+
 
 
 }
