@@ -12,6 +12,7 @@
         android:id="@+id/selectionLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:elevation="6dp"
         >
 
         <TextView
@@ -35,13 +36,17 @@
     </LinearLayout>
 
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/cardview_dark_background"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"
         android:name="com.example.dartapp.ItemFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="2dp"
         app:layoutManager="LinearLayoutManager"
         tools:context=".ui.stats.TableFragment"
         android:background="?attr/colorBackgroundFloating"

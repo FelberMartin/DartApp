@@ -12,10 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.example.dartapp.R
 import com.example.dartapp.databinding.ActivityTrainingBinding
-import com.example.dartapp.ui.dialogs.CheckoutDialog
-import com.example.dartapp.ui.dialogs.DoubleAttemptsDialog
-import com.example.dartapp.ui.dialogs.FourChoicesDialog
-import com.example.dartapp.ui.dialogs.LegFinishedDialog
+import com.example.dartapp.ui.dialogs.*
 import com.example.dartapp.util.Strings
 import com.example.dartapp.ui.training.viewmodels.GameViewModel
 import com.example.dartapp.ui.training.viewmodels.GameViewModelFactory
@@ -61,6 +58,13 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
+    }
+
+    override fun onBackPressed() {
+        val exitDialog = ExitTrainingDialog(this)
+        exitDialog.show()
+
+        exitDialog.setOnExitClickedListener { super.onBackPressed() }
     }
 
     override fun onConfirmPressed(value: Int) {

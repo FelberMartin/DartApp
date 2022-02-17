@@ -43,6 +43,12 @@
     <string name="checkout_question">How many darts did you throw?</string>
     <string name="checkout_explanation">(Used for statistics)</string>
 
+    <!-- ExitTrainingDialog -->
+    <string name="exit_dialog_subtitle">The progress will not be saved!</string>
+    <string name="exit_dialog_title">Do you really want to exit this Training?</string>
+    <string name="cancel">Cancel</string>
+    <string name="exit">Exit</string>
+
     <!-- StatsFragment -->
     <string name="stats_fragment_label">Stats</string>
 
@@ -75,8 +81,6 @@
     <string name="theme_header">Appearance</string>
     <string name="auto_theme_title">Use system appearance</string>
     <string name="dark_theme_title">Use dark theme</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

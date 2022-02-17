@@ -4,9 +4,8 @@
 ===========================================
 
 TODO:
- - Finishing tips
  - Stats selection
- - Ask before leaving training
+ - Remove lag when loading history
  - Menu design
  - Multiple DataSets for bar and line charts
  - gradient code in LineChart
