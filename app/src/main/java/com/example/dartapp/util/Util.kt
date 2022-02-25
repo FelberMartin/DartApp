@@ -37,13 +37,16 @@ fun getStringByIdName(context: Context, name: String): String {
     return res.getString(res.getIdentifier(name, "string", context.packageName))
 }
 
-fun getNavOptions(): NavOptions? {
+fun getDefaultNavOptions(): NavOptions? {
+    return getDefaultNavOptionsBuilder().build()
+}
+
+fun getDefaultNavOptionsBuilder(): NavOptions.Builder {
     return NavOptions.Builder()
         .setEnterAnim(R.anim.slide_in_right)
         .setExitAnim(R.anim.slide_out_left)
         .setPopEnterAnim(R.anim.slide_in_left)
         .setPopExitAnim(R.anim.slide_out_right)
-        .build()
 }
 
 fun Date.weekDay() : String {

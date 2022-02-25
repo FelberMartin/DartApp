@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import com.example.dartapp.databinding.FragmentMenuBinding
-import com.example.dartapp.util.getNavOptions
+import com.example.dartapp.util.getDefaultNavOptions
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -35,22 +35,22 @@ class MenuFragment : Fragment() {
 
         binding.buttonTraining.setOnClickListener {
             val action = MenuFragmentDirections.actionMenuFragmentToModiFragment()
-            findNavController().navigate(action, getNavOptions())
+            findNavController().navigate(action, getDefaultNavOptions())
         }
 
         binding.buttonStats.setOnClickListener {
-            val action = MenuFragmentDirections.actionMenuFramentToStatsFragment()
-            findNavController().navigate(action, getNavOptions())
+            val action = MenuFragmentDirections.actionMenuFramentToLoadingFragment()
+            findNavController().navigate(action, getDefaultNavOptions())
         }
 
         binding.buttonTest.setOnClickListener {
             val action = MenuFragmentDirections.actionMenuFramentToTestFragment()
-            findNavController().navigate(action, getNavOptions())
+            findNavController().navigate(action, getDefaultNavOptions())
         }
 
         binding.buttonSettings.setOnClickListener {
             val action = MenuFragmentDirections.actionMenuFramentToSettingsFragment()
-            findNavController().navigate(action, getNavOptions())
+            findNavController().navigate(action, getDefaultNavOptions())
         }
 
     }

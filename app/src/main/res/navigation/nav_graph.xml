@@ -16,14 +16,14 @@
             app:destination="@id/ModeFragment" />
 
         <action
-            android:id="@+id/action_MenuFrament_to_statsFragment"
-            app:destination="@id/statsFragment" />
-        <action
             android:id="@+id/action_MenuFrament_to_testFragment"
             app:destination="@id/testFragment" />
         <action
             android:id="@+id/action_MenuFrament_to_settingsFragment"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/action_MenuFrament_to_loadingFragment"
+            app:destination="@id/loadingFragment" />
     </fragment>
     <fragment
         android:id="@+id/ModeFragment"
@@ -64,4 +64,13 @@
         android:id="@+id/historyDetailsFragment"
         android:name="com.example.dartapp.ui.stats.HistoryDetailsFragment"
         android:label="HistoryDetailsFragment" />
+    <fragment
+        android:id="@+id/loadingFragment"
+        android:name="com.example.dartapp.ui.stats.LoadingFragment"
+        android:label="fragment_loading"
+        tools:layout="@layout/fragment_loading">
+        <action
+            android:id="@+id/action_loadingFragment_to_statsFragment"
+            app:destination="@id/statsFragment" />
+    </fragment>
 </navigation>

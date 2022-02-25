@@ -1,7 +1,6 @@
 package com.example.dartapp.ui.stats
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +9,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dartapp.database.Leg
-import com.example.dartapp.database.LegDatabase
 import com.example.dartapp.databinding.FragmentHistoryBinding
 import com.example.dartapp.ui.stats.adapters.HistoryAdapter
-import com.example.dartapp.util.App
-import com.example.dartapp.util.getNavOptions
+import com.example.dartapp.util.getDefaultNavOptions
 
 class HistoryFragment : Fragment() {
 
@@ -58,6 +55,6 @@ class HistoryFragment : Fragment() {
         viewModel.setDetailed(leg)
 
         val action = StatsFragmentDirections.actionStatsFragmentToHistoryDetailsFragment()
-        findNavController().navigate(action, getNavOptions())
+        findNavController().navigate(action, getDefaultNavOptions())
     }
 }

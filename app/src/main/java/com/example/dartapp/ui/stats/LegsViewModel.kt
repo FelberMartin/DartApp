@@ -1,6 +1,8 @@
 package com.example.dartapp.ui.stats
 
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -17,6 +19,8 @@ class LegsViewModel : ViewModel() {
 
     private val categoryLimits = listOf(0, 60, 100, 140, 180)
 
+    val isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
+
     lateinit var legs: LiveData<List<Leg>>
     val detailedLeg = MutableLiveData(Leg())
 
@@ -32,13 +36,19 @@ class LegsViewModel : ViewModel() {
     val dateString = MutableLiveData("Jan 12, 2001")
 
     init {
-        loadAll()
+        loadAllAsync()
+    }
+
+    fun loadAllAsync() {
+        isLoading.value = true
+        Handler(Looper.getMainLooper()).postDelayed(this::loadAll, 0)
     }
 
     fun loadAll() {
         val context = App.instance.applicationContext
         val legTable = LegDatabase.getInstance(context).legDatabaseDao
         legs = legTable.getAllLegs()
+        isLoading.value = false
     }
 
 
