@@ -4,8 +4,8 @@ import androidx.annotation.StringRes
 import com.example.dartapp.R
 import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
+import com.example.dartapp.util.GameUtil
 import com.example.dartapp.util.Strings
-import com.example.dartapp.util.categorizeServes
 import com.example.dartapp.util.milliToDurationString
 
 open class TableItem(
@@ -65,8 +65,8 @@ open class TableItem(
                 val s = if (limit == 180) "180" else "$limit+"
                 val item = TableItem(s) {
                     it.sumOf { leg ->
-                        val list = Converters.toArrayListOfInts(leg.servesList)
-                        categorizeServes(categories, list)[limit]!!}.toString()
+                        val serves = Converters.toArrayListOfInts(leg.servesList)
+                        GameUtil.countServesForCategories(serves, categories)[limit]!!}.toString()
                 }
                 items.add(item)
             }
