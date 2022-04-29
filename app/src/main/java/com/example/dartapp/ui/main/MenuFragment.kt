@@ -1,13 +1,13 @@
 package com.example.dartapp.ui.main
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.dartapp.databinding.FragmentMenuBinding
-import com.example.dartapp.util.getDefaultNavOptions
+import com.example.dartapp.util.Navigation
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -23,7 +23,7 @@ class MenuFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentMenuBinding.inflate(inflater, container, false)
         return binding.root
@@ -35,22 +35,22 @@ class MenuFragment : Fragment() {
 
         binding.buttonTraining.setOnClickListener {
             val action = MenuFragmentDirections.actionMenuFragmentToModiFragment()
-            findNavController().navigate(action, getDefaultNavOptions())
+            findNavController().navigate(action, Navigation.getDefaultNavOptions())
         }
 
         binding.buttonStats.setOnClickListener {
             val action = MenuFragmentDirections.actionMenuFramentToLoadingFragment()
-            findNavController().navigate(action, getDefaultNavOptions())
+            findNavController().navigate(action, Navigation.getDefaultNavOptions())
         }
 
         binding.buttonTest.setOnClickListener {
             val action = MenuFragmentDirections.actionMenuFramentToTestFragment()
-            findNavController().navigate(action, getDefaultNavOptions())
+            findNavController().navigate(action, Navigation.getDefaultNavOptions())
         }
 
         binding.buttonSettings.setOnClickListener {
             val action = MenuFragmentDirections.actionMenuFramentToSettingsFragment()
-            findNavController().navigate(action, getDefaultNavOptions())
+            findNavController().navigate(action, Navigation.getDefaultNavOptions())
         }
 
     }

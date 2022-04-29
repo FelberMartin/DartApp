@@ -1,20 +1,15 @@
 package com.example.dartapp.ui.stats.adapters
 
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.RecyclerView
 import com.example.dartapp.databinding.HeaderTableBinding
-
 import com.example.dartapp.databinding.ItemTableBinding
 import com.example.dartapp.game.gameModes.GameMode
 import com.example.dartapp.ui.stats.LegsViewModel
 
 
-/**
- * [RecyclerView.Adapter] that can display a [PlaceholderItem].
- * TODO: Replace the implementation with code for your data type.
- */
 class TableItemAdapter(
     private val values: List<TableItem>,
     private val viewModel: LegsViewModel
@@ -60,9 +55,9 @@ class TableItemAdapter(
             }
         } else {
             with (holder as ItemViewHolder) {
-                holder.nameView.text = item.name
+                nameView.text = item.name
                 val v = item.getValue(filteredLegs)
-                holder.valueView.text = v
+                valueView.text = v
             }
         }
 

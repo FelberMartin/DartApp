@@ -5,8 +5,8 @@ import com.example.dartapp.R
 import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
 import com.example.dartapp.util.GameUtil
+import com.example.dartapp.util.NumberFormatter
 import com.example.dartapp.util.Strings
-import com.example.dartapp.util.milliToDurationString
 
 open class TableItem(
     val name: String,
@@ -15,7 +15,8 @@ open class TableItem(
 
     fun getValue(legs: List<Leg>?): String {
         if (legs == null) return "No Data"
-        return evaluator?.invoke(legs) ?: ""
+        val stringToShow = evaluator?.invoke(legs) ?: ""
+        return stringToShow.replace("NaN", "-")
     }
 
     companion object {
@@ -26,7 +27,7 @@ open class TableItem(
             TableItem("#Darts") { (it.sumOf { leg -> leg.dartCount }).toString() },
 
             TableItem("Time spent training") {
-              milliToDurationString(it.sumOf { leg -> leg.durationMilli })
+              NumberFormatter.milliToDurationString(it.sumOf { leg -> leg.durationMilli })
             },
 
             // AVERAGES
@@ -41,7 +42,7 @@ open class TableItem(
                 String.format("%.1f", it.map { leg -> leg.checkout }.average())
             },
             TableItem("Avg. Duration") {
-                milliToDurationString(it.map { leg -> leg.durationMilli }.average().toLong())
+                NumberFormatter.milliToDurationString(it.map { leg -> leg.durationMilli }.average().toLong())
             },
             TableItem("Avg. Darts/Game") {
                 String.format("%.1f", it.map { leg -> leg.dartCount }.average())
@@ -51,19 +52,18 @@ open class TableItem(
         fun items() : List<TableItem> {
             val items = ArrayList(upperItems)
             items.add(TableHeader(TableHeader.Category.SERVE_DISTRIBUTION))
-            items.addAll(distroItems())
+            items.addAll(distributionItems())
             return items
         }
 
-        // TODO: pls fix this code below, its so fking inefficient
-        private fun distroItems() : List<TableItem> {
+        private fun distributionItems() : List<TableItem> {
             val categories = arrayListOf<Int>()
             repeat(10) { categories.add(it * 20) }
 
             val items = arrayListOf<TableItem>()
-            for ((index, limit) in categories.withIndex()) {
-                val s = if (limit == 180) "180" else "$limit+"
-                val item = TableItem(s) {
+            for (limit in categories) {
+                val itemName = if (limit == 180) "180" else "$limit+"
+                val item = TableItem(itemName) {
                     it.sumOf { leg ->
                         val serves = Converters.toArrayListOfInts(leg.servesList)
                         GameUtil.countServesForCategories(serves, categories)[limit]!!}.toString()

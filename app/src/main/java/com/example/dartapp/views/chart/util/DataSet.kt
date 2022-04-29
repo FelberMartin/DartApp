@@ -1,15 +1,14 @@
 package com.example.dartapp.views.chart.util
 
-import com.example.dartapp.util.decimalToString
+import com.example.dartapp.util.NumberFormatter
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.random.Random
 
 
 class DataPoint(var x: Any, var y: Number) {
     fun yString() : String {
-        return decimalToString(y)
+        return NumberFormatter.decimalToString(y)
     }
 
     fun xString(type: DataSet.Type) : String {
@@ -18,7 +17,7 @@ class DataPoint(var x: Any, var y: Number) {
 
     companion object {
         fun format(n: Number) : String {
-            return decimalToString(n)
+            return NumberFormatter.decimalToString(n)
         }
 
         fun xString(x: Any, type: DataSet.Type) : String {
@@ -65,7 +64,7 @@ class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
 
 
         fun random(type: Type = Type.NUMBER, count: Int = 4, randomX: Boolean = false, min: Double = 0.0, max: Double = 100.0) : DataSet {
-            var data = DataSet()
+            val data = DataSet()
             data.dataPointXType = type
 
             var xStart = 0
@@ -89,7 +88,7 @@ class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
         }
 
         fun pieLargeTexts() : DataSet {
-            var data = DataSet()
+            val data = DataSet()
             data.dataPointXType = Type.STRING
             data.add(DataPoint("Very large text, some may even say its as large as my ...", 100))
             data.add(DataPoint("Lorem Ipso, deshalb geh ich Disco, pogo logo schoko schoki!", 100))
@@ -98,7 +97,7 @@ class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
         }
 
         fun line() : DataSet {
-            var data = DataSet()
+            val data = DataSet()
             data.dataPointXType = Type.NUMBER
             data.add(DataPoint(0f, 10f))
             data.add(DataPoint(1f, 10f))

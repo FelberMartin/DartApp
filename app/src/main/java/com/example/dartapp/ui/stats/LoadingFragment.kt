@@ -1,15 +1,14 @@
 package com.example.dartapp.ui.stats
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.dartapp.R
-import com.example.dartapp.util.getDefaultNavOptions
-import com.example.dartapp.util.getDefaultNavOptionsBuilder
+import com.example.dartapp.util.Navigation
 
 
 class LoadingFragment : Fragment() {
@@ -27,7 +26,7 @@ class LoadingFragment : Fragment() {
         vm.isLoading.observe(viewLifecycleOwner) {
             if (it == false) {
                 val action = LoadingFragmentDirections.actionLoadingFragmentToStatsFragment()
-                var builder = getDefaultNavOptionsBuilder()
+                val builder = Navigation.getDefaultNavOptionsBuilder()
                 builder.setPopUpTo(R.id.MenuFrament, false)
                 findNavController().navigate(action, builder.build())
             }

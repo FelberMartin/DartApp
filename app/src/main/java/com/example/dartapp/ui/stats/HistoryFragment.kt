@@ -1,9 +1,11 @@
 package com.example.dartapp.ui.stats
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -11,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.dartapp.database.Leg
 import com.example.dartapp.databinding.FragmentHistoryBinding
 import com.example.dartapp.ui.stats.adapters.HistoryAdapter
-import com.example.dartapp.util.getDefaultNavOptions
+import com.example.dartapp.util.Navigation
 
 class HistoryFragment : Fragment() {
 
@@ -28,7 +30,7 @@ class HistoryFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentHistoryBinding.inflate(inflater, container, false)
 
@@ -51,10 +53,11 @@ class HistoryFragment : Fragment() {
         _binding = null
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     private fun onClick(leg: Leg) {
         viewModel.setDetailed(leg)
 
         val action = StatsFragmentDirections.actionStatsFragmentToHistoryDetailsFragment()
-        findNavController().navigate(action, getDefaultNavOptions())
+        findNavController().navigate(action, Navigation.getDefaultNavOptions())
     }
 }

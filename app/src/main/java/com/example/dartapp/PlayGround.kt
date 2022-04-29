@@ -1,7 +1,5 @@
 package com.example.dartapp
 
-import com.example.dartapp.util.milliToDurationString
-import com.example.dartapp.views.chart.CoordinateBasedChart
 import java.text.DecimalFormat
 
 class PlayGround {
@@ -14,8 +12,8 @@ class PlayGround {
         }
 
         fun validServes() {
-            var serveValids = ArrayList<Int>()
-            var valids = validThrows()
+            val serveValids = ArrayList<Int>()
+            val valids = validThrows()
             for (first in valids) {
                 for (second in valids) {
                     for (third in valids) {
@@ -35,7 +33,7 @@ class PlayGround {
         }
 
         fun validThrows(): List<Int> {
-            var valids = ArrayList<Int>()
+            val valids = ArrayList<Int>()
             for (multiplier in 1..3) {
                 for (value in 0..20) {
                     valids.add(multiplier * value)
@@ -62,9 +60,7 @@ class PlayGround {
 //            }
 //        }
 
-        fun textTimeFormat() {
-            println(milliToDurationString(415646423585L))
-        }
+
     }
 
 

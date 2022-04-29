@@ -1,15 +1,15 @@
 package com.example.dartapp.util
 
-import com.google.common.truth.Truth.assertThat;
+import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
 class GameUtilTest {
 
     @Test
     fun `two categories`() {
-        val inputList = listOf(56, 69, 180, 39, 2, 121, 111, 34)
+        val inputServes = listOf(56, 69, 180, 39, 2, 121, 111, 34)
         val result = GameUtil.countServesForCategories(
-            inputList,
+            inputServes,
             listOf(0, 100)
         )
 
@@ -23,9 +23,9 @@ class GameUtilTest {
 
     @Test
     fun `default categories`() {
-        val inputList = listOf(56, 69, 180, 39, 2, 121, 111, 34)
+        val inputServes = listOf(56, 69, 180, 39, 2, 121, 111, 34)
         val result = GameUtil.countServesForCategories(
-            inputList,
+            inputServes,
             listOf(0, 60, 100, 140)
         )
 
