@@ -4,30 +4,58 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Spinner
-        android:id="@+id/chart_spinner"
+    <LinearLayout
+        android:id="@+id/selection_layout"
+        android:weightSum="5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:spinnerMode="dropdown"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Spinner
+            android:id="@+id/spinner_stats"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:spinnerMode="dropdown"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="vs"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <Spinner
+            android:id="@+id/spinner_versus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:spinnerMode="dropdown"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    </LinearLayout>
+
+
 
     <com.example.dartapp.views.chart.BarChart
         android:id="@+id/barChart"
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:layout_below="@+id/chart_spinner"
+        android:layout_below="@+id/selection_layout"
         android:layout_alignParentEnd="true"
-        app:layout_constraintTop_toBottomOf="@+id/chart_spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/selection_layout" />
 
     <com.example.dartapp.views.chart.legend.Legend
-        android:layout_margin="@dimen/spacing_medium"
         android:id="@+id/legend2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/barChart"
+        android:layout_margin="@dimen/spacing_medium"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/barChart" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

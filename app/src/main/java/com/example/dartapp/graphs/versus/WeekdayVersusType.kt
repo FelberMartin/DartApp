@@ -24,6 +24,10 @@ class WeekdayVersusType() : VersusTypeBase("Weekdays", DataSet.Type.STRING) {
     }
 
     companion object {
+        val defaults = listOf(
+            WeekdayVersusType()
+        )
+
         private fun emptyWeekDayListMap() : Map<Any, ArrayList<Leg>> {
             val map = HashMap<Any, ArrayList<Leg>>()
             val now = System.currentTimeMillis()

@@ -19,4 +19,14 @@ class TimeVersusType(
     override fun partitionLegs(legs: List<Leg>): Map<Any, List<Leg>> {
         return legs.groupBy { leg -> leg.endTime / MILLISECONDS_PER_DAY }
     }
+
+    companion object {
+        val defaults = listOf(
+            TimeVersusType("Last week", 7),
+            TimeVersusType("Last month", 30),
+            TimeVersusType("Last quarter", 91),
+            TimeVersusType("Last year", 365),
+            TimeVersusType("All time", Int.MAX_VALUE)
+        )
+    }
 }

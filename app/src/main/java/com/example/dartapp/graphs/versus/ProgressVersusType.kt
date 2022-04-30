@@ -22,6 +22,12 @@ class ProgressVersusType(
     }
 
     companion object {
+        val defaults = listOf(
+            ProgressVersusType(10),
+            ProgressVersusType(100),
+            ProgressVersusType(Int.MAX_VALUE)
+        )
+
         fun makeName(limit: Int) : String {
             if (limit == Int.MAX_VALUE) {
                 return "All legs"
