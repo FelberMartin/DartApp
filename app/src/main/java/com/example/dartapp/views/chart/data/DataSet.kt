@@ -1,44 +1,13 @@
 package com.example.dartapp.views.chart.util
 
-import com.example.dartapp.util.NumberFormatter
-import java.text.SimpleDateFormat
-import java.util.*
+import com.example.dartapp.views.chart.data.DataPoint
 import kotlin.random.Random
-
-
-class DataPoint(var x: Any, var y: Number) {
-    fun yString() : String {
-        return NumberFormatter.decimalToString(y)
-    }
-
-    fun xString(type: DataSet.Type) : String {
-        return xString(x, type)
-    }
-
-    companion object {
-        fun format(n: Number) : String {
-            return NumberFormatter.decimalToString(n)
-        }
-
-        fun xString(x: Any, type: DataSet.Type) : String {
-            return when (type) {
-                DataSet.Type.STRING -> x as String
-                DataSet.Type.NUMBER -> format((x as Number))
-                DataSet.Type.DATE -> {
-                    val xLong = x as Long
-                    val date = Date(xLong)
-                    return SimpleDateFormat.getDateInstance().format(date)
-                }
-            }
-        }
-    }
-}
 
 /**
  * Class responsible for providing the data for the chart views.
  * This is not really a Set but rather an arrayList.
  */
-class DataSet(c: MutableCollection<out DataPoint>) : ArrayList<DataPoint>(c) {
+class DataSet(collection: Collection<DataPoint>) : ArrayList<DataPoint>(collection) {
 
     constructor() : this(ArrayList())
 

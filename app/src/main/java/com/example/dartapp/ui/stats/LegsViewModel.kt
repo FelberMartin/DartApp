@@ -11,7 +11,7 @@ import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
 import com.example.dartapp.database.LegDatabase
 import com.example.dartapp.util.*
-import com.example.dartapp.views.chart.util.DataPoint
+import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.util.DataSet
 import java.util.*
 
@@ -68,7 +68,7 @@ class LegsViewModel : ViewModel() {
         categoryData.value = pieChartDataSet()
 
         val date = Date(leg.endTime)
-        weekDay.value = date.weekDay()
+        weekDay.value = date.weekDayString()
         timeString.value = date.timeString()
         dateString.value = date.dateString()
     }

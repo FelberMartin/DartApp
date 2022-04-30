@@ -4,6 +4,6 @@ import androidx.annotation.ColorRes
 
 object Colors {
     fun get(@ColorRes colorRes: Int): Int {
-        return App.instance.getColor(colorRes)
+        return App.instance.applicationContext.getColor(colorRes)
     }
 }

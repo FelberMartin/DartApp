@@ -12,10 +12,10 @@ import com.example.dartapp.ui.stats.LegsViewModel
 import com.example.dartapp.util.Strings
 import com.example.dartapp.util.dateString
 import com.example.dartapp.util.timeString
-import com.example.dartapp.util.weekDay
+import com.example.dartapp.util.weekDayString
 import java.util.*
 
-class HistoryAdapter(private val lifecycleOwner: LifecycleOwner, private val viewModel: LegsViewModel) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
+class HistoryAdapter(lifecycleOwner: LifecycleOwner, private val viewModel: LegsViewModel) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
     inner class ViewHolder(val binding: ItemHistoryBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -51,7 +51,7 @@ class HistoryAdapter(private val lifecycleOwner: LifecycleOwner, private val vie
                 val date = Date(endTime)
                 binding.timeTextView.text = date.timeString()
                 binding.dateTextView.text = date.dateString()
-                binding.weekdayTextView.text = date.weekDay()
+                binding.weekdayTextView.text = date.weekDayString()
 
                 binding.layout.setOnClickListener { listener?.invoke(this) }
             }

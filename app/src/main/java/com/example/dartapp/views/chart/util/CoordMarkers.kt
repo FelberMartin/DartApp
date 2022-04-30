@@ -7,6 +7,7 @@ import android.view.View
 import androidx.annotation.AttrRes
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.*
+import com.example.dartapp.views.chart.data.DataPoint
 import com.google.android.material.color.MaterialColors
 import kotlin.math.ceil
 import kotlin.math.floor

@@ -6,7 +6,7 @@ import androidx.annotation.StringRes
 object Strings {
     const val EMPTY_STRING = ""
 
-    fun get(@StringRes stringRes: Int, context: Context = App.instance, vararg formatArgs: Any = emptyArray()): String {
+    fun get(@StringRes stringRes: Int, context: Context = App.instance.applicationContext, vararg formatArgs: Any = emptyArray()): String {
         return context.getString(stringRes, *formatArgs)
     }
 
