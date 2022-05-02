@@ -6,7 +6,6 @@ import android.util.AttributeSet
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.CoordMarkers
 import com.example.dartapp.views.chart.util.DataSet
-import com.example.dartapp.views.chart.util.MARKER_INTERN_SPACING
 import com.example.dartapp.views.chart.util.getAttrColor
 import com.google.android.material.color.MaterialColors
 import kotlin.math.max
@@ -34,6 +33,9 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     var xStartAtZero = false
     var yStartAtZero = false
 
+    var showXAxisArrow = true
+    var showXAxisMarkers = true
+
     /**
      * Rectangle including all the coordinates that can be displayed on this coordinate system.
      * Extrema of the displayed values, not the extrema of the data points.
@@ -41,8 +43,6 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
      *          coordinate system!!
      */
     var coordRect = RectF()
-
-    protected var plainXAxis = false
 
     private val xMarkers = CoordMarkers(this, CoordMarkers.Axis.X)
     private val yMarkers = CoordMarkers(this, CoordMarkers.Axis.Y)
@@ -89,6 +89,10 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
     override fun reload() {
         super.reload()
+
+        if (data.isEmpty()) {
+            return
+        }
 
         // Y values
         coordRect.top = data.minOf { dp -> dp.y.toFloat() }
@@ -200,7 +204,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         lines.add(tipX + ARROW_TIP_SIZE)
         lines.add(tipY + ARROW_TIP_SIZE)
 
-        if (plainXAxis) return lines
+        if (!showXAxisArrow) return lines
 
         // x Tip
         tipX = arrowOffset.x + xArrowLength - ARROW_STRENGTH / 2
@@ -285,6 +289,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         arrowOffset.x = yMarkers.requiredWidth
         arrowOffset.y = xMarkers.requiredHeight
 
+        val plainXAxis = !showXAxisArrow && !showXAxisMarkers
         if (plainXAxis) {
             // if there are no markers make sure that the y Markers fit into the view if they are
             // on the really bottom
@@ -337,7 +342,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     }
 
     protected fun drawMarkers(canvas: Canvas) {
-        if (!plainXAxis)
+        if (showXAxisMarkers)
             xMarkers.draw(canvas)
         yMarkers.draw(canvas)
     }

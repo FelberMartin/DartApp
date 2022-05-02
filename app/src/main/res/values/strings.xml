@@ -51,6 +51,8 @@
 
     <!-- StatsFragment -->
     <string name="stats_fragment_label">Stats</string>
+    <string name="no_data_short">No data</string>
+
 
     <!-- HistoryFragment -->
     <string name="average_label">Avg:</string>
@@ -81,8 +83,8 @@
     <string name="theme_header">Appearance</string>
     <string name="auto_theme_title">Use system appearance</string>
     <string name="dark_theme_title">Use dark theme</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-
 
 </resources>

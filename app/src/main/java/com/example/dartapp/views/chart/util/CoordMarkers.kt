@@ -130,7 +130,7 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
     }
 
     private fun updateRequiredDimensions() {
-        maxTextWidth = texts.maxOf { t -> markerPaint.measureText(t) }
+        maxTextWidth = if (texts.isEmpty()) 0f else texts.maxOf { t -> markerPaint.measureText(t) }
         maxTextHeight = markerPaint.fontMetrics.height()
         requiredWidth = maxTextWidth + MARKER_SIZE + MARKER_INTERN_SPACING
         requiredHeight = maxTextHeight + MARKER_SIZE + MARKER_INTERN_SPACING

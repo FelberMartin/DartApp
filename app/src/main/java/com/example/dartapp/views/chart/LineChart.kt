@@ -5,7 +5,6 @@ import android.content.Context
 import android.graphics.*
 import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.annotation.RequiresApi
 import androidx.core.graphics.plus
@@ -89,6 +88,11 @@ class LineChart @JvmOverloads constructor(
     private fun updatePath() {
         points.clear()
         linePath.reset()
+
+        if (data.isEmpty()) {
+            return
+        }
+
         var lastPoint = inCoordSystem(0)
         var control = lastPoint
         linePath.moveTo(lastPoint.x, lastPoint.y)

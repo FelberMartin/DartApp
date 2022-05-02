@@ -8,12 +8,8 @@ import android.graphics.Paint
 import android.graphics.PointF
 import android.graphics.RectF
 import android.util.AttributeSet
-import com.example.dartapp.util.App
-import com.example.dartapp.views.chart.ARROW_STRENGTH
-import com.example.dartapp.views.chart.CoordinateBasedChart
 import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.util.InfoTextBox
-import kotlin.math.max
 import kotlin.math.min
 
 
@@ -27,7 +23,6 @@ class BarChart @JvmOverloads constructor(
     private val barRects = arrayListOf<RectF>()
     var barMaxHeight = Float.MAX_VALUE
 
-
     private val barDefaultSize = 0.7f
     private val barSelectedSize = 0.85f
 
@@ -39,7 +34,8 @@ class BarChart @JvmOverloads constructor(
     private var infoTranslation = PointF()
 
     init {
-        plainXAxis = true
+        showXAxisArrow = false
+        showXAxisMarkers = false
         showVerticalGrid = false
         xStartAtZero = true
         yStartAtZero = true

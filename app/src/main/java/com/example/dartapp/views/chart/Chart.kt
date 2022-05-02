@@ -18,7 +18,7 @@ abstract class Chart @JvmOverloads constructor(
 ) : View(context, attrs, defStyleAttr), ValueAnimator.AnimatorUpdateListener {
 
     private var linkedLegend: Legend? = null
-    var colorManager = ColorManager()
+    var colorManager = ColorManager.default
 
     var animatedEnter = true
     set(value) {
