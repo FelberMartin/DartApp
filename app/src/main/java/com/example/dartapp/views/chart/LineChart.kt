@@ -87,7 +87,8 @@ class LineChart @JvmOverloads constructor(
 
     private fun updatePath() {
         points.clear()
-        linePath.reset()
+//        linePath.reset()
+        linePath.rewind()
 
         if (data.isEmpty()) {
             return
@@ -134,6 +135,10 @@ class LineChart @JvmOverloads constructor(
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun drawLines(canvas: Canvas) {
+        if (linePath.isEmpty) {
+            return
+        }
+
         val appr = linePath.approximate(0.5f)
         val points = appr.filterIndexed { index, _ -> index % 3 != 0 }
         val fractions = appr.filterIndexed { index, _ -> index % 3 == 0 }

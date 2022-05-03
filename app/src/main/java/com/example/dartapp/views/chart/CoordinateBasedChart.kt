@@ -3,7 +3,6 @@ package com.example.dartapp.views.chart
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.CoordMarkers
 import com.example.dartapp.views.chart.util.DataSet
@@ -157,8 +156,6 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     private fun updateArrows() {
         xArrowLength = width - arrowOffset.x
         yArrowLength = height - arrowOffset.y
-
-        Log.d("ARROWS", "lengths: $xArrowLength, $yArrowLength")
 
         calcArrows()
     }
