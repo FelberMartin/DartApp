@@ -67,8 +67,8 @@ class LineChart @JvmOverloads constructor(
 
 
     init {
-        data = DataSet.random(count = 7, randomX = true)
         if (isInEditMode) {
+            data = DataSet.random(count = 7, randomX = true)
             selectedIndex = -1
         }
     }
@@ -137,7 +137,7 @@ class LineChart @JvmOverloads constructor(
         val appr = linePath.approximate(0.5f)
         val points = appr.filterIndexed { index, _ -> index % 3 != 0 }
         val fractions = appr.filterIndexed { index, _ -> index % 3 == 0 }
-        var lines = ArrayList<Float>()
+        val lines = ArrayList<Float>()
         for (i in 0 until points.size / 2) {
             val x = points[2 * i]
             val y = points[2 * i + 1]
@@ -154,7 +154,7 @@ class LineChart @JvmOverloads constructor(
     }
 
     private fun drawPoints(canvas: Canvas) {
-        for ((i, p) in points.withIndex()) {
+        for (p in points) {
             canvas.drawCircle(p.x, p.y, 5f, linePaint)
         }
     }

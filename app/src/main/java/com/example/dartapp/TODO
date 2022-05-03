@@ -5,8 +5,11 @@
 
 TODO:
  - Stats selection
+    - TestData from FakeRepository
  - Menu design
  - Multiple DataSets for bar and line charts
  - gradient code in LineChart
  - Selection animations
  - UIStrings from YT tutorial (clean access without context)
+ - Empty DataSets:
+    - Small dots in the upper left corner

@@ -3,6 +3,7 @@ package com.example.dartapp.views.chart
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.CoordMarkers
 import com.example.dartapp.views.chart.util.DataSet
@@ -91,26 +92,26 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         super.reload()
 
         if (data.isEmpty()) {
-            return
-        }
-
-        // Y values
-        coordRect.top = data.minOf { dp -> dp.y.toFloat() }
-        coordRect.bottom = data.maxOf { dp -> dp.y.toFloat() }
-
-        // X values
-        if (data.dataPointXType == DataSet.Type.STRING) {
-            coordRect.left = 0f
-            coordRect.right = data.size.toFloat() - 1
+            coordRect = RectF()
         } else {
-            coordRect.left = data.minOf { dp -> (dp.x as Number).toFloat() }
-            coordRect.right = data.maxOf { dp -> (dp.x as Number).toFloat() }
-        }
+            // Y values
+            coordRect.top = data.minOf { dp -> dp.y.toFloat() }
+            coordRect.bottom = data.maxOf { dp -> dp.y.toFloat() }
 
-        if (xStartAtZero)
-            coordRect.left = 0f
-        if (yStartAtZero)
-            coordRect.top = 0f
+            // X values
+            if (data.dataPointXType == DataSet.Type.STRING) {
+                coordRect.left = 0f
+                coordRect.right = data.size.toFloat() - 1
+            } else {
+                coordRect.left = data.minOf { dp -> (dp.x as Number).toFloat() }
+                coordRect.right = data.maxOf { dp -> (dp.x as Number).toFloat() }
+            }
+
+            if (xStartAtZero)
+                coordRect.left = 0f
+            if (yStartAtZero)
+                coordRect.top = 0f
+        }
 
         handleAutoPadding()
         updateCoordSystem()
@@ -157,6 +158,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         xArrowLength = width - arrowOffset.x
         yArrowLength = height - arrowOffset.y
 
+        Log.d("ARROWS", "lengths: $xArrowLength, $yArrowLength")
+
         calcArrows()
     }
 
@@ -164,7 +167,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
      * Calculates the new lines for the coordinate system's arrows and stores them
      */
     private fun calcArrows() {
-        var lines: ArrayList<Float> = ArrayList()
+        val lines: ArrayList<Float> = ArrayList()
 
         // x Axis
         lines.add(arrowOffset.x)
@@ -190,7 +193,7 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
      * Produces the lines of the arrow tips
      */
     private fun getArrowTips() : List<Float> {
-        var lines: ArrayList<Float> = ArrayList()
+        val lines: ArrayList<Float> = ArrayList()
 
         // y Tip
         var tipX = arrowOffset.x
@@ -247,7 +250,10 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
      * @return The x pixel on the View's canvas
      */
     fun coordXToPixel(x: Float) : Float {
-        val fraction = (x - coordRect.left) / coordRect.width()
+        var fraction = 0f
+        if (coordRect.width() > 0) {
+            fraction = (x - coordRect.left) / coordRect.width()
+        }
         return coordPixelRect.left + coordPixelRect.width() * fraction
     }
 
@@ -258,7 +264,10 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
      * @return The y pixel on the View's canvas
      */
     fun coordYToPixel(y: Float) : Float {
-        val fraction = (y - coordRect.top) / coordRect.height()
+        var fraction = 0f
+        if (coordRect.height() > 0) {
+            fraction = (y - coordRect.top) / coordRect.height()
+        }
         return coordPixelRect.top + coordPixelRect.height() * (1 - fraction)
     }
 

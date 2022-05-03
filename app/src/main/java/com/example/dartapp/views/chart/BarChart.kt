@@ -41,7 +41,9 @@ class BarChart @JvmOverloads constructor(
         yStartAtZero = true
         verticalAutoPadding = false
         topAutoPadding = true
-        data = DataSet.random(type = DataSet.Type.STRING)
+        if (isInEditMode) {
+            data = DataSet.random(type = DataSet.Type.STRING)
+        }
 
     }
 
@@ -95,6 +97,8 @@ class BarChart @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
+        super.onDraw(canvas)
+
         drawGrid(canvas)
         drawBars(canvas)
         drawMarkers(canvas)
