@@ -4,28 +4,35 @@ import android.os.Build
 import android.os.Bundle
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.navArgs
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import com.example.dartapp.R
 import com.example.dartapp.databinding.ActivityTrainingBinding
-import com.example.dartapp.ui.dialogs.*
-import com.example.dartapp.util.Strings
+import com.example.dartapp.game.gameModes.GameMode
+import com.example.dartapp.ui.dialogs.CheckoutDialog
+import com.example.dartapp.ui.dialogs.DoubleAttemptsDialog
+import com.example.dartapp.ui.dialogs.ExitTrainingDialog
+import com.example.dartapp.ui.dialogs.LegFinishedDialog
 import com.example.dartapp.ui.training.viewmodels.GameViewModel
-import com.example.dartapp.ui.training.viewmodels.GameViewModelFactory
 import com.example.dartapp.views.numbergrid.NumberGridDelegate
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityTrainingBinding
 
     private lateinit var viewModel: GameViewModel
-    private lateinit var viewModelFactory: GameViewModelFactory
+
+    @Inject
+    lateinit var viewModelFactory: GameViewModel.GameViewModelFactory
 
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,12 +52,13 @@ class TrainingActivity : AppCompatActivity(), NumberGridDelegate {
     }
 
     private fun initViewModel() {
-        val extraString = Strings.get(R.string.extra_string_mode)
-        val modeString = intent.getStringExtra(extraString)
-        viewModelFactory = GameViewModelFactory(modeString)
+        val args: TrainingActivityArgs by navArgs()
+        val gameMode = GameMode.fromTypeId(args.gameModeId)
 
-        viewModel = ViewModelProvider(this, viewModelFactory)
-            .get(GameViewModel::class.java)
+        val _viewModel: GameViewModel by viewModels {
+            GameViewModel.providesFactory(viewModelFactory, gameMode)
+        }
+        viewModel = _viewModel
     }
 
 

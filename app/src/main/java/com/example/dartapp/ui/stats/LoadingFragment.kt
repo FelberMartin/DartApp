@@ -9,8 +9,9 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.example.dartapp.R
 import com.example.dartapp.util.Navigation
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class LoadingFragment : Fragment() {
 
     private lateinit var viewModel: LegsViewModel

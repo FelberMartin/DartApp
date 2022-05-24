@@ -75,9 +75,9 @@ class TableItemAdapter(
     }
 
 
-    fun applyFilter(filter: GameMode.ID) {
+    fun applyFilter(filter: GameMode.Type) {
         filteredLegs = viewModel.legs.value ?: listOf()
-        if (filter != GameMode.ID.ALL)
+        if (filter != GameMode.Type.ALL)
             filteredLegs = filteredLegs.filter { leg -> leg.gameMode == filter.id }
 
         notifyDataSetChanged()

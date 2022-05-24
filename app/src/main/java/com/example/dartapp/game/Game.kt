@@ -57,7 +57,7 @@ class Game (private val mode: GameMode) {
         return Leg(
             endTime = time,
             durationMilli = time - startTimeMilli,
-            gameMode = mode.id.id,
+            gameMode = mode.type.id,
             dartCount = dartCount,
             servesAvg = avg,
             doubleAttempts = doubleAttempts,

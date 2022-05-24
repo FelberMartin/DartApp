@@ -39,9 +39,9 @@
         android:name="com.example.dartapp.ui.training.TrainingActivity"
         android:label="@string/training_activity_label" >
         <argument
-            android:name="mode"
-            app:argType="string"
-            android:defaultValue='"501"' />
+            android:name="gameModeId"
+            app:argType="integer"
+            android:defaultValue='1' />
     </activity>
     <fragment
         android:id="@+id/statsFragment"

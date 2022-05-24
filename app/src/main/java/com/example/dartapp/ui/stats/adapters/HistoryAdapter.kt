@@ -42,7 +42,7 @@ class HistoryAdapter(lifecycleOwner: LifecycleOwner, private val viewModel: Legs
         with(holder) {
             val leg = viewModel.legs.value?.get(position) ?: Leg()
             with (leg) {
-                val fromRaw = GameMode.ID.values().firstOrNull { it.id == gameMode }
+                val fromRaw = GameMode.Type.values().firstOrNull { it.id == gameMode }
                 binding.title.text = fromRaw?.stringRes?.let { Strings.get(it) }
 
                 binding.avgTextView.text = String.format("%.2f", servesAvg)

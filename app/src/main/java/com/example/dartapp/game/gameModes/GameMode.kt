@@ -7,7 +7,7 @@ import com.example.dartapp.game.Game
 abstract class GameMode {
 
     abstract val startPoints: Int
-    abstract val id: ID
+    abstract val type: Type
 
     abstract fun isServeValid(serve: Int, game: Game): Boolean
 
@@ -20,13 +20,28 @@ abstract class GameMode {
     }
 
 
-    enum class ID(val id: Int, @StringRes val stringRes: Int) {
+    companion object {
+        fun fromType(type: GameMode.Type): GameMode {
+            return when (type) {
+                Type.X01 -> Mode501()
+                Type.CHEAT -> CheatMode()
+
+                else -> CheatMode()
+            }
+        }
+
+        fun fromTypeId(id: Int): GameMode {
+            return fromType(Type.fromId(id))
+        }
+    }
+
+    enum class Type(val id: Int, @StringRes val stringRes: Int) {
         ALL(-1, R.string.mode_all),     // Used for selection modes in the stats table
         X01(1, R.string.mode_501_label),
         CHEAT(69, R.string.mode_cheat_label);
 
         companion object {
-            fun fromId(id: Int) : ID {
+            fun fromId(id: Int) : Type {
                 return values().first { it.id == id }
             }
         }

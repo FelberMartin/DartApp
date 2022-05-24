@@ -5,7 +5,7 @@ import com.example.dartapp.game.Game
 class CheatMode : GameMode() {
 
     override val startPoints: Int = 1
-    override val id: ID = ID.CHEAT
+    override val type: Type = Type.CHEAT
 
     override fun isServeValid(serve: Int, game: Game): Boolean {
         return true

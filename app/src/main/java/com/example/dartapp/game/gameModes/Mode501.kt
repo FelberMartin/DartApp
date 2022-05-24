@@ -8,7 +8,7 @@ class Mode501 : GameMode() {
     private val generalInvalidServes: List<Int> = listOf(163, 166, 169, 172, 173, 175, 176, 178, 179)
 
     override val startPoints: Int = 501
-    override val id: ID = ID.X01
+    override val type: Type = Type.X01
 
     override fun isServeValid(serve: Int, game: Game): Boolean {
         if (serve < 0 || serve > 180) return false

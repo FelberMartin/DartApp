@@ -20,7 +20,6 @@
     <string name="mode_501_label">501</string>
     <string name="mode_100_attempts_label">100 Attempts</string>
     <string name="mode_cheat_label">Cheat</string>
-    <string name="extra_string_mode">mode</string>
 
     <!-- TrainingActivity -->
     <string name="training_activity_label">Training</string>

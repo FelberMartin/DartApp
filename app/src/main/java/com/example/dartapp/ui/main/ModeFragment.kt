@@ -8,8 +8,8 @@ import android.widget.Button
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.example.dartapp.R
 import com.example.dartapp.databinding.FragmentModesBinding
+import com.example.dartapp.game.gameModes.GameMode
 
 /**
  * A simple [Fragment] subclass as the second destination in the navigation.
@@ -39,15 +39,12 @@ class ModeFragment : Fragment() {
         binding.layout.children.filter { it is Button }.forEach {
             val button = it as Button
             button.setOnClickListener {
-                val extraString: String = resources.getString(R.string.extra_string_mode)
-                val modeString = button.text as String
+                // TODO: replace this with the actual value depending on the button pressed.
+                //       For this change the layout of this Fragment to use a recycler view instead of a linear layout.
+                val gameModeTypeId = GameMode.Type.X01.id
 
-                val action = ModeFragmentDirections.actionModeFragmentToTrainingActivity(modeString)
+                val action = ModeFragmentDirections.actionModeFragmentToTrainingActivity(gameModeTypeId)
                 findNavController().navigate(action)
-
-//                val intent = Intent(activity, TrainingActivity::class.java)
-//                intent.putExtra(extraString, modeString)
-//                startActivity(intent)
             }
         }
     }

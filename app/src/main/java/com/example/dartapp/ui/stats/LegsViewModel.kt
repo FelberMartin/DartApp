@@ -9,13 +9,17 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
-import com.example.dartapp.database.LegDatabase
+import com.example.dartapp.database.LegDatabaseDao
 import com.example.dartapp.util.*
 import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.util.DataSet
 import java.util.*
+import javax.inject.Inject
 
-class LegsViewModel : ViewModel() {
+
+class LegsViewModel @Inject constructor(
+    private val legDatabaseDao: LegDatabaseDao
+): ViewModel() {
 
     private val categoryLimits = listOf(0, 60, 100, 140, 180)
 
@@ -46,8 +50,7 @@ class LegsViewModel : ViewModel() {
 
     fun loadAll() {
         val context = App.instance.applicationContext
-        val legTable = LegDatabase.getInstance(context).legDatabaseDao
-        legs = legTable.getAllLegs()
+        legs = legDatabaseDao.getAllLegs()
         isLoading.value = false
     }
 

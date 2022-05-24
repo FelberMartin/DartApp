@@ -53,7 +53,7 @@ class TableFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         val spinnerAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
             requireContext(),
-            android.R.layout.simple_spinner_item, GameMode.ID.values().map { Strings.get(it.stringRes) }
+            android.R.layout.simple_spinner_item, GameMode.Type.values().map { Strings.get(it.stringRes) }
         )
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.spinner.adapter = spinnerAdapter
@@ -69,8 +69,8 @@ class TableFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
     override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-        val selectedItem = GameMode.ID.values()[position]
-        val filter = GameMode.ID.values().first { it == selectedItem }
+        val selectedItem = GameMode.Type.values()[position]
+        val filter = GameMode.Type.values().first { it == selectedItem }
         tableAdapter.applyFilter(filter)
     }
 

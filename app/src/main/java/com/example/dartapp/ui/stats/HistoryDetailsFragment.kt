@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.fragment.findNavController
 import com.example.dartapp.databinding.FragmentHistoryDetailsBinding
 import com.example.dartapp.game.gameModes.GameMode
 import com.example.dartapp.util.Strings
@@ -41,8 +40,8 @@ class HistoryDetailsFragment() : Fragment() {
         }
 
         // The title shown in the navigation controller on the top
-        val gameModeId = viewModel.detailedLeg.value?.gameMode ?: GameMode.ID.X01.id
-        val gameMode = GameMode.ID.fromId(gameModeId)
+        val gameModeId = viewModel.detailedLeg.value?.gameMode ?: GameMode.Type.X01.id
+        val gameMode = GameMode.Type.fromId(gameModeId)
         (requireActivity() as AppCompatActivity).supportActionBar?.title = Strings.get(gameMode.stringRes)
 
         return binding.root

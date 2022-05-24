@@ -4,13 +4,39 @@ import android.util.Log
 import android.view.View
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.dartapp.database.LegDatabase
+import androidx.lifecycle.ViewModelProvider
+import com.example.dartapp.database.LegDatabaseDao
 import com.example.dartapp.game.FinishHelper
-import com.example.dartapp.game.gameModes.GameMode
 import com.example.dartapp.game.Game
-import com.example.dartapp.util.App
+import com.example.dartapp.game.gameModes.GameMode
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 
-class GameViewModel(private val mode: GameMode) : ViewModel() {
+
+
+class GameViewModel @AssistedInject constructor(
+    private val legDatabaseDao: LegDatabaseDao,
+    @Assisted private val mode: GameMode
+) : ViewModel() {
+
+    @AssistedFactory
+    interface GameViewModelFactory {
+        fun create(gameMode: GameMode): GameViewModel
+    }
+
+    companion object {
+        fun providesFactory(
+            assistedFactory: GameViewModel.GameViewModelFactory,
+            gameMode: GameMode
+        ): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+
+                return assistedFactory.create(gameMode) as T
+            }
+        }
+    }
 
     private val NO_DATA = "--"
 
@@ -94,11 +120,11 @@ class GameViewModel(private val mode: GameMode) : ViewModel() {
     }
 
     fun saveGameToDatabase() {
-        val db = LegDatabase.getInstance(App.instance.applicationContext)
-        val legDao = db.legDatabaseDao
-        legDao.insert(game.toLeg())
+        legDatabaseDao.insert(game.toLeg())
         Log.d("LegDatabase", "Leg stored")
     }
+
+
 
 
 
