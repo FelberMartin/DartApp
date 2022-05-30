@@ -2,6 +2,7 @@ package com.example.dartapp.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.dartapp.database.ExampleLegDatabase
 import com.example.dartapp.database.LegDatabase
 import com.example.dartapp.util.Constants.DATABASE_NAME
 import dagger.Module
@@ -27,9 +28,7 @@ object AppModule {
     @Named("example_data_db")
     fun provideExampleDataDatabase(
         @ApplicationContext context: Context
-    ) : LegDatabase {
-        return Room.databaseBuilder(context, LegDatabase::class.java, DATABASE_NAME).build()
-    }
+    ) = ExampleLegDatabase.generate(context)
 
     @Singleton
     @Provides

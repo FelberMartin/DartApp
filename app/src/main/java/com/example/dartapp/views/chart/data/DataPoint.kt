@@ -43,7 +43,7 @@ class DataPoint(var x: Any, var y: Number) {
                 DataSet.Type.STRING -> x as String
                 DataSet.Type.NUMBER -> format((x as Number))
                 DataSet.Type.DATE -> {
-                    val xLong = x as Long
+                    val xLong = (x as Number).toLong()
                     val date = Date(xLong)
                     return SimpleDateFormat.getDateInstance().format(date)
                 }

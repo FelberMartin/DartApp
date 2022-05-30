@@ -20,7 +20,7 @@ open class TableItem(
     }
 
     companion object {
-        private val upperItems = arrayListOf(
+        private val totalsAndAverages = arrayListOf(
             // TOTALS
             TableHeader(TableHeader.Category.TOTALS),
             TableItem("#Games") { it.size.toString() },
@@ -50,7 +50,7 @@ open class TableItem(
         )
 
         fun items() : List<TableItem> {
-            val items = ArrayList(upperItems)
+            val items = ArrayList(totalsAndAverages)
             items.add(TableHeader(TableHeader.Category.SERVE_DISTRIBUTION))
             items.addAll(distributionItems())
             return items
@@ -65,7 +65,7 @@ open class TableItem(
                 val itemName = if (limit == 180) "180" else "$limit+"
                 val item = TableItem(itemName) {
                     it.sumOf { leg ->
-                        val serves = Converters.toArrayListOfInts(leg.servesList)
+                        val serves = Converters.toListOfInts(leg.servesList)
                         GameUtil.countServesForCategories(serves, categories)[limit]!!}.toString()
                 }
                 items.add(item)

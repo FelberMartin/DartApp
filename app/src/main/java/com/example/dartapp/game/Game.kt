@@ -10,25 +10,25 @@ class Game (private val mode: GameMode) {
 
     var serves: ArrayList<Int> = ArrayList()
 
-    var pointsLeft: Int = startPoints
+    val pointsLeft: Int
         get() = startPoints - serves.sum()
 
-    var lastServe: Int = -1
+    val lastServe: Int
         get() {
             if (serves.isEmpty()) return -1
             return serves.last()
         }
 
-    var avg: Double = 0.0
+    val avg: Double
         get() = serves.average()
 
     var doubleAttemptsList = ArrayList<Int>()
-    var doubleAttempts: Int = 0
+    private val doubleAttempts: Int
         get() = doubleAttemptsList.sum()
 
     var unusedDartCount = 0
 
-    var dartCount = 0
+    val dartCount
         get() = serves.size * 3 - unusedDartCount
 
     private val startTimeMilli = System.currentTimeMillis()
@@ -61,8 +61,8 @@ class Game (private val mode: GameMode) {
             dartCount = dartCount,
             servesAvg = avg,
             doubleAttempts = doubleAttempts,
-            servesList = Converters.fromArrayListOfInts(serves),
-            doubleAttemptsList = Converters.fromArrayListOfInts(doubleAttemptsList),
+            servesList = Converters.fromListOfInts(serves),
+            doubleAttemptsList = Converters.fromListOfInts(doubleAttemptsList),
             checkout = serves.last()
         )
     }

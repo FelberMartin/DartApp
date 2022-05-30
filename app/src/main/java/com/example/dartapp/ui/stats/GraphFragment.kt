@@ -13,7 +13,6 @@ import com.example.dartapp.databinding.FragmentGraphBinding
 import com.example.dartapp.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.graphs.versus.VersusTypeBase
 import com.example.dartapp.views.chart.EChartType
-import com.example.dartapp.views.chart.util.DataSet
 
 
 class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
@@ -35,13 +34,13 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
         
         _binding = FragmentGraphBinding.inflate(layoutInflater)
 
-        val vm: LegsViewModel by activityViewModels()
-        this.viewModel = vm
-
         initStatsSpinner()
 
-        val dataSet = DataSet.random(count = 8, randomX = false)
-        binding.chartHolder.dataSet = DataSet()
+        val vm: LegsViewModel by activityViewModels()
+        this.viewModel = vm
+        vm.legs.observe(requireActivity()) {
+            updateDataSet()
+        }
 
         return binding.root
     }
@@ -66,7 +65,10 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
 
     private fun getSelectedVersusType() : VersusTypeBase {
         val statType = getSelectedStatType()
-        val pos = binding.spinnerVersus.selectedItemPosition
+        var pos = binding.spinnerVersus.selectedItemPosition
+        if (pos == -1)
+            pos = 0
+
         return statType.getAvailableVersusTypes()[pos]
     }
 
@@ -76,9 +78,7 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
             binding.chartHolder.chartType = getSelectedStatType().chartType
             updateVersusSpinner()
         } else if (parent?.id == R.id.spinner_versus) {
-            val legs = viewModel.legs.value ?: listOf()
-            val dataSet = getSelectedVersusType().buildDataSet(legs, getSelectedStatType()::reduceLegsToNumber)
-            binding.chartHolder.dataSet = dataSet
+            updateDataSet()
         }
 
         updateUI()
@@ -97,6 +97,12 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
             setSelection(0)
         }
 
+    }
+
+    private fun updateDataSet() {
+        val legs = viewModel.legs.value ?: listOf()
+        val dataSet = getSelectedVersusType().buildDataSet(legs, getSelectedStatType()::reduceLegsToNumber)
+        binding.chartHolder.dataSet = dataSet
     }
 
     private fun updateUI() {

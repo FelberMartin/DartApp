@@ -9,17 +9,24 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
-import com.example.dartapp.database.LegDatabaseDao
-import com.example.dartapp.util.*
+import com.example.dartapp.database.LegDatabase
+import com.example.dartapp.util.GameUtil
+import com.example.dartapp.util.dateString
+import com.example.dartapp.util.timeString
+import com.example.dartapp.util.weekDayString
 import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.util.DataSet
+import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
+import javax.inject.Named
 
-
+@HiltViewModel
 class LegsViewModel @Inject constructor(
-    private val legDatabaseDao: LegDatabaseDao
+    @Named("example_data_db") legDatabase: LegDatabase
 ): ViewModel() {
+
+    private val legDatabaseDao = legDatabase.legDatabaseDao()
 
     private val categoryLimits = listOf(0, 60, 100, 140, 180)
 
@@ -43,13 +50,12 @@ class LegsViewModel @Inject constructor(
         loadAllAsync()
     }
 
-    fun loadAllAsync() {
+    private fun loadAllAsync() {
         isLoading.value = true
         Handler(Looper.getMainLooper()).postDelayed(this::loadAll, 0)
     }
 
-    fun loadAll() {
-        val context = App.instance.applicationContext
+    private fun loadAll() {
         legs = legDatabaseDao.getAllLegs()
         isLoading.value = false
     }
@@ -65,7 +71,7 @@ class LegsViewModel @Inject constructor(
 
         average.value = String.format("%.1f", leg.servesAvg)
 
-        servesList = Converters.toArrayListOfInts(leg.servesList)
+        servesList = ArrayList(Converters.toListOfInts(leg.servesList))
 
         servesData.value = lineChartDataSet()
         categoryData.value = pieChartDataSet()

@@ -18,7 +18,10 @@ abstract class VersusTypeBase (
                 reducer.invoke(partition.value)
             )
         }
-        return DataSet(dataPoints)
+
+        val dataSet = DataSet(dataPoints)
+        dataSet.dataPointXType = dataSetType
+        return dataSet
     }
 
     protected open fun filterLegs(legs: List<Leg>) : List<Leg> {
