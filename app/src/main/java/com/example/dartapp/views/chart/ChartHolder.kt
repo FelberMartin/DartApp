@@ -11,24 +11,27 @@ class ChartHolder@JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : CardView(context, attrs, defStyleAttr) {
 
+    var replaceChartOnDataSetChange = false
+
     var chartType = EChartType.LINE_CHART
         set(value) {
-            field = value; chartTypeChanged()
+            field = value; replaceChart()
         }
 
     var dataSet = DataSet()
         set(value) {
-            field = value; chart.data = value
+            field = value
+            if (replaceChartOnDataSetChange) { replaceChart() }
         }
 
     private var _chart: Chart? = null
     val chart get() = _chart!!
 
     init {
-        chartTypeChanged()
+        replaceChart()
     }
 
-    private fun chartTypeChanged() {
+    private fun replaceChart() {
         this.removeView(_chart)
         _chart = when (chartType) {
             EChartType.LINE_CHART -> LineChart(context)

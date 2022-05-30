@@ -88,7 +88,8 @@ class BarChart @JvmOverloads constructor(
             val multiplier = if (index == selectedIndex) barSelectedSize else barDefaultSize
             val barSize = coordPixelRect.width() / data.size * multiplier
 
-            val x = coordXToPixel(index.toFloat())
+            val numericXValue = if (dp.x is Number) (dp.x as Number).toFloat() else index.toFloat()
+            val x = coordXToPixel(numericXValue)
             val yTop = coordYToPixel(dp.y.toFloat())
 
             barRects.add(RectF(x - barSize / 2, yTop,

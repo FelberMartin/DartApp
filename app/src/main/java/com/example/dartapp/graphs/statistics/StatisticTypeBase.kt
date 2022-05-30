@@ -2,6 +2,7 @@ package com.example.dartapp.graphs.statistics
 
 import com.example.dartapp.database.Leg
 import com.example.dartapp.graphs.versus.VersusTypeBase
+import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.EChartType
 
 abstract class StatisticTypeBase (
@@ -11,6 +12,8 @@ abstract class StatisticTypeBase (
 ) {
 
     abstract fun reduceLegsToNumber(legs: List<Leg>) : Number
+
+    open fun modifyChart(chart: Chart) { }
 
     fun getAvailableVersusTypes() : List<VersusTypeBase> {
         return availableVersusTypes.reduce { acc, list -> acc + list }

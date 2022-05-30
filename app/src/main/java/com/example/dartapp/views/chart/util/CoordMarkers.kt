@@ -179,7 +179,7 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
      * For finding the right marker distances
      */
     companion object {
-        private val markerDistances = listOf<Float>(0.1f, 0.2f, 0.5f, 1f, 2f, 5f, 10f, 20f,
+        private val markerDistances = listOf(0.1f, 0.2f, 0.5f, 1f, 2f, 5f, 10f, 20f,
             25f, 40f, 50f, 100f, 125f, 150f, 200f, 500f)
 
         private val bigMarkerSteps = listOf(1f, 2f, 5f)

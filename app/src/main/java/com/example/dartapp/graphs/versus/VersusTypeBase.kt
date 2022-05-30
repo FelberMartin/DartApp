@@ -1,6 +1,7 @@
 package com.example.dartapp.graphs.versus
 
 import com.example.dartapp.database.Leg
+import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.util.DataSet
 
@@ -30,5 +31,6 @@ abstract class VersusTypeBase (
 
     abstract fun partitionLegs(legs: List<Leg>) : Map<Any, List<Leg>>
 
+    open fun modifyChart(chart: Chart) {}
 
 }

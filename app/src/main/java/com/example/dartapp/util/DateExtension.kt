@@ -11,6 +11,10 @@ fun Date.timeString() : String {
     return SimpleDateFormat("HH:mm").format(this)
 }
 
+fun Date.compactDateString() : String {
+    return SimpleDateFormat("dd/MM/YY").format(this)
+}
+
 fun Date.dateString() : String {
     return SimpleDateFormat.getDateInstance().format(this)
 }

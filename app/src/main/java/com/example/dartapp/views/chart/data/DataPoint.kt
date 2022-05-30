@@ -1,8 +1,8 @@
 package com.example.dartapp.views.chart.data
 
 import com.example.dartapp.util.NumberFormatter
+import com.example.dartapp.util.compactDateString
 import com.example.dartapp.views.chart.util.DataSet
-import java.text.SimpleDateFormat
 import java.util.*
 
 class DataPoint(var x: Any, var y: Number) {
@@ -45,7 +45,7 @@ class DataPoint(var x: Any, var y: Number) {
                 DataSet.Type.DATE -> {
                     val xLong = (x as Number).toLong()
                     val date = Date(xLong)
-                    return SimpleDateFormat.getDateInstance().format(date)
+                    return date.compactDateString()
                 }
             }
         }

@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import kotlin.random.Random
 
-const val daysBack = 120
-const val maxPerDay = 3
-const val millisPerDay = 1000 * 60 * 60 * 24
-const val TAG = "ExampleLegDatabase"
+private const val daysBack = 120
+private const val maxPerDay = 3
+private const val millisPerDay = 1000L * 60 * 60 * 24
+private const val TAG = "ExampleLegDatabase"
 
 object ExampleLegDatabase {
 

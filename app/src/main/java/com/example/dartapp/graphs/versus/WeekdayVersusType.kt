@@ -12,7 +12,7 @@ class WeekdayVersusType() : VersusTypeBase("Weekdays", DataSet.Type.STRING) {
         return legs
     }
 
-    override fun partitionLegs(legs: List<Leg>): Map<Any, ArrayList<Leg>> {
+    override fun partitionLegs(legs: List<Leg>): Map<Any, List<Leg>> {
         val map = emptyWeekDayListMap()
 
         for (leg in legs) {

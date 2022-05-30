@@ -42,6 +42,8 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
             updateDataSet()
         }
 
+        binding.chartHolder.replaceChartOnDataSetChange = true
+
         return binding.root
     }
 
@@ -81,6 +83,7 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
             updateDataSet()
         }
 
+        modifyChart()
         updateUI()
     }
 
@@ -104,6 +107,15 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
         val dataSet = getSelectedVersusType().buildDataSet(legs, getSelectedStatType()::reduceLegsToNumber)
         binding.chartHolder.dataSet = dataSet
     }
+
+    private fun modifyChart() {
+        with(binding.chartHolder.chart) {
+            getSelectedStatType().modifyChart(this)
+            getSelectedVersusType().modifyChart(this)
+            reload()
+        }
+    }
+
 
     private fun updateUI() {
         updateLegend()

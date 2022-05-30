@@ -3,6 +3,7 @@ package com.example.dartapp.views.chart
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.CoordMarkers
 import com.example.dartapp.views.chart.util.DataSet
@@ -44,8 +45,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
      */
     var coordRect = RectF()
 
-    private val xMarkers = CoordMarkers(this, CoordMarkers.Axis.X)
-    private val yMarkers = CoordMarkers(this, CoordMarkers.Axis.Y)
+    val xMarkers = CoordMarkers(this, CoordMarkers.Axis.X)
+    val yMarkers = CoordMarkers(this, CoordMarkers.Axis.Y)
 
     // Rectangle representing the coordinate system's occupied area on the canvas
     protected var coordPixelRect = RectF()
@@ -114,6 +115,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
 
         handleAutoPadding()
         updateCoordSystem()
+
+        Log.d("Coords", "$coordRect")
     }
 
     /**
