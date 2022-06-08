@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.example.dartapp.databinding.FragmentHistoryDetailsBinding
 import com.example.dartapp.game.gameModes.GameMode
-import com.example.dartapp.util.Strings
+import com.example.dartapp.util.resources.Strings
 
 class HistoryDetailsFragment() : Fragment() {
 

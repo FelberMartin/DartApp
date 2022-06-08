@@ -6,7 +6,7 @@ import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
 import com.example.dartapp.util.GameUtil
 import com.example.dartapp.util.NumberFormatter
-import com.example.dartapp.util.Strings
+import com.example.dartapp.util.resources.Strings
 
 open class TableItem(
     val name: String,

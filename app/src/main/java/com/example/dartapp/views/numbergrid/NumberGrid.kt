@@ -11,8 +11,6 @@ import android.widget.LinearLayout
 import android.widget.TableLayout
 import androidx.annotation.RequiresApi
 import com.example.dartapp.R
-import com.example.dartapp.util.App
-import com.example.dartapp.util.Strings
 import com.google.android.material.button.MaterialButton
 
 

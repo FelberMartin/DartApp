@@ -1,4 +1,4 @@
-package com.example.dartapp.util
+package com.example.dartapp.util.time
 
 object TimeUtil {
 

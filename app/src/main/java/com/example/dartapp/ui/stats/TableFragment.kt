@@ -14,7 +14,7 @@ import com.example.dartapp.ui.stats.adapters.TableItemAdapter
 
 import android.widget.ArrayAdapter
 import com.example.dartapp.game.gameModes.GameMode
-import com.example.dartapp.util.Strings
+import com.example.dartapp.util.resources.Strings
 
 
 /**

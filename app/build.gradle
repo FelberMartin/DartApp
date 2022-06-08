@@ -91,4 +91,6 @@ dependencies {
     kaptAndroidTest "androidx.hilt:hilt-compiler:1.0.0"
 
 
+    // Advanced Seekbars
+    implementation 'com.github.warkiz.widget:indicatorseekbar:2.1.2'
 }

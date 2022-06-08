@@ -9,7 +9,7 @@ import com.example.dartapp.database.Leg
 import com.example.dartapp.databinding.ItemHistoryBinding
 import com.example.dartapp.game.gameModes.GameMode
 import com.example.dartapp.ui.stats.LegsViewModel
-import com.example.dartapp.util.Strings
+import com.example.dartapp.util.resources.Strings
 import com.example.dartapp.util.dateString
 import com.example.dartapp.util.timeString
 import com.example.dartapp.util.weekDayString

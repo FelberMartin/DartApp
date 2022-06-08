@@ -1,7 +1,8 @@
-package com.example.dartapp.util
+package com.example.dartapp.util.resources
 
 import android.content.Context
 import androidx.annotation.StringRes
+import com.example.dartapp.util.App
 
 object Strings {
     const val EMPTY_STRING = ""

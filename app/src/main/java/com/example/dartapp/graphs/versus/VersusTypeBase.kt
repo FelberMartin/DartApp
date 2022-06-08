@@ -1,18 +1,21 @@
 package com.example.dartapp.graphs.versus
 
 import com.example.dartapp.database.Leg
+import com.example.dartapp.graphs.filter.LegFilterBase
+import com.example.dartapp.graphs.partitioner.LegPartitioner
 import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.util.DataSet
 
 abstract class VersusTypeBase (
     val name: String,
-    val dataSetType: DataSet.Type
+    val legFilter: LegFilterBase?,
+    val legPartitioner: LegPartitioner
 ){
 
     fun buildDataSet(legs: List<Leg>, reducer: (List<Leg>) -> Number) : DataSet {
-        val filteredLegs = filterLegs(legs)
-        val partitioned = partitionLegs(filteredLegs)
+        val filteredLegs = legFilter?.filterLegs(legs) ?: legs
+        val partitioned = legPartitioner.partitionLegs(filteredLegs)
         val dataPoints = partitioned.map { partition ->
             DataPoint(
                 partition.key,
@@ -21,15 +24,13 @@ abstract class VersusTypeBase (
         }
 
         val dataSet = DataSet(dataPoints)
-        dataSet.dataPointXType = dataSetType
+        dataSet.dataPointXType = DataSet.Type.STRING
         return dataSet
     }
 
-    protected open fun filterLegs(legs: List<Leg>) : List<Leg> {
-        return legs
+    open fun filterIndexChanged(index: Int) {
+        legFilter?.filterOptionIndex = index
     }
-
-    abstract fun partitionLegs(legs: List<Leg>) : Map<Any, List<Leg>>
 
     open fun modifyChart(chart: Chart) {}
 

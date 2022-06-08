@@ -3,7 +3,7 @@ package com.example.dartapp.ui.dialogs
 import android.content.Context
 import android.os.Bundle
 import com.example.dartapp.R
-import com.example.dartapp.util.Strings
+import com.example.dartapp.util.resources.Strings
 
 class CheckoutDialog(context: Context) : FourChoicesDialog(context) {
 

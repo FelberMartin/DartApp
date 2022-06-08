@@ -4,7 +4,7 @@ import android.content.Context
 import android.widget.Button
 import androidx.annotation.StringRes
 import com.example.dartapp.R
-import com.example.dartapp.util.Strings
+import com.example.dartapp.util.resources.Strings
 
 abstract class Tile(val context: Context, var text: String) {
 

@@ -1,21 +1,16 @@
-package com.example.dartapp.graphs.versus
+package com.example.dartapp.graphs.partitioner
 
 import com.example.dartapp.database.Leg
-import com.example.dartapp.util.time.TimeUtil.MILLISECONDS_PER_DAY
+import com.example.dartapp.util.time.TimeUtil
 import com.example.dartapp.util.weekDayString
-import com.example.dartapp.views.chart.util.DataSet
 import java.util.*
 
-class WeekdayVersusType() : VersusTypeBase("Weekdays", DataSet.Type.STRING) {
+class WeekdayLegPartitioner : LegPartitioner {
 
-    override fun filterLegs(legs: List<Leg>): List<Leg> {
-        return legs
-    }
+    override fun partitionLegs(sortedLegs: List<Leg>): Map<Any, List<Leg>> {
+        val map = WeekdayLegPartitioner.emptyWeekDayListMap()
 
-    override fun partitionLegs(legs: List<Leg>): Map<Any, List<Leg>> {
-        val map = emptyWeekDayListMap()
-
-        for (leg in legs) {
+        for (leg in sortedLegs) {
             val weekDayString = Date(leg.endTime).weekDayString()
             map[weekDayString]!!.add(leg)
         }
@@ -24,15 +19,11 @@ class WeekdayVersusType() : VersusTypeBase("Weekdays", DataSet.Type.STRING) {
     }
 
     companion object {
-        val defaults = listOf(
-            WeekdayVersusType()
-        )
-
         private fun emptyWeekDayListMap() : Map<Any, ArrayList<Leg>> {
             val map = HashMap<Any, ArrayList<Leg>>()
             val now = System.currentTimeMillis()
             for (i in 0 until 7) {
-                val millisOffset = i * MILLISECONDS_PER_DAY
+                val millisOffset = i * TimeUtil.MILLISECONDS_PER_DAY
                 val then = Date(now - millisOffset)
                 map[then.weekDayString()] = ArrayList()
             }

@@ -51,6 +51,7 @@
     <!-- StatsFragment -->
     <string name="stats_fragment_label">Stats</string>
     <string name="no_data_short">No data</string>
+    <string name="calendar_week_abr">CW</string>
 
 
     <!-- HistoryFragment -->

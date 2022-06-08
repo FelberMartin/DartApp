@@ -1,5 +1,6 @@
 package com.example.dartapp.util
 
+import com.example.dartapp.util.resources.Strings
 import java.text.DecimalFormat
 
 object NumberFormatter {
