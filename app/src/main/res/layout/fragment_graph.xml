@@ -100,13 +100,17 @@
         android:layout_width="0dp"
         android:layout_height="15dp"
         android:layout_marginTop="33dp"
-        app:isb_ticks_count="5"
+        android:layout_marginHorizontal="24dp"
         app:isb_r2l="true"
+        app:isb_seek_smoothly="true"
+        app:isb_show_indicator="none"
         app:isb_show_tick_texts="true"
+        app:isb_ticks_count="5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout4" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout4"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

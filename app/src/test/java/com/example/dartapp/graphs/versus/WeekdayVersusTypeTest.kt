@@ -11,7 +11,7 @@ class WeekdayVersusTypeTest {
     @Test
     fun partitionLegs_listForEveryWeekDay() {
         val legs = listOf(Leg())
-        val result = weekdayVersusType.partitionLegs(legs)
+        val result = weekdayVersusType.legPartitioner.partitionLegs(legs)
         assertThat(result.keys.size).isEqualTo(7)
     }
 }

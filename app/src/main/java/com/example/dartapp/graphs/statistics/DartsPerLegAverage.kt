@@ -10,7 +10,7 @@ import com.example.dartapp.views.chart.LineChart
 class DartsPerLegAverage() : StatisticTypeBase(
     "Darts per Leg Avg",
     EChartType.LINE_CHART,
-    GamesVersusType.defaults, TimeVersusType.defaults
+    GamesVersusType(), TimeVersusType()
 ) {
 
     override fun reduceLegsToNumber(legs: List<Leg>): Number {

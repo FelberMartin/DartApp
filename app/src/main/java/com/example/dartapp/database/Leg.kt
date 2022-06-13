@@ -13,11 +13,11 @@ data class Leg(
     @ColumnInfo(name = "game_mode")
     var gameMode: Int = 0,
 
-    @ColumnInfo(name = "end_time_milli")
-    var endTime: Long = System.currentTimeMillis(),
+    @ColumnInfo(name = "end_time")
+    var endTime: String = "",
 
-    @ColumnInfo(name = "duration_milli")
-    var durationMilli: Long = 1000L * 60 * 10, // 10 Minutes
+    @ColumnInfo(name = "duration_seconds")
+    var duration: Long = 20 * 60L,
 
     @ColumnInfo(name = "dart_count")
     var dartCount: Int = 0,
@@ -38,7 +38,7 @@ data class Leg(
     var doubleAttemptsList: String = "",
 
 
-)
+    )
 
 
 

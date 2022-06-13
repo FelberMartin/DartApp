@@ -7,5 +7,5 @@ interface LegPartitioner {
     /**
      * Expects the passed list of legs to be sorted by the timestamp.
      */
-    fun partitionLegs(sortedLegs: List<Leg>) : Map<Any, List<Leg>>
+    fun partitionLegs(sortedLegs: List<Leg>) : Map<String, List<Leg>>
 }

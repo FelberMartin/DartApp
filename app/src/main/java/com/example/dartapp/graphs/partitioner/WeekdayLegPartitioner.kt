@@ -1,17 +1,18 @@
 package com.example.dartapp.graphs.partitioner
 
+import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
-import com.example.dartapp.util.time.TimeUtil
-import com.example.dartapp.util.weekDayString
-import java.util.*
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 class WeekdayLegPartitioner : LegPartitioner {
 
-    override fun partitionLegs(sortedLegs: List<Leg>): Map<Any, List<Leg>> {
+
+    override fun partitionLegs(sortedLegs: List<Leg>): Map<String, List<Leg>> {
         val map = WeekdayLegPartitioner.emptyWeekDayListMap()
 
         for (leg in sortedLegs) {
-            val weekDayString = Date(leg.endTime).weekDayString()
+            val weekDayString = Converters.toLocalDateTime(leg.endTime).format(weekdayFormatter)
             map[weekDayString]!!.add(leg)
         }
 
@@ -19,13 +20,14 @@ class WeekdayLegPartitioner : LegPartitioner {
     }
 
     companion object {
-        private fun emptyWeekDayListMap() : Map<Any, ArrayList<Leg>> {
-            val map = HashMap<Any, ArrayList<Leg>>()
-            val now = System.currentTimeMillis()
+        private val weekdayFormatter = DateTimeFormatter.ofPattern("EEE")
+
+        private fun emptyWeekDayListMap() : Map<String, ArrayList<Leg>> {
+            val map = mutableMapOf<String, ArrayList<Leg>>()
             for (i in 0 until 7) {
-                val millisOffset = i * TimeUtil.MILLISECONDS_PER_DAY
-                val then = Date(now - millisOffset)
-                map[then.weekDayString()] = ArrayList()
+                val then = LocalDateTime.now().minusDays(i.toLong())
+                val weekdayKey = then.format(weekdayFormatter)
+                map[weekdayKey] = ArrayList()
             }
 
             return map

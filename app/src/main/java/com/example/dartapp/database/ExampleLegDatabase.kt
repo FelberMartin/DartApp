@@ -2,11 +2,12 @@ package com.example.dartapp.database
 
 import android.content.Context
 import androidx.room.Room
+import java.time.Duration
+import java.time.LocalDateTime
 import kotlin.random.Random
 
 private const val daysBack = 120
 private const val maxPerDay = 3
-private const val millisPerDay = 1000L * 60 * 60 * 24
 private const val TAG = "ExampleLegDatabase"
 
 object ExampleLegDatabase {
@@ -40,14 +41,14 @@ object ExampleLegDatabase {
     }
 
     private fun createRandomLeg(daysBack: Int): Leg {
-        val now = System.currentTimeMillis()
+        val now = LocalDateTime.now()
         val serves = createRandomServes()
         val doubleAttempts = createRandomDoubleAttempts()
 
         return Leg(
             gameMode = 1,
-            endTime = now - daysBack * millisPerDay,
-            durationMilli = Random.nextInt(20) * 60 * 1000L,
+            endTime = Converters.fromLocalDateTime(now.minusDays(daysBack.toLong())),
+            duration = Converters.fromDuration(Duration.ofSeconds(Random.nextLong(20) * 60)),
             dartCount = serves.size * 3,
             servesAvg = serves.average(),
             doubleAttempts = doubleAttempts.size,

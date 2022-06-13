@@ -5,6 +5,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
 import com.example.dartapp.R
+import com.example.dartapp.util.replaceNaN
 import com.example.dartapp.views.chart.util.CoordMarkers
 import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.util.getAttrColor
@@ -95,8 +96,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
             coordRect = RectF()
         } else {
             // Y values
-            coordRect.top = data.minOf { dp -> dp.y.toFloat() }
-            coordRect.bottom = data.maxOf { dp -> dp.y.toFloat() }
+            coordRect.top = data.minOf { dp -> dp.y.toFloat().replaceNaN(0f) }
+            coordRect.bottom = data.maxOf { dp -> dp.y.toFloat().replaceNaN(0f) }
 
             // X values
             if (data.dataPointXType == DataSet.Type.STRING) {

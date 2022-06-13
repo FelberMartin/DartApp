@@ -11,7 +11,7 @@ import com.example.dartapp.views.chart.util.ColorManager
 class TrainingCount() : StatisticTypeBase(
     "Training count",
     EChartType.BAR_CHART,
-    TimeVersusType.defaults, WeekdayVersusType.defaults
+    TimeVersusType(), WeekdayVersusType()
 ) {
 
     override fun reduceLegsToNumber(legs: List<Leg>): Number {

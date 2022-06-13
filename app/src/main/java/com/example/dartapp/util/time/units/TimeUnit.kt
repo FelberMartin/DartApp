@@ -1,11 +1,26 @@
 package com.example.dartapp.util.time
 
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 abstract class TimeUnit(
+    private val uniquePattern: String,
+    private val uiPattern: String
  ) {
-    abstract fun toUiString(milliseconds: Long): String
-    abstract fun toIndex(milliseconds: Long): Int
-    abstract fun toStartOfUnit(milliseconds: Long): Long
-    abstract fun millisAfterGoingBack(unitCount: Int, milliseconds: Long = System.currentTimeMillis()): Long
+
+    private val uiFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(uiPattern)
+    private val uniqueFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern(uniquePattern)
+
+
+    open fun toUiString(dateTime: LocalDateTime): String {
+        return dateTime.format(uiFormatter)
+    }
+
+    open fun toUniqueString(dateTime: LocalDateTime): String {
+        return dateTime.format(uniqueFormatter)
+    }
+
+    abstract fun afterGoingBack(unitCount: Int, dateTime: LocalDateTime = LocalDateTime.now()): LocalDateTime
 }
 
 

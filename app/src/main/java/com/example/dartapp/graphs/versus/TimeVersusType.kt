@@ -13,10 +13,12 @@ class TimeVersusType() : VersusTypeBase(
     TimeLegPartitioner()
 ) {
 
-    override fun filterIndexChanged(index: Int) {
-        super.filterIndexChanged(index)
-        val timeUnit = (legFilter?.currentFilterOption()?.value as Pair<*, *>).second
-        (legPartitioner as TimeLegPartitioner).timeUnit = timeUnit as TimeUnit
+    override fun filterSeekBarIndexChanged(index: Int) {
+        super.filterSeekBarIndexChanged(index)
+        val pair = (legFilter?.currentFilterOption()?.value as Pair<Int, TimeUnit>)
+        val timeLegPartitioner = legPartitioner as TimeLegPartitioner
+        timeLegPartitioner.timeUnitCount = pair.first
+        timeLegPartitioner.timeUnit = pair.second
     }
 
     override fun modifyChart(chart: Chart) {

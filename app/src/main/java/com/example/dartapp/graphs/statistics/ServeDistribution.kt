@@ -8,7 +8,7 @@ import com.example.dartapp.views.chart.EChartType
 class ServeDistribution() : StatisticTypeBase(
     "Serve Distribution",
     EChartType.PIE_CHART,
-    GamesVersusType.defaults, TimeVersusType.defaults
+    GamesVersusType(), TimeVersusType()
 ) {
 
     override fun reduceLegsToNumber(legs: List<Leg>): Number {

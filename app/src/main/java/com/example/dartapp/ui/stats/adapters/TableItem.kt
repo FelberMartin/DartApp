@@ -5,7 +5,6 @@ import com.example.dartapp.R
 import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
 import com.example.dartapp.util.GameUtil
-import com.example.dartapp.util.NumberFormatter
 import com.example.dartapp.util.resources.Strings
 
 open class TableItem(
@@ -27,7 +26,7 @@ open class TableItem(
             TableItem("#Darts") { (it.sumOf { leg -> leg.dartCount }).toString() },
 
             TableItem("Time spent training") {
-              NumberFormatter.milliToDurationString(it.sumOf { leg -> leg.durationMilli })
+              Converters.toDuration(it.sumOf { leg -> leg.duration }).toString()
             },
 
             // AVERAGES
@@ -42,7 +41,7 @@ open class TableItem(
                 String.format("%.1f", it.map { leg -> leg.checkout }.average())
             },
             TableItem("Avg. Duration") {
-                NumberFormatter.milliToDurationString(it.map { leg -> leg.durationMilli }.average().toLong())
+                Converters.toDuration(it.map { leg -> leg.duration }.average().toLong()).toString()
             },
             TableItem("Avg. Darts/Game") {
                 String.format("%.1f", it.map { leg -> leg.dartCount }.average())

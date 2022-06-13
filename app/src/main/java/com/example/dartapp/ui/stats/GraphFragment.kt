@@ -13,6 +13,9 @@ import com.example.dartapp.databinding.FragmentGraphBinding
 import com.example.dartapp.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.graphs.versus.VersusTypeBase
 import com.example.dartapp.views.chart.EChartType
+import com.warkiz.widget.IndicatorSeekBar
+import com.warkiz.widget.OnSeekChangeListener
+import com.warkiz.widget.SeekParams
 
 
 class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
@@ -35,6 +38,7 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
         _binding = FragmentGraphBinding.inflate(layoutInflater)
 
         initStatsSpinner()
+        setSeekBarChangeListener()
 
         val vm: LegsViewModel by activityViewModels()
         this.viewModel = vm
@@ -47,6 +51,19 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
         return binding.root
     }
 
+    private fun setSeekBarChangeListener() {
+        binding.filterSeekBar.onSeekChangeListener = object : OnSeekChangeListener {
+            override fun onSeeking(seekParams: SeekParams?) {
+                getSelectedVersusType().filterSeekBarIndexChanged(seekParams?.thumbPosition ?: 0)
+                updateDataSet()
+                updateUI()
+            }
+
+            override fun onStartTrackingTouch(seekBar: IndicatorSeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: IndicatorSeekBar?) {}
+        }
+    }
+
     private fun initStatsSpinner() {
         val statsSpinnerAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
             requireContext(),
@@ -54,6 +71,7 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
             statTypes.map { type -> type.name }
         )
         statsSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
         binding.spinnerStats.apply {
             adapter = statsSpinnerAdapter
             onItemSelectedListener = this@GraphFragment
@@ -80,10 +98,10 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
             binding.chartHolder.chartType = getSelectedStatType().chartType
             updateVersusSpinner()
         } else if (parent?.id == R.id.spinner_versus) {
+            updateSeekBar()
             updateDataSet()
         }
 
-        modifyChart()
         updateUI()
     }
 
@@ -102,10 +120,34 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
 
     }
 
+    private fun updateSeekBar() {
+        val legFilter = getSelectedVersusType().legFilter
+        if (legFilter == null) {
+            binding.filterSeekBar.visibility = View.GONE
+            return
+        }
+
+        with(binding.filterSeekBar) {
+            visibility = View.VISIBLE
+            tickCount = legFilter.filterOptions.size
+            setProgress(0f)
+            getSelectedVersusType().filterSeekBarIndexChanged(0)
+            customTickTexts(legFilter.filterOptions.map { x -> x.name }.toTypedArray())
+        }
+    }
+
     private fun updateDataSet() {
         val legs = viewModel.legs.value ?: listOf()
         val dataSet = getSelectedVersusType().buildDataSet(legs, getSelectedStatType()::reduceLegsToNumber)
         binding.chartHolder.dataSet = dataSet
+    }
+
+    private fun updateUI() {
+        modifyChart()
+        updateLegend()
+
+        val noData = binding.chartHolder.dataSet.isEmpty()
+        binding.cvNoData.visibility = if (noData) View.VISIBLE else View.GONE
     }
 
     private fun modifyChart() {
@@ -114,14 +156,6 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
             getSelectedVersusType().modifyChart(this)
             reload()
         }
-    }
-
-
-    private fun updateUI() {
-        updateLegend()
-
-        val noData = binding.chartHolder.dataSet.isEmpty()
-        binding.cvNoData.visibility = if (noData) View.VISIBLE else View.GONE
     }
 
     private fun updateLegend() {

@@ -28,7 +28,7 @@ abstract class VersusTypeBase (
         return dataSet
     }
 
-    open fun filterIndexChanged(index: Int) {
+    open fun filterSeekBarIndexChanged(index: Int) {
         legFilter?.filterOptionIndex = index
     }
 

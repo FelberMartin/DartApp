@@ -3,6 +3,8 @@ package com.example.dartapp.game
 import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
 import com.example.dartapp.game.gameModes.GameMode
+import java.time.Duration
+import java.time.LocalDateTime
 
 class Game (private val mode: GameMode) {
 
@@ -31,7 +33,7 @@ class Game (private val mode: GameMode) {
     val dartCount
         get() = serves.size * 3 - unusedDartCount
 
-    private val startTimeMilli = System.currentTimeMillis()
+    private val startDateTime = LocalDateTime.now()
 
 
     fun isFinished() : Boolean {
@@ -53,10 +55,10 @@ class Game (private val mode: GameMode) {
 
 
     fun toLeg() : Leg {
-        val time = System.currentTimeMillis()
+        val now = LocalDateTime.now()
         return Leg(
-            endTime = time,
-            durationMilli = time - startTimeMilli,
+            endTime = Converters.fromLocalDateTime(now),
+            duration = Converters.fromDuration(Duration.between(startDateTime, now)),
             gameMode = mode.type.id,
             dartCount = dartCount,
             servesAvg = avg,

@@ -6,8 +6,8 @@ class PartitionCountLegPartitioner(
     private val partitionCount: Int
 ) : LegPartitioner {
 
-    override fun partitionLegs(sortedLegs: List<Leg>): Map<Any, List<Leg>> {
-        val map = mutableMapOf<Any, List<Leg>>()
+    override fun partitionLegs(sortedLegs: List<Leg>): Map<String, List<Leg>> {
+        val map = mutableMapOf<String, List<Leg>>()
         val partitionSize = calculatePartitionSize(sortedLegs)
         var index = 0
         while (index < sortedLegs.size) {

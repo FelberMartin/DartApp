@@ -8,7 +8,7 @@ import com.example.dartapp.views.chart.EChartType
 abstract class StatisticTypeBase (
     val name: String,
     val chartType: EChartType,
-    private vararg val availableVersusTypes: List<VersusTypeBase>
+    private vararg val availableVersusTypes: VersusTypeBase
 ) {
 
     abstract fun reduceLegsToNumber(legs: List<Leg>) : Number
@@ -16,7 +16,7 @@ abstract class StatisticTypeBase (
     open fun modifyChart(chart: Chart) { }
 
     fun getAvailableVersusTypes() : List<VersusTypeBase> {
-        return availableVersusTypes.reduce { acc, list -> acc + list }
+        return availableVersusTypes.toList()
     }
 
     companion object {

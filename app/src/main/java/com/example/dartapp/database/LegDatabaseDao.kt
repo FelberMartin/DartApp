@@ -21,10 +21,10 @@ interface LegDatabaseDao {
     @Query("DELETE FROM legs_table")
     fun clear()
 
-    @Query("SELECT * FROM legs_table ORDER BY end_time_milli DESC")
+    @Query("SELECT * FROM legs_table ORDER BY end_time DESC")
     fun getAllLegs(): LiveData<List<Leg>>
 
-    @Query("SELECT * FROM legs_table ORDER BY end_time_milli DESC LIMIT 1")
+    @Query("SELECT * FROM legs_table ORDER BY end_time DESC LIMIT 1")
     fun getLatestLeg(): Leg?
 
 }
