@@ -11,13 +11,10 @@ import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
 import com.example.dartapp.database.LegDatabase
 import com.example.dartapp.util.GameUtil
-import com.example.dartapp.util.dateString
-import com.example.dartapp.util.timeString
-import com.example.dartapp.util.weekDayString
 import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.util.DataSet
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.util.*
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Named
 
@@ -76,10 +73,10 @@ class LegsViewModel @Inject constructor(
         servesData.value = lineChartDataSet()
         categoryData.value = pieChartDataSet()
 
-        val date = Date(leg.endTime)
-        weekDay.value = date.weekDayString()
-        timeString.value = date.timeString()
-        dateString.value = date.dateString()
+        val date = Converters.toLocalDateTime(leg.endTime)
+        weekDay.value = date.format(DateTimeFormatter.ofPattern("EE"))
+        timeString.value = date.format(DateTimeFormatter.ofPattern("HH:mm"))
+        dateString.value = date.format(DateTimeFormatter.ofPattern("dd/MM/yy"))
     }
 
 

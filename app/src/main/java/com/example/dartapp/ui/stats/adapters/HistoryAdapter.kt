@@ -5,15 +5,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import com.example.dartapp.database.Converters
 import com.example.dartapp.database.Leg
 import com.example.dartapp.databinding.ItemHistoryBinding
 import com.example.dartapp.game.gameModes.GameMode
 import com.example.dartapp.ui.stats.LegsViewModel
 import com.example.dartapp.util.resources.Strings
-import com.example.dartapp.util.dateString
-import com.example.dartapp.util.timeString
-import com.example.dartapp.util.weekDayString
-import java.util.*
+import java.time.format.DateTimeFormatter
 
 class HistoryAdapter(lifecycleOwner: LifecycleOwner, private val viewModel: LegsViewModel) : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
 
@@ -48,10 +46,10 @@ class HistoryAdapter(lifecycleOwner: LifecycleOwner, private val viewModel: Legs
                 binding.avgTextView.text = String.format("%.2f", servesAvg)
                 binding.servesCountTextView.text = dartCount.toString()
 
-                val date = Date(endTime)
-                binding.timeTextView.text = date.timeString()
-                binding.dateTextView.text = date.dateString()
-                binding.weekdayTextView.text = date.weekDayString()
+                val date = Converters.toLocalDateTime(endTime)
+                binding.timeTextView.text = date.format(DateTimeFormatter.ofPattern("HH:mm"))
+                binding.dateTextView.text = date.format(DateTimeFormatter.ofPattern("dd/MM/yy"))
+                binding.weekdayTextView.text = date.format(DateTimeFormatter.ofPattern("EE"))
 
                 binding.layout.setOnClickListener { listener?.invoke(this) }
             }

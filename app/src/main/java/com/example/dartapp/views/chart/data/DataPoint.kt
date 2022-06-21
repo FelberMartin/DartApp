@@ -1,9 +1,11 @@
 package com.example.dartapp.views.chart.data
 
 import com.example.dartapp.util.NumberFormatter
-import com.example.dartapp.util.compactDateString
 import com.example.dartapp.views.chart.util.DataSet
-import java.util.*
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class DataPoint(var x: Any, var y: Number) {
     fun yString() : String {
@@ -44,8 +46,8 @@ class DataPoint(var x: Any, var y: Number) {
                 DataSet.Type.NUMBER -> format((x as Number))
                 DataSet.Type.DATE -> {
                     val xLong = (x as Number).toLong()
-                    val date = Date(xLong)
-                    return date.compactDateString()
+                    val date = LocalDateTime.ofInstant(Instant.ofEpochSecond(xLong), ZoneId.systemDefault())
+                    return date.format(DateTimeFormatter.ofPattern("dd/MM/yy"))
                 }
             }
         }

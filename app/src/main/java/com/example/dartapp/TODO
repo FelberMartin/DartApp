@@ -5,7 +5,7 @@
 
 TODO:
  - Stats selection
-    - Considered separating VersusTypes into Filter + Partitioner (move Partitioner to StatisticType)
+    -  draw graphs even with NaN/no values
  - ModeSelectionFragment use RecyclerView in Layout
  - Menu design
  - Multiple DataSets for bar and line charts

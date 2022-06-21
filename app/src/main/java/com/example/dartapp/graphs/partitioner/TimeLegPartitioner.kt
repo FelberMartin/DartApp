@@ -16,8 +16,6 @@ class TimeLegPartitioner() : LegPartitioner {
 
     override fun partitionLegs(sortedLegs: List<Leg>): Map<String, List<Leg>> {
         if (timeUnitCount == TimeLegFilter.ALL_TIME_COUNT) {
-            // TODO: Freezes the App
-            // TODO: draw graphs even with Nan/no values
             handleAllTimeOption(sortedLegs[0])
         }
         val oneForEachPartition = getOneForEachPartition()
@@ -40,7 +38,7 @@ class TimeLegPartitioner() : LegPartitioner {
         timeUnitCount = minimumQuarters
         val now = LocalDateTime.now()
         val firstLegEnd = Converters.toLocalDateTime(firstLeg.endTime)
-        while(now.minusMonths(timeUnitCount * 3L).isBefore(firstLegEnd)) {
+        while(now.minusMonths(timeUnitCount * 3L).isAfter(firstLegEnd)) {
             timeUnitCount++
         }
     }
