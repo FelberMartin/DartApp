@@ -34,7 +34,7 @@ class TimeLegPartitioner() : LegPartitioner {
 
     private fun handleAllTimeOption(firstLeg: Leg) {
         timeUnit = Quarter
-        val minimumQuarters = 3
+        val minimumQuarters = 2
         timeUnitCount = minimumQuarters
         val now = LocalDateTime.now()
         val firstLegEnd = Converters.toLocalDateTime(firstLeg.endTime)

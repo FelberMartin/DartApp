@@ -5,7 +5,7 @@
 
 TODO:
  - Stats selection
-    -  draw graphs even with NaN/no values
+    - Pie Chart data
  - ModeSelectionFragment use RecyclerView in Layout
  - Menu design
  - Multiple DataSets for bar and line charts

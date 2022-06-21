@@ -90,14 +90,16 @@ class LineChart @JvmOverloads constructor(
 //        linePath.reset()
         linePath.rewind()
 
-        if (data.isEmpty()) {
+        val nonNaNIndices = data.nonNaNIndices()
+
+        if (nonNaNIndices.isEmpty()) {
             return
         }
 
-        var lastPoint = inCoordSystem(0)
+        var lastPoint = inCoordSystem(nonNaNIndices[0])
         var control = lastPoint
         linePath.moveTo(lastPoint.x, lastPoint.y)
-        for (i in 0 until data.size) {
+        for (i in nonNaNIndices) {
             val nextPoint = inCoordSystem(i)
             points.add(nextPoint)
 

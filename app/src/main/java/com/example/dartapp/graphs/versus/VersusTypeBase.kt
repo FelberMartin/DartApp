@@ -29,6 +29,9 @@ abstract class VersusTypeBase (
     }
 
     open fun filterSeekBarIndexChanged(index: Int) {
+        if (legFilter?.filterOptions?.size ?: 0 <= index) {
+            return
+        }
         legFilter?.filterOptionIndex = index
     }
 

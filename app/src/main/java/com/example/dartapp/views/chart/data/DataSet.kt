@@ -25,6 +25,12 @@ class DataSet(collection: Collection<DataPoint>) : ArrayList<DataPoint>(collecti
         return DataPoint.xString(x, dataPointXType)
     }
 
+    fun nonNaNIndices() : List<Int> {
+        return this.mapIndexed { index, dataPoint -> Pair(index, dataPoint) }
+            .filter { pair -> !pair.second.y.toFloat().isNaN() }
+            .map { pair -> pair.first }
+    }
+
     companion object Generator {
 
         private val names = listOf("Apple Pie", "Silly StackOverflow questions", "Litre of Wine",

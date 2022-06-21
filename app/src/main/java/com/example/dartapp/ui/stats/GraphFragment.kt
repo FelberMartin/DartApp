@@ -34,7 +34,6 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        
         _binding = FragmentGraphBinding.inflate(layoutInflater)
 
         initStatsSpinner()
