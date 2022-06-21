@@ -2,15 +2,15 @@ package com.example.dartapp.views.chart
 
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.*
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PointF
+import android.graphics.RectF
 import android.util.AttributeSet
-import android.view.MotionEvent
 import android.view.animation.AccelerateDecelerateInterpolator
-import androidx.core.animation.doOnEnd
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.util.InfoTextBox
-import com.example.dartapp.views.chart.util.getAttrColor
 import com.google.android.material.color.MaterialColors
 import kotlin.math.*
 
@@ -56,7 +56,7 @@ class PieChart @JvmOverloads constructor(
     }
 
     var shownMaxAngle = STARTING_ANGLE_GRAD + 360f
-    override var enterAnimation = ObjectAnimator.ofFloat(
+    override var enterAnimation: ObjectAnimator? = ObjectAnimator.ofFloat(
         this, "shownMaxAngle", STARTING_ANGLE_GRAD, 360f + STARTING_ANGLE_GRAD
     ). apply {
         duration = enterAnimationDuration

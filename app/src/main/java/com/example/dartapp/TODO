@@ -6,6 +6,7 @@
 TODO:
  - Stats selection
     - Pie Chart data
+    - Test empty Database with graphs
  - ModeSelectionFragment use RecyclerView in Layout
  - Menu design
  - Multiple DataSets for bar and line charts

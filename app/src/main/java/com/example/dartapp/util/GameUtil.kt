@@ -1,17 +1,17 @@
 package com.example.dartapp.util
 
 import java.util.*
-import kotlin.collections.HashMap
 
 object GameUtil {
 
     const val MAX_VALUE_PER_SERVE = 180
+    val DEFAULT_SERVE_CATEGORIES = listOf(0, 60, 100, 140, 180)
 
     /**
      * Counts for each category all the serves between the category bound (inclusive) and the next bigger category
      * bound (exclusive).
      */
-    fun countServesForCategories(serves: List<Int>, categories: List<Int>): SortedMap<Int, Int> {
+    fun countServesForCategories(serves: List<Int>, categories: List<Int> = DEFAULT_SERVE_CATEGORIES): SortedMap<Int, Int> {
         val dividedServes = HashMap<Int, Int>()
         for ((index, limit) in categories.withIndex()) {
             var count = 0
@@ -25,6 +25,10 @@ object GameUtil {
         }
 
         return dividedServes.toSortedMap()
+    }
+
+    fun nameServeCategory(categoryLimit: Int): String {
+        return if (categoryLimit != 180) "$categoryLimit+" else "180"
     }
 
 }

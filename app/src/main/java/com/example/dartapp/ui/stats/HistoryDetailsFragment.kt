@@ -23,7 +23,7 @@ class HistoryDetailsFragment() : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         _binding = FragmentHistoryDetailsBinding.inflate(inflater, container, false)
 

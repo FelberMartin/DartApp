@@ -25,8 +25,6 @@ class LegsViewModel @Inject constructor(
 
     private val legDatabaseDao = legDatabase.legDatabaseDao()
 
-    private val categoryLimits = listOf(0, 60, 100, 140, 180)
-
     val isLoading: MutableLiveData<Boolean> = MutableLiveData(true)
 
     lateinit var legs: LiveData<List<Leg>>
@@ -92,9 +90,9 @@ class LegsViewModel @Inject constructor(
         val data = DataSet()
         data.dataPointXType = DataSet.Type.STRING
 
-        GameUtil.countServesForCategories(servesList, categoryLimits).forEach { (limit, count) ->
-            val s = if (limit != 180) "$limit+" else "180"
-            data.add(DataPoint(s, count))
+        GameUtil.countServesForCategories(servesList).forEach { (limit, count) ->
+            val categoryString = GameUtil.nameServeCategory(limit)
+            data.add(DataPoint(categoryString, count))
         }
 
         return data

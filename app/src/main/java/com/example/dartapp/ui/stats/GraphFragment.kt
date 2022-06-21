@@ -137,7 +137,7 @@ class GraphFragment : Fragment(), AdapterView.OnItemSelectedListener{
 
     private fun updateDataSet() {
         val legs = viewModel.legs.value ?: listOf()
-        val dataSet = getSelectedVersusType().buildDataSet(legs, getSelectedStatType()::reduceLegsToNumber)
+        val dataSet = getSelectedStatType().buildDataSet(legs, getSelectedVersusType())
         binding.chartHolder.dataSet = dataSet
     }
 
