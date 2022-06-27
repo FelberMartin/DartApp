@@ -16,7 +16,7 @@ class TimeLegPartitioner() : LegPartitioner {
 
     override fun partitionLegs(sortedLegs: List<Leg>): Map<String, List<Leg>> {
         if (timeUnitCount == TimeLegFilter.ALL_TIME_COUNT) {
-            handleAllTimeOption(sortedLegs[0])
+            handleAllTimeOption(sortedLegs)
         }
         val oneForEachPartition = getOneForEachPartition()
         val legsByUiKeys = mutableMapOf<String, ArrayList<Leg>>()
@@ -32,12 +32,12 @@ class TimeLegPartitioner() : LegPartitioner {
         return legsByUiKeys
     }
 
-    private fun handleAllTimeOption(firstLeg: Leg) {
+    private fun handleAllTimeOption(sortedLegs: List<Leg>) {
         timeUnit = Quarter
         val minimumQuarters = 2
         timeUnitCount = minimumQuarters
         val now = LocalDateTime.now()
-        val firstLegEnd = Converters.toLocalDateTime(firstLeg.endTime)
+        val firstLegEnd = if (sortedLegs.isNotEmpty()) Converters.toLocalDateTime(sortedLegs[0].endTime) else LocalDateTime.now()
         while(now.minusMonths(timeUnitCount * 3L).isAfter(firstLegEnd)) {
             timeUnitCount++
         }

@@ -23,6 +23,8 @@ class TrainingCount() : StatisticTypeBase(
             xStartAtZero = false
             colorManager = ColorManager.singleColor
             showXAxisMarkers = true
+            verticalAutoPadding = false
+            topAutoPadding = true
         }
     }
 }

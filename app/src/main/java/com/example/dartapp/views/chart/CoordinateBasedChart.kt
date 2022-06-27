@@ -25,9 +25,15 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : Chart(context, attrs, defStyleAttr) {
 
-    // Automatically put some dynamic padding between the border of the coordinate system
-    // and the outer values
+
+    /**
+     * Automatically puts some dynamic padding to the left and right of the x-Value extremes.
+     */
     var horizontalAutoPadding = true
+
+    /**
+     * Automatically puts some dynamic padding to the top and bottom of the y-Value extremes.
+     */
     var verticalAutoPadding = true
     var topAutoPadding = true
 

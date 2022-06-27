@@ -16,11 +16,10 @@ import com.example.dartapp.views.chart.util.DataSet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
-import javax.inject.Named
 
 @HiltViewModel
 class LegsViewModel @Inject constructor(
-    @Named("example_data_db") legDatabase: LegDatabase
+    legDatabase: LegDatabase
 ): ViewModel() {
 
     private val legDatabaseDao = legDatabase.legDatabaseDao()
