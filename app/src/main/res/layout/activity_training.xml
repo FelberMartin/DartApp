@@ -112,12 +112,13 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <!-- android:text="@{@string/optimal_finish_template(igameViewModel.finishSuggestion)}" !-->
+
                 <TextView
                     android:id="@+id/optimalFinishLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="@dimen/spacing_medium"
-                    android:text="@{@string/optimal_finish_template(gameViewModel.finishSuggestion)}"
                     android:textAlignment="textEnd"
                     android:visibility="@{gameViewModel.suggestionVisibility}"
                     app:layout_constraintBottom_toBottomOf="parent"
