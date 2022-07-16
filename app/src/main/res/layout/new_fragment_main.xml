@@ -48,7 +48,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/statistic_title_tv"
-                app:srcCompat="@drawable/app_icon" />
+                app:srcCompat="@drawable/graph_placeholder" />
 
             <com.google.android.material.button.MaterialButton
                 style="@style/Widget.Material3.Button.OutlinedButton.Icon"
@@ -120,7 +120,7 @@
                 android:id="@+id/imageView"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                app:srcCompat="@drawable/app_icon" />
+                app:srcCompat="@drawable/ic_launcher_foreground" />
 
         </com.google.android.material.card.MaterialCardView>
 
