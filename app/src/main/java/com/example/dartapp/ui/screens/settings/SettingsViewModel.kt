@@ -1,12 +1,13 @@
 package com.example.dartapp.ui.screens.settings
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dartapp.persistent.settings.SettingKey
 import com.example.dartapp.persistent.settings.SettingsStoreBase
+import com.example.dartapp.persistent.settings.options.AppearanceOption
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -14,41 +15,41 @@ class SettingsViewModel @Inject constructor(
     private val settingsStore: SettingsStoreBase
 ): ViewModel() {
 
-    private val _askForDouble = MutableLiveData<Boolean>()
-    val askForDouble: LiveData<Boolean> = _askForDouble
+    var askForDouble by mutableStateOf(SettingKey.ASK_FOR_DOUBLE.defaultValue)
+        private set
 
-    val askForCheckout = mutableStateOf(SettingKey.ASK_FOR_CHECKOUT.defaultValue)
+    var askForCheckout by mutableStateOf(SettingKey.ASK_FOR_CHECKOUT.defaultValue)
+        private set
+
+    var appearanceOption by mutableStateOf(AppearanceOption.values()[SettingKey.APPEARANCE.defaultValue])
+        private set
 
     init {
         viewModelScope.launch {
-            _askForDouble.value = settingsStore.read(SettingKey.ASK_FOR_DOUBLE)
-            askForCheckout.value = settingsStore.read(SettingKey.ASK_FOR_CHECKOUT)
+            askForDouble = settingsStore.read(SettingKey.ASK_FOR_DOUBLE)
+            askForCheckout = settingsStore.read(SettingKey.ASK_FOR_CHECKOUT)
         }
     }
 
     fun changeAskForDouble(checked: Boolean) {
         viewModelScope.launch {
             settingsStore.write(SettingKey.ASK_FOR_DOUBLE, checked)
-            _askForDouble.value = checked
+            askForDouble = checked
         }
     }
 
     fun changeAskForCheckout(checked: Boolean) {
         viewModelScope.launch {
             settingsStore.write(SettingKey.ASK_FOR_CHECKOUT, checked)
-            askForCheckout.value = checked
+            askForCheckout = checked
         }
     }
 
-//    fun readAppearanceOption(): AppearanceOption {
-//        viewModelScope.launch {
-//            AppearanceOption.values()[settingsStore.read(SettingKey.APPEARANCE)]
-//        }
-//    }
-//
-//    suspend fun writeAppearanceOption(appearanceOption: AppearanceOption) =
-//        settingsStore.write(SettingKey.APPEARANCE, appearanceOption.ordinal)
-//
-//    suspend fun <T:Any> readSetting(key: SettingKey<T>): T = settingsStore.read(key)
-//    suspend fun <T:Any> writeSetting(key: SettingKey<T>, value: T) = settingsStore.write(key, value)
+    fun changeAppearanceOption(newAppearanceOption: AppearanceOption) {
+        viewModelScope.launch {
+            settingsStore.write(SettingKey.APPEARANCE, newAppearanceOption.ordinal)
+            appearanceOption = newAppearanceOption
+        }
+    }
+
 }
