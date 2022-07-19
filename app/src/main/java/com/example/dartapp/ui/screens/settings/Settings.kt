@@ -6,6 +6,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,6 +23,8 @@ import com.example.dartapp.ui.values.Padding
 fun SettingsScreen(
     viewModel: SettingsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
 ) {
+    val askForDouble by viewModel.askForDouble.observeAsState(initial = true)
+
     Background {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -35,10 +39,10 @@ fun SettingsScreen(
 
             Section(title = "Training") {
                 TrainingSection(
-                    askForDouble = viewModel.askForDouble,
+                    askForDouble = askForDouble,
                     onAskForDoubleChange = viewModel::changeAskForDouble,
-                    askForCheckout = viewModel.askForCheckout,
-                    onAskForCheckoutChange = viewModel::changeAskForCheckout
+                    askForCheckout = true,
+                    onAskForCheckoutChange = { }
                 )
             }
         }

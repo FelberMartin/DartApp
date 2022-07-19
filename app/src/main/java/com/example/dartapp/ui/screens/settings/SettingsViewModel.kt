@@ -1,8 +1,8 @@
 package com.example.dartapp.ui.screens.settings
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dartapp.persistent.settings.SettingKey
@@ -14,30 +14,29 @@ class SettingsViewModel @Inject constructor(
     private val settingsStore: SettingsStoreBase
 ): ViewModel() {
 
-    var askForDouble by mutableStateOf(SettingKey.ASK_FOR_DOUBLE.defaultValue)
-        private set
+    private val _askForDouble = MutableLiveData<Boolean>()
+    val askForDouble: LiveData<Boolean> = _askForDouble
 
-    var askForCheckout by mutableStateOf(SettingKey.ASK_FOR_CHECKOUT.defaultValue)
-        private set
+    val askForCheckout = mutableStateOf(SettingKey.ASK_FOR_CHECKOUT.defaultValue)
 
     init {
         viewModelScope.launch {
-            askForDouble = settingsStore.read(SettingKey.ASK_FOR_DOUBLE)
-            askForCheckout = settingsStore.read(SettingKey.ASK_FOR_CHECKOUT)
+            _askForDouble.value = settingsStore.read(SettingKey.ASK_FOR_DOUBLE)
+            askForCheckout.value = settingsStore.read(SettingKey.ASK_FOR_CHECKOUT)
         }
     }
 
     fun changeAskForDouble(checked: Boolean) {
         viewModelScope.launch {
             settingsStore.write(SettingKey.ASK_FOR_DOUBLE, checked)
-            askForDouble = checked
+            _askForDouble.value = checked
         }
     }
 
     fun changeAskForCheckout(checked: Boolean) {
         viewModelScope.launch {
             settingsStore.write(SettingKey.ASK_FOR_CHECKOUT, checked)
-            askForCheckout = checked
+            askForCheckout.value = checked
         }
     }
 
