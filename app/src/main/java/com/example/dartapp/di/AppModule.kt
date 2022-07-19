@@ -5,6 +5,7 @@ import androidx.room.Room
 import com.example.dartapp.database.ExampleLegDatabase
 import com.example.dartapp.database.LegDatabase
 import com.example.dartapp.persistent.settings.SettingsStore
+import com.example.dartapp.persistent.settings.SettingsStoreBase
 import com.example.dartapp.util.Constants.DATABASE_NAME
 import dagger.Module
 import dagger.Provides
@@ -41,5 +42,5 @@ object AppModule {
     @Provides
     fun provideSettingsStore(
         @ApplicationContext context: Context
-    ) = SettingsStore(context)
+    ): SettingsStoreBase = SettingsStore(context)
 }

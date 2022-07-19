@@ -8,9 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.dartapp.persistent.settings.SettingKey
 import com.example.dartapp.persistent.settings.SettingsStoreBase
 import com.example.dartapp.persistent.settings.options.AppearanceOption
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsStore: SettingsStoreBase
 ): ViewModel() {
@@ -50,6 +52,14 @@ class SettingsViewModel @Inject constructor(
             settingsStore.write(SettingKey.APPEARANCE, newAppearanceOption.ordinal)
             appearanceOption = newAppearanceOption
         }
+    }
+
+
+    fun useDarkTheme(isSystemInDarkMode: Boolean): Boolean {
+        if (appearanceOption == AppearanceOption.DARK) {
+            return true
+        }
+        return appearanceOption == AppearanceOption.SYSTEM && isSystemInDarkMode
     }
 
 }
