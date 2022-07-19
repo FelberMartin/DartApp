@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.dartapp.database.ExampleLegDatabase
 import com.example.dartapp.database.LegDatabase
+import com.example.dartapp.persistent.settings.SettingsStore
 import com.example.dartapp.util.Constants.DATABASE_NAME
 import dagger.Module
 import dagger.Provides
@@ -35,4 +36,10 @@ object AppModule {
     fun provideShoppingDao(
         database: LegDatabase
     ) = database.legDatabaseDao()
+
+    @Singleton
+    @Provides
+    fun provideSettingsStore(
+        @ApplicationContext context: Context
+    ) = SettingsStore(context)
 }

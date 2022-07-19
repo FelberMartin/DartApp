@@ -4,7 +4,6 @@ package com.example.dartapp.database
 import androidx.test.filters.SmallTest
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
@@ -13,7 +12,6 @@ import javax.inject.Inject
 import javax.inject.Named
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @SmallTest
 @HiltAndroidTest
 class LegDatabaseDaoTest {
