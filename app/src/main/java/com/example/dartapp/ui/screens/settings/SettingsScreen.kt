@@ -11,6 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dartapp.persistent.settings.InMemorySettingsStore
 import com.example.dartapp.persistent.settings.options.AppearanceOption
+import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.RoundedTopAppBar
@@ -19,14 +20,15 @@ import com.example.dartapp.ui.values.Padding
 
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel = androidx.lifecycle.viewmodel.compose.viewModel()
+    viewModel: SettingsViewModel
 ) {
     Background {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
             RoundedTopAppBar(
-                title = "Settings"
+                title = "Settings",
+                navigationViewModel = viewModel
             )
 
             Section(title = "Appearance") {
@@ -180,7 +182,7 @@ private fun BooleanOption(
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
 fun SettingsScreenPreview() {
-    val settingsViewModel = SettingsViewModel(InMemorySettingsStore())
+    val settingsViewModel = SettingsViewModel(InMemorySettingsStore(), NavigationManager())
     DartAppTheme() {
         SettingsScreen(viewModel = settingsViewModel)
     }

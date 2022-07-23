@@ -21,13 +21,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dartapp.R
+import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.extensions.withDropShadow
 import com.example.dartapp.ui.theme.DartAppTheme
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(
+    viewModel: HomeViewModel
+) {
     Background {
         Column(
             modifier = Modifier
@@ -36,7 +39,7 @@ fun HomeScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            SettingsRow()
+            SettingsRow(viewModel::onSettingsPressed)
             StatisticsCard()
             AppIconAndName()
             PlayButtonAndModeSelection()
@@ -47,16 +50,22 @@ fun HomeScreen() {
 }
 
 @Composable
-private fun SettingsRow() {
+private fun SettingsRow(
+    onSettingsClicked: () -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.End
     ) {
-        Icon(
-            imageVector = Icons.Outlined.Settings,
-            contentDescription = "Settings",
+        IconButton(
+            onClick = onSettingsClicked,
             modifier = Modifier.size(32.dp)
-        )
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Settings,
+                contentDescription = "Settings",
+            )
+        }
     }
 }
 
@@ -76,7 +85,8 @@ private fun StatisticsCard() {
 
             Image(
                 painter = painterResource(id = R.drawable.graph_placeholder),
-                contentDescription = "Preview of statistics"
+                contentDescription = "Preview of statistics",
+                modifier = Modifier.height(240.dp)
             )
 
             OutlinedButton(
@@ -194,10 +204,12 @@ private fun ModeSelection() {
 
 }
 
-@Preview(showBackground = true, widthDp = 360, heightDp = 800)
+@Preview(showBackground = true, widthDp = 380, heightDp = 780)
 @Composable
 fun DefaultPreview() {
     DartAppTheme {
-        HomeScreen()
+        HomeScreen(
+            viewModel = HomeViewModel(NavigationManager())
+        )
     }
 }

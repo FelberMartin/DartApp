@@ -3,19 +3,21 @@ package com.example.dartapp.ui.screens.settings
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.dartapp.persistent.settings.SettingKey
 import com.example.dartapp.persistent.settings.SettingsStoreBase
 import com.example.dartapp.persistent.settings.options.AppearanceOption
+import com.example.dartapp.ui.navigation.NavigationManager
+import com.example.dartapp.ui.shared.NavigationViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsStore: SettingsStoreBase
-): ViewModel() {
+    private val settingsStore: SettingsStoreBase,
+    navigationManager: NavigationManager
+): NavigationViewModel(navigationManager) {
 
     var askForDouble by mutableStateOf(SettingKey.ASK_FOR_DOUBLE.defaultValue)
         private set

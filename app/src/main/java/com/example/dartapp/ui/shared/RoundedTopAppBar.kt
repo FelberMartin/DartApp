@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.dartapp.ui.navigation.command.NavigationCommand
 import com.example.dartapp.ui.theme.DartAppTheme
 
 @Composable
@@ -29,13 +30,27 @@ fun RoundedTopAppBar(
         navigationIcon = { Icon(
             imageVector = Icons.Default.ArrowBackIos,
             contentDescription = "Back",
-            modifier = Modifier.padding(20.dp).height(16.dp).clickable(onClick = onBackClicked ?: {})
+            modifier = Modifier
+                .padding(20.dp)
+                .height(16.dp)
+                .clickable(onClick = onBackClicked ?: {})
         ) },
         modifier = Modifier
             .shadow(8.dp, RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp), ),
         scrollBehavior = scrollBehavior
     )
 }
+
+@Composable
+fun RoundedTopAppBar(
+    title: String,
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    navigationViewModel: NavigationViewModel
+) = com.example.dartapp.ui.shared.RoundedTopAppBar(
+    title = title,
+    scrollBehavior = scrollBehavior,
+    onBackClicked = { navigationViewModel.navigate(NavigationCommand.NAVIGATE_UP) }
+)
 
 @Preview(showBackground = true, widthDp = 340, heightDp = 200)
 @Composable
