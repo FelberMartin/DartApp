@@ -3,10 +3,10 @@ package com.example.dartapp.ui.navigation.command
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavController
 
-open class NavigationDirectionCommand(
-    val arguments: List<NamedNavArgument>,
-    val destination: String
-) : NavigationCommand() {
+class NavigationDirectionCommand(
+    val destination: String,
+    val arguments: List<NamedNavArgument>
+) : NavigationCommand {
 
     override fun navigateWith(navController: NavController) {
         navController.navigate(destination)

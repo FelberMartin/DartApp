@@ -40,8 +40,8 @@ class MainActivity : ComponentActivity() {
     private fun DartApp() {
         val appearanceOption = settingsRepository.appearanceOptionFlow.collectAsState(AppearanceOption.Default)
         val navController = rememberNavController()
-        navigationManager.commands.collectAsState().value.also { command ->
-            command.navigateOnceWith(navController)
+        navigationManager.commands.collectAsState().value.also { oneTimeCommand ->
+            oneTimeCommand.use { command -> command.navigateWith(navController) }
         }
 
         DartAppTheme(
