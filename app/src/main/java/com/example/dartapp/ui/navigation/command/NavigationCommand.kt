@@ -2,16 +2,26 @@ package com.example.dartapp.ui.navigation.command
 
 import androidx.navigation.NavController
 
-interface NavigationCommand {
+abstract class NavigationCommand {
 
-    fun navigateWith(navController: NavController)
+    var executed = false
+        private set
+
+    fun navigateOnceWith(navController: NavController) {
+        if (!executed) {
+            navigateWith(navController)
+            executed = true
+        }
+    }
+
+    protected abstract fun navigateWith(navController: NavController)
 
     companion object {
-        val DO_NOTHING = object : NavigationCommand {
+        val DO_NOTHING = object : NavigationCommand() {
             override fun navigateWith(navController: NavController) {}
         }
 
-        val NAVIGATE_UP = object : NavigationCommand {
+        val NAVIGATE_UP = object : NavigationCommand() {
             override fun navigateWith(navController: NavController) {
                 navController.navigateUp()
             }

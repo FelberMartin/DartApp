@@ -4,13 +4,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.dartapp.persistent.settings.InMemorySettingsStore
-import com.example.dartapp.persistent.settings.options.AppearanceOption
+import com.example.dartapp.data.AppearanceOption
+import com.example.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
+import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
@@ -22,6 +25,10 @@ import com.example.dartapp.ui.values.Padding
 fun SettingsScreen(
     viewModel: SettingsViewModel
 ) {
+    val appearanceOption = viewModel.appearanceOption.observeAsState(AppearanceOption.SYSTEM)
+    val askForDouble = viewModel.askForDouble.observeAsState(true)
+    val askForCheckout = viewModel.askForCheckout.observeAsState(true)
+
     Background {
         Column(
             modifier = Modifier.fillMaxSize()
@@ -33,16 +40,16 @@ fun SettingsScreen(
 
             Section(title = "Appearance") {
                 AppearanceSection(
-                    appearanceOption = viewModel.appearanceOption,
+                    appearanceOption = appearanceOption,
                     onAppearanceOptionChange = viewModel::changeAppearanceOption
                 )
             }
 
             Section(title = "Training") {
                 TrainingSection(
-                    askForDouble = viewModel.askForDouble,
+                    askForDouble = askForDouble,
                     onAskForDoubleChange = viewModel::changeAskForDouble,
-                    askForCheckout = viewModel.askForCheckout,
+                    askForCheckout = askForCheckout,
                     onAskForCheckoutChange = viewModel::changeAskForCheckout
                 )
             }
@@ -83,12 +90,12 @@ private fun Section(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppearanceSection(
-    appearanceOption: AppearanceOption,
+    appearanceOption: State<AppearanceOption>,
     onAppearanceOptionChange: (AppearanceOption) -> Unit
 )  {
     Column() {
         for (option in AppearanceOption.values()) {
-            val selected = option == appearanceOption
+            val selected = option == appearanceOption.value
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.clickable {
@@ -105,7 +112,7 @@ private fun AppearanceSection(
 
                 RadioButton(
                     selected = selected,
-                    onClick = { /* Handled in row */ }
+                    onClick = null  // Handled in Row
                 )
             }
         }
@@ -116,9 +123,9 @@ private fun AppearanceSection(
 
 @Composable
 private fun TrainingSection(
-    askForDouble: Boolean,
+    askForDouble: State<Boolean>,
     onAskForDoubleChange: (Boolean) -> Unit,
-    askForCheckout: Boolean,
+    askForCheckout: State<Boolean>,
     onAskForCheckoutChange: (Boolean) -> Unit
 ) {
     Column(
@@ -127,13 +134,13 @@ private fun TrainingSection(
         BooleanOption(
             text = "Ask for double attempts",
             info = "When disabled, will not calculate a double rate for trainings.",
-            enabled = askForDouble,
+            enabled = askForDouble.value,
             onEnabledChange = onAskForDoubleChange
         )
         BooleanOption(
             text = "Ask for checkout",
             info = "When disabled, defaults to three darts thrown in the last serve.",
-            enabled = askForCheckout,
+            enabled = askForCheckout.value,
             onEnabledChange = onAskForCheckoutChange
         )
     }
@@ -165,7 +172,7 @@ private fun BooleanOption(
 
             Switch(
                 checked = enabled,
-                onCheckedChange = {  /* Handled in column */ },
+                onCheckedChange = null, // Handled in column
                 modifier = Modifier.scale(0.7f)
             )
         }
@@ -182,7 +189,7 @@ private fun BooleanOption(
 @Preview(widthDp = 360, heightDp = 800)
 @Composable
 fun SettingsScreenPreview() {
-    val settingsViewModel = SettingsViewModel(InMemorySettingsStore(), NavigationManager())
+    val settingsViewModel = SettingsViewModel(SettingsRepository(InMemoryKeyValueStorage()), NavigationManager())
     DartAppTheme() {
         SettingsScreen(viewModel = settingsViewModel)
     }

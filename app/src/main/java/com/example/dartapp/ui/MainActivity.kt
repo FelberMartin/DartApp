@@ -7,15 +7,15 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.dartapp.data.AppearanceOption
+import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.home.HomeScreen
 import com.example.dartapp.ui.screens.settings.SettingsScreen
-import com.example.dartapp.ui.screens.settings.SettingsViewModel
 import com.example.dartapp.ui.theme.DartAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -26,6 +26,9 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var navigationManager: NavigationManager
 
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -35,13 +38,14 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun DartApp() {
-        val settingsViewModel: SettingsViewModel = viewModel()
+        val appearanceOption = settingsRepository.appearanceOptionFlow.collectAsState(AppearanceOption.Default)
         val navController = rememberNavController()
         navigationManager.commands.collectAsState().value.also { command ->
-            command.navigateWith(navController)
+            command.navigateOnceWith(navController)
         }
+
         DartAppTheme(
-            useDarkTheme = settingsViewModel.useDarkTheme(isSystemInDarkTheme())
+            useDarkTheme = appearanceOption.value.useDarkTheme(isSystemInDarkTheme())
         ) {
             NavHost(
                 navController = navController,
