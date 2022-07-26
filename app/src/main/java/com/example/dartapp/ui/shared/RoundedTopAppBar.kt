@@ -1,16 +1,12 @@
 package com.example.dartapp.ui.shared
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIos
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -19,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.example.dartapp.ui.navigation.command.NavigationCommand
 import com.example.dartapp.ui.theme.DartAppTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoundedTopAppBar(
     title: String,
@@ -27,14 +24,22 @@ fun RoundedTopAppBar(
 ) {
     CenterAlignedTopAppBar(
         title = { Text(text = title) },
-        navigationIcon = { Icon(
-            imageVector = Icons.Default.ArrowBackIos,
-            contentDescription = "Back",
-            modifier = Modifier
-                .padding(20.dp)
-                .height(16.dp)
-                .clickable(onClick = onBackClicked ?: {})
-        ) },
+        navigationIcon = {
+            IconButton(
+                onClick = onBackClicked ?: {},
+                modifier = Modifier
+                    .padding(10.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "Back",
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .height(24.dp)
+
+                )
+            }
+         },
         modifier = Modifier
             .shadow(8.dp, RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp), ),
         scrollBehavior = scrollBehavior
@@ -46,7 +51,7 @@ fun RoundedTopAppBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior? = null,
     navigationViewModel: NavigationViewModel
-) = com.example.dartapp.ui.shared.RoundedTopAppBar(
+) = RoundedTopAppBar(
     title = title,
     scrollBehavior = scrollBehavior,
     onBackClicked = { navigationViewModel.navigate(NavigationCommand.NAVIGATE_UP) }

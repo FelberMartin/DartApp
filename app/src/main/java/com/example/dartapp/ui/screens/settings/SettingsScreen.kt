@@ -1,6 +1,7 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.dartapp.ui.screens.settings
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -87,7 +88,6 @@ private fun Section(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun AppearanceSection(
     appearanceOption: State<AppearanceOption>,
@@ -96,25 +96,36 @@ private fun AppearanceSection(
     Column() {
         for (option in AppearanceOption.values()) {
             val selected = option == appearanceOption.value
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.clickable {
-                    onAppearanceOptionChange(option)
-                }
-            ) {
-                Text(
-                    text = option.text,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(vertical = 10.dp)
-                        .padding(start = Padding.MediumPadding)
-                )
+            AppearanceOption(onAppearanceOptionChange, option, selected)
+        }
+    }
 
-                RadioButton(
-                    selected = selected,
-                    onClick = null  // Handled in Row
-                )
-            }
+}
+
+@Composable
+private fun AppearanceOption(
+    onAppearanceOptionChange: (AppearanceOption) -> Unit,
+    option: AppearanceOption,
+    selected: Boolean
+) {
+    TextButton(
+        onClick = { onAppearanceOptionChange(option) },
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = option.text,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier
+                    .weight(1f)
+            )
+
+            RadioButton(
+                selected = selected,
+                onClick = null,  // Handled in Row
+            )
         }
     }
 
@@ -129,7 +140,7 @@ private fun TrainingSection(
     onAskForCheckoutChange: (Boolean) -> Unit
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         BooleanOption(
             text = "Ask for double attempts",
@@ -153,37 +164,36 @@ private fun BooleanOption(
     enabled: Boolean,
     onEnabledChange: (Boolean) -> Unit
 ) {
-    Column(
-        modifier = Modifier.clickable {
-            onEnabledChange(!enabled)
-        }
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = Padding.MediumPadding)
-        ) {
+    TextButton(
+        onClick = { onEnabledChange(!enabled) },
+        shape = MaterialTheme.shapes.medium)
+    {
+        Column() {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .weight(1f)
+                )
+
+                Switch(
+                    checked = enabled,
+                    onCheckedChange = null, // Handled in column
+                    modifier = Modifier.scale(0.8f)
+                )
+            }
             Text(
-                text = text,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(vertical = 10.dp)
-            )
-
-            Switch(
-                checked = enabled,
-                onCheckedChange = null, // Handled in column
-                modifier = Modifier.scale(0.7f)
+                text = info,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.padding(bottom = 4.dp)
             )
         }
-        Text(
-            text = info,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.padding(horizontal = Padding.MediumPadding)
-        )
     }
-
 }
 
 @Preview(widthDp = 360, heightDp = 800)
