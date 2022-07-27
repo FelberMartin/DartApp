@@ -42,7 +42,7 @@ fun HomeScreen(
             SettingsRow(viewModel::onSettingsPressed)
             StatisticsCard()
             AppIconAndName()
-            PlayButtonAndModeSelection()
+            PlayButtonAndModeSelection(viewModel::onPlayPressed)
         }
     }
 
@@ -128,13 +128,15 @@ private fun AppIconAndName() {
 }
 
 @Composable
-private fun PlayButtonAndModeSelection() {
+private fun PlayButtonAndModeSelection(
+    onPlayClicked: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(bottom = 36.dp)
     ) {
         Button(
-            onClick = { /*TODO*/ },
+            onClick = onPlayClicked,
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(44.dp),

@@ -2,18 +2,21 @@ package com.example.dartapp.ui.screens.game
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.dartapp.game.Game
 import com.example.dartapp.game.numberpad.NumberPadBase
 import com.example.dartapp.game.numberpad.PerDartNumberPad
 import com.example.dartapp.game.numberpad.PerServeNumberPad
 import com.example.dartapp.ui.navigation.NavigationManager
+import com.example.dartapp.ui.navigation.command.NavigationCommand
 import com.example.dartapp.ui.shared.NavigationViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
-    navigationManager: NavigationManager,
+    val navigationManager: NavigationManager,
 ) : NavigationViewModel(navigationManager) {
 
     private val _numberPad: MutableLiveData<NumberPadBase> = MutableLiveData(PerServeNumberPad())
@@ -25,15 +28,18 @@ class GameViewModel @Inject constructor(
     private val game: Game? = null
 
     fun closeClicked() {
-        // Launch Confirm Dialog
+        // TODO: Launch Confirm Dialog
+        navigationManager.navigate(NavigationCommand.NAVIGATE_UP)
     }
 
-    suspend fun onUndoClicked() {
-        // TOOD: game.undo()
-        numberPad.value!!.clear()
+    fun onUndoClicked() {
+        viewModelScope.launch {
+            // TODO: game.undo()
+            numberPad.value!!.clear()
+        }
     }
 
-    fun onSwitchNumPadClicked() {
+    fun onSwapNumberPadClicked() {
         if (usePerServeNumberPad) {
             _numberPad.postValue(PerDartNumberPad())
         } else {
@@ -41,9 +47,24 @@ class GameViewModel @Inject constructor(
         }
     }
 
-    fun onEnterClicked() {
-        val number = numberPad.value!!.number
+    fun onNumberTyped(number: Int) {
+        viewModelScope.launch {
+            numberPad.value!!.numberTyped(number)
+        }
+    }
 
+    fun clearNumberPad() {
+        viewModelScope.launch {
+            numberPad.value!!.clear()
+        }
+    }
+
+    fun onEnterClicked() {
+        viewModelScope.launch {
+            val number = numberPad.value!!.number
+
+            numberPad.value!!.clear()
+        }
     }
 
 

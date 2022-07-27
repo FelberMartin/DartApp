@@ -29,7 +29,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun onPlayPressed() {
-        // TODO: Navigate to new Game with gameModeType
+        navigationManager.navigate(NavigationDirections.Game)
     }
 
     fun onSettingsPressed() {

@@ -14,6 +14,7 @@ import com.example.dartapp.data.AppearanceOption
 import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
+import com.example.dartapp.ui.screens.game.GameScreen
 import com.example.dartapp.ui.screens.home.HomeScreen
 import com.example.dartapp.ui.screens.settings.SettingsScreen
 import com.example.dartapp.ui.theme.DartAppTheme
@@ -60,6 +61,10 @@ class MainActivity : ComponentActivity() {
                     SettingsScreen(
                         hiltViewModel()
                     )
+                }
+
+                composable(NavigationDirections.Game.destination) {
+                    GameScreen(hiltViewModel())
                 }
 
             }

@@ -1,17 +1,17 @@
 package com.example.dartapp.game.numberpad
 
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 class PerDartNumberPad : NumberPadBase() {
 
     private var baseNumber: Int = 0
 
     private val _doubleModifierEnabled = MutableStateFlow(false)
-    val doubleModifierEnabled: StateFlow<Boolean> = _doubleModifierEnabled
+    val doubleModifierEnabled = _doubleModifierEnabled.asStateFlow()
 
     private val _tripleModifierEnabled = MutableStateFlow(false)
-    val tripleModifierEnabled: StateFlow<Boolean> = _tripleModifierEnabled
+    val tripleModifierEnabled = _tripleModifierEnabled.asStateFlow()
 
     override suspend fun numberTyped(typed: Int) {
         baseNumber = typed
@@ -33,5 +33,21 @@ class PerDartNumberPad : NumberPadBase() {
         super.clear()
         _doubleModifierEnabled.emit(false)
         _tripleModifierEnabled.emit(false)
+    }
+
+    suspend fun toggleDoubleModifier() {
+        val currentlyEnabled = doubleModifierEnabled.value
+        if (!currentlyEnabled && tripleModifierEnabled.value) {
+            _tripleModifierEnabled.emit(false)
+        }
+        _doubleModifierEnabled.emit(!currentlyEnabled)
+    }
+
+    suspend fun toggleTripleModifier() {
+        val currentlyEnabled = tripleModifierEnabled.value
+        if (!currentlyEnabled && doubleModifierEnabled.value) {
+            _doubleModifierEnabled.emit(false)
+        }
+        _tripleModifierEnabled.emit(!currentlyEnabled)
     }
 }

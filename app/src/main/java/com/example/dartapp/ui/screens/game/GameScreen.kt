@@ -12,17 +12,22 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.dartapp.game.numberpad.NumberPadBase
+import com.example.dartapp.game.numberpad.PerDartNumberPad
+import com.example.dartapp.game.numberpad.PerServeNumberPad
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.ui.values.Padding
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -131,17 +136,53 @@ private fun PlayerGameStatistic(
 private fun BottomElements(
     viewModel: GameViewModel
 ) {
+    val numberPad by viewModel.numberPad.observeAsState(PerServeNumberPad())
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.fillMaxWidth().height(450.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(450.dp)
     ) {
         CheckoutInfo()
-        NumPadInfoAndActionsRow()
+
+        NumPadInfoAndActionsRow(
+            onUndoClicked = viewModel::onUndoClicked,
+            numberState = numberPad.number.collectAsState(),
+            onSwapNumberPadClicked = viewModel::onSwapNumberPadClicked
+        )
+
+        PickNumberPadVersion(viewModel, numberPad)
+
+    }
+}
+
+@Composable
+private fun PickNumberPadVersion(
+    viewModel: GameViewModel,
+    numberPad: NumberPadBase,
+) {
+    val coroutineScope = rememberCoroutineScope()
+
+    if (viewModel.usePerServeNumberPad) {
         PerServeNumPad(
-            onDigitClicked = {},
-            onClearClicked = { /*TODO*/ },
-            onEnterClicked = {}
+            onDigitClicked = viewModel::onNumberTyped,
+            onClearClicked = viewModel::clearNumberPad,
+            onEnterClicked = viewModel::onEnterClicked
+        )
+    } else {
+        val perDartNumberPad = numberPad as PerDartNumberPad
+        val doubleEnabled by perDartNumberPad.doubleModifierEnabled.collectAsState()
+        val tripleEnabled by perDartNumberPad.tripleModifierEnabled.collectAsState()
+
+        PerDartNumPad(
+            onNumberClicked = viewModel::onNumberTyped,
+            doubleModifierEnabled = doubleEnabled,
+            onDoubleModifierClicked = { coroutineScope.launch { perDartNumberPad.toggleDoubleModifier() } },
+            tripleModifierEnabled = tripleEnabled,
+            onTripleModifierClicked = { coroutineScope.launch { perDartNumberPad.toggleTripleModifier() } },
+            onEnterClicked = viewModel::onEnterClicked
         )
     }
 }
@@ -170,13 +211,19 @@ private fun CheckoutInfo() {
 }
 
 @Composable
-private fun NumPadInfoAndActionsRow() {
+private fun NumPadInfoAndActionsRow(
+    onUndoClicked: () -> Unit,
+    numberState: State<Int>,
+    onSwapNumberPadClicked: () -> Unit
+) {
+    val number by numberState
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = onUndoClicked,
             modifier = Modifier
                 .border(1.dp, MaterialTheme.colorScheme.onBackground, shape = CircleShape)
         ) {
@@ -187,13 +234,13 @@ private fun NumPadInfoAndActionsRow() {
         }
 
         Text(
-            text = "69",
+            text = "$number",
             style = MaterialTheme.typography.displaySmall,
             color = MaterialTheme.colorScheme.secondary
         )
 
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = onSwapNumberPadClicked,
             modifier = Modifier
                 .border(1.dp, MaterialTheme.colorScheme.onBackground, shape = CircleShape)
         ) {

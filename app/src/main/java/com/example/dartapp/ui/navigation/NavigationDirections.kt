@@ -15,4 +15,9 @@ object NavigationDirections {
         destination = "settings"
     )
 
+    val Game = NavigationDirectionCommand(
+        arguments = emptyList(),
+        destination = "game"
+    )
+
 }
