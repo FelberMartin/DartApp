@@ -2,7 +2,7 @@ package com.example.dartapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.dartapp.database.LegDatabase
+import com.example.dartapp.data.persistent.database.LegDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

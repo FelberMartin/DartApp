@@ -1,7 +1,7 @@
 package com.example.dartapp.game
 
-import com.example.dartapp.database.Converters
-import com.example.dartapp.database.Leg
+import com.example.dartapp.data.persistent.database.Converters
+import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.game.gameModes.GameMode
 import java.time.Duration
 import java.time.LocalDateTime

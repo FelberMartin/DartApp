@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import com.example.dartapp.data.persistent.keyvalue.IKeyValueStorage
 import com.example.dartapp.data.persistent.keyvalue.KeyValueStorage
-import com.example.dartapp.database.ExampleLegDatabase
-import com.example.dartapp.database.LegDatabase
+import com.example.dartapp.data.persistent.database.ExampleLegDatabase
+import com.example.dartapp.data.persistent.database.LegDatabase
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.util.Constants.DATABASE_NAME
 import dagger.Module
