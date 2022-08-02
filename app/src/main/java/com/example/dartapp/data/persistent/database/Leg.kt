@@ -10,9 +10,6 @@ data class Leg(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
 
-    @ColumnInfo(name = "game_mode")
-    var gameMode: Int = 0,
-
     @ColumnInfo(name = "end_time")
     var endTime: String = "",
 

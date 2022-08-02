@@ -2,27 +2,22 @@ package com.example.dartapp.game
 
 import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.Leg
-import com.example.dartapp.game.gameModes.GameMode
+import com.example.dartapp.game.gameaction.GameActionBase
 import java.time.Duration
 import java.time.LocalDateTime
+import java.util.*
 
-class Game (private val mode: GameMode) {
+class Game() {
 
-    private val startPoints = mode.startPoints
+    private val startDateTime = LocalDateTime.now()
+    private val startPoints = 501
 
-    var serves: ArrayList<Int> = ArrayList()
+    var dartsEntered: ArrayList<Int> = ArrayList()
+    private val gameActions = Stack<GameActionBase>()
+
 
     val pointsLeft: Int
-        get() = startPoints - serves.sum()
-
-    val lastServe: Int
-        get() {
-            if (serves.isEmpty()) return -1
-            return serves.last()
-        }
-
-    val avg: Double
-        get() = serves.average()
+        get() = startPoints - dartsEntered.sum()
 
     var doubleAttemptsList = ArrayList<Int>()
     private val doubleAttempts: Int
@@ -31,37 +26,62 @@ class Game (private val mode: GameMode) {
     var unusedDartCount = 0
 
     val dartCount
-        get() = serves.size * 3 - unusedDartCount
-
-    private val startDateTime = LocalDateTime.now()
+        get() = dartsEntered.size
 
 
-    fun isFinished() : Boolean {
-        return mode.isGameFinished(this)
-    }
-
-    fun askForDoubleAttempts() : Boolean {
-        return mode.askForDoubleAttempts(this)
-    }
-
-    fun isServeValid(serve: Int) : Boolean {
-        return mode.isServeValid(serve, this)
+    fun applyAction(action: GameActionBase) {
+        gameActions.push(action)
+        action.apply(this)
     }
 
     fun undo() {
-        serves.removeLastOrNull()
-        doubleAttemptsList.removeLastOrNull()
+        if (gameActions.isNotEmpty()) {
+            gameActions.pop().undo(this)
+        }
     }
 
+    private fun getAverage(perDart: Boolean = false) : Double  {
+        if (perDart) {
+            return dartsEntered.average()
+        }
+        return getServes().average()
+    }
+
+    private fun getLast(perDart: Boolean = false) : Int {
+        if (dartsEntered.isEmpty()) {
+            return NO_LAST_VALUE
+        }
+
+        if (perDart) {
+            dartsEntered.last()
+        }
+        return getServes().last()
+    }
+
+    private fun getServes() : List<Int> {
+        val serves = ArrayList<Int>()
+        val serveCount = Math.ceil(dartsEntered.size / 3.0).toInt()
+        for (i in 0..serveCount) {
+            var sum = 0
+            for (j in 0..2) {
+                val index = i * 3 + j
+                if (index < dartsEntered.size) {
+                    sum += dartsEntered[index]
+                }
+            }
+            serves.add(sum)
+        }
+        return serves
+    }
 
     fun toLeg() : Leg {
         val now = LocalDateTime.now()
+        val serves = getServes()
         return Leg(
             endTime = Converters.fromLocalDateTime(now),
             duration = Converters.fromDuration(Duration.between(startDateTime, now)),
-            gameMode = mode.type.id,
             dartCount = dartCount,
-            servesAvg = avg,
+            servesAvg = getAverage(),
             doubleAttempts = doubleAttempts,
             servesList = Converters.fromListOfInts(serves),
             doubleAttemptsList = Converters.fromListOfInts(doubleAttemptsList),
@@ -69,6 +89,8 @@ class Game (private val mode: GameMode) {
         )
     }
 
-
+    companion object {
+        const val NO_LAST_VALUE = -1
+    }
 
 }

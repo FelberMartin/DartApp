@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.dartapp.game.Game
+import com.example.dartapp.game.gameaction.AddDartGameAction
+import com.example.dartapp.game.gameaction.AddServeGameAction
 import com.example.dartapp.game.numberpad.NumberPadBase
 import com.example.dartapp.game.numberpad.PerDartNumberPad
 import com.example.dartapp.game.numberpad.PerServeNumberPad
@@ -25,7 +27,7 @@ class GameViewModel @Inject constructor(
     val usePerServeNumberPad
         get() = numberPad.value is PerServeNumberPad
 
-    private val game: Game? = null
+    private val game = Game()
 
     fun closeClicked() {
         // TODO: Launch Confirm Dialog
@@ -34,7 +36,7 @@ class GameViewModel @Inject constructor(
 
     fun onUndoClicked() {
         viewModelScope.launch {
-            // TODO: game.undo()
+            game.undo()
             numberPad.value!!.clear()
         }
     }
@@ -61,11 +63,17 @@ class GameViewModel @Inject constructor(
 
     fun onEnterClicked() {
         viewModelScope.launch {
-            val number = numberPad.value!!.number
+            val number = numberPad.value!!.number.value
+
+            if (usePerServeNumberPad) {
+                game.applyAction(AddServeGameAction(number))
+            } else {
+                game.applyAction(AddDartGameAction(number))
+            }
 
             numberPad.value!!.clear()
         }
     }
 
-
+    // TODO: values from the game (avg, last, pointsLeft) to show in the UI
 }
