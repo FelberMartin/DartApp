@@ -3,6 +3,7 @@ package com.example.dartapp.ui.screens.game
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.dartapp.game.CheckoutTip
 import com.example.dartapp.game.Game
 import com.example.dartapp.game.gameaction.AddDartGameAction
 import com.example.dartapp.game.gameaction.AddServeGameAction
@@ -107,7 +108,9 @@ class GameViewModel @Inject constructor(
         _average.postValue(if (average != null) String.format("%.2f", average) else PLACEHOLDER_STRING)
         val lastString = game.getLast(usePerDartNumberPad)?.toString()
         _last.postValue(lastString ?: PLACEHOLDER_STRING)
+
+        _checkoutTip.postValue(CheckoutTip.checkoutTips[game.pointsLeft])
     }
 
-    // TODO: Dialogs + Invalid Serves + CheckoutTip
+    // TODO: Dialogs + Invalid Serves
 }

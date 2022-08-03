@@ -150,7 +150,7 @@ private fun BottomElements(
             .fillMaxWidth()
             .height(450.dp)
     ) {
-        CheckoutInfo()
+        CheckoutInfo(viewModel.checkoutTip.observeAsState().value)
 
         NumPadInfoAndActionsRow(
             onUndoClicked = viewModel::onUndoClicked,
@@ -193,7 +193,12 @@ private fun PickNumberPadVersion(
 }
 
 @Composable
-private fun CheckoutInfo() {
+private fun CheckoutInfo(
+    checkoutTip: String?
+) {
+    if (checkoutTip == null) {
+        return
+    }
     MyCard() {
         Row(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
@@ -208,7 +213,7 @@ private fun CheckoutInfo() {
             Spacer(Modifier.width(8.dp))
 
             Text(
-                text = "Checkout: T19 D20",
+                text = "Checkout: $checkoutTip",
                 color = MaterialTheme.colorScheme.primary
             )
         }

@@ -1,8 +1,8 @@
 package com.example.dartapp.game
 
-object FinishHelper {
+object CheckoutTip {
 
-    val finishSuggestions = mapOf<Int, String>(
+    val checkoutTips = mapOf<Int, String>(
         170 to "T20,T20,Bullseye",
         167 to "T20,T19,Bullseye",
         164 to "T20,T18,Bullseye",
