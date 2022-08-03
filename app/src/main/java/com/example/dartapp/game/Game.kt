@@ -2,6 +2,7 @@ package com.example.dartapp.game
 
 import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.Leg
+import com.example.dartapp.game.gameaction.FillServeGameAction
 import com.example.dartapp.game.gameaction.GameActionBase
 import java.time.Duration
 import java.time.LocalDateTime
@@ -40,16 +41,20 @@ class Game() {
         }
     }
 
-    private fun getAverage(perDart: Boolean = false) : Double  {
+    fun getAverage(perDart: Boolean = false) : Double?  {
+        if (dartsEntered.isEmpty()) {
+            return null
+        }
+
         if (perDart) {
             return dartsEntered.average()
         }
         return getServes().average()
     }
 
-    private fun getLast(perDart: Boolean = false) : Int {
+    fun getLast(perDart: Boolean = false) : Int? {
         if (dartsEntered.isEmpty()) {
-            return NO_LAST_VALUE
+            return null
         }
 
         if (perDart) {
@@ -58,10 +63,18 @@ class Game() {
         return getServes().last()
     }
 
+    fun completeDartsToFullServe() {
+        val started = dartCount % 3
+        if (started == 0) {
+            return
+        }
+        applyAction(FillServeGameAction(3 - started))
+    }
+
     private fun getServes() : List<Int> {
         val serves = ArrayList<Int>()
         val serveCount = Math.ceil(dartsEntered.size / 3.0).toInt()
-        for (i in 0..serveCount) {
+        for (i in 0 until serveCount) {
             var sum = 0
             for (j in 0..2) {
                 val index = i * 3 + j
@@ -81,16 +94,12 @@ class Game() {
             endTime = Converters.fromLocalDateTime(now),
             duration = Converters.fromDuration(Duration.between(startDateTime, now)),
             dartCount = dartCount,
-            servesAvg = getAverage(),
+            servesAvg = getAverage()!!,
             doubleAttempts = doubleAttempts,
             servesList = Converters.fromListOfInts(serves),
             doubleAttemptsList = Converters.fromListOfInts(doubleAttemptsList),
             checkout = serves.last()
         )
-    }
-
-    companion object {
-        const val NO_LAST_VALUE = -1
     }
 
 }

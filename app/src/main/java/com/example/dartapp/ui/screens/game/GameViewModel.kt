@@ -16,6 +16,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+const val PLACEHOLDER_STRING = "--"
+
 @HiltViewModel
 class GameViewModel @Inject constructor(
     val navigationManager: NavigationManager,
@@ -24,10 +26,29 @@ class GameViewModel @Inject constructor(
     private val _numberPad: MutableLiveData<NumberPadBase> = MutableLiveData(PerServeNumberPad())
     val numberPad: LiveData<NumberPadBase> = _numberPad
 
-    val usePerServeNumberPad
-        get() = numberPad.value is PerServeNumberPad
+    private val _pointsLeft: MutableLiveData<Int> = MutableLiveData(501)
+    val pointsLeft: LiveData<Int> = _pointsLeft
+
+    private val _dartCount = MutableLiveData(0)
+    val dartCount: LiveData<Int> = _dartCount
+
+    private val _average = MutableLiveData<String>(PLACEHOLDER_STRING)
+    val average: LiveData<String> = _average
+
+    private val _last = MutableLiveData(PLACEHOLDER_STRING)
+    val last: LiveData<String> = _last
+
+    private val _checkoutTip: MutableLiveData<String?> = MutableLiveData(null)
+    val checkoutTip: LiveData<String?> = _checkoutTip
+
+    val usePerDartNumberPad
+        get() = numberPad.value is PerDartNumberPad
 
     private val game = Game()
+
+    init {
+        updateUI()
+    }
 
     fun closeClicked() {
         // TODO: Launch Confirm Dialog
@@ -38,15 +59,18 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             game.undo()
             numberPad.value!!.clear()
+            updateUI()
         }
     }
 
     fun onSwapNumberPadClicked() {
-        if (usePerServeNumberPad) {
-            _numberPad.postValue(PerDartNumberPad())
+        if (usePerDartNumberPad) {
+            _numberPad.value = PerServeNumberPad()
+            game.completeDartsToFullServe()
         } else {
-            _numberPad.postValue(PerServeNumberPad())
+            _numberPad.value = PerDartNumberPad()
         }
+        updateUI()
     }
 
     fun onNumberTyped(number: Int) {
@@ -65,15 +89,25 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             val number = numberPad.value!!.number.value
 
-            if (usePerServeNumberPad) {
-                game.applyAction(AddServeGameAction(number))
-            } else {
+            if (usePerDartNumberPad) {
                 game.applyAction(AddDartGameAction(number))
+            } else {
+                game.applyAction(AddServeGameAction(number))
             }
 
             numberPad.value!!.clear()
+            updateUI()
         }
     }
 
-    // TODO: values from the game (avg, last, pointsLeft) to show in the UI
+    private fun updateUI() {
+        _pointsLeft.postValue(game.pointsLeft)
+        _dartCount.postValue(game.dartCount)
+        val average = game.getAverage(usePerDartNumberPad)
+        _average.postValue(if (average != null) String.format("%.2f", average) else PLACEHOLDER_STRING)
+        val lastString = game.getLast(usePerDartNumberPad)?.toString()
+        _last.postValue(lastString ?: PLACEHOLDER_STRING)
+    }
+
+    // TODO: Dialogs + Invalid Serves + CheckoutTip
 }

@@ -46,7 +46,6 @@ object ExampleLegDatabase {
         val doubleAttempts = createRandomDoubleAttempts()
 
         return Leg(
-            gameMode = 1,
             endTime = Converters.fromLocalDateTime(now.minusDays(daysBack.toLong())),
             duration = Converters.fromDuration(Duration.ofSeconds(Random.nextLong(20) * 60)),
             dartCount = serves.size * 3,

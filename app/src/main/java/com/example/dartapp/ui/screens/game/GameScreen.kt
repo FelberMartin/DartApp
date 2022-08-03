@@ -71,6 +71,11 @@ private fun TopRow(
 private fun PlayerStats(
     viewModel: GameViewModel
 ) {
+    val pointsLeft by viewModel.pointsLeft.observeAsState(0)
+    val dartCount by viewModel.dartCount.observeAsState(0)
+    val last by viewModel.last.observeAsState("")
+    val average by viewModel.average.observeAsState("")
+
     MyCard(
         modifier = Modifier
             .fillMaxWidth()
@@ -82,7 +87,7 @@ private fun PlayerStats(
                 .padding(12.dp)
         ) {
             Text(
-                text = "501",
+                text = pointsLeft.toString(),
                 style = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.Medium),
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.padding(vertical = 20.dp)
@@ -94,17 +99,17 @@ private fun PlayerStats(
             ) {
                 PlayerGameStatistic(
                     name = "Darts: ",
-                    valueString = "12"
+                    valueString = dartCount.toString()
                 )
 
                 PlayerGameStatistic(
                     name = "Last: ",
-                    valueString = "80"
+                    valueString = last
                 )
 
                 PlayerGameStatistic(
                     name = "Ø ",
-                    valueString = "56.6"
+                    valueString = average
                 )
             }
         }
@@ -165,13 +170,7 @@ private fun PickNumberPadVersion(
 ) {
     val coroutineScope = rememberCoroutineScope()
 
-    if (viewModel.usePerServeNumberPad) {
-        PerServeNumPad(
-            onDigitClicked = viewModel::onNumberTyped,
-            onClearClicked = viewModel::clearNumberPad,
-            onEnterClicked = viewModel::onEnterClicked
-        )
-    } else {
+    if (viewModel.usePerDartNumberPad) {
         val perDartNumberPad = numberPad as PerDartNumberPad
         val doubleEnabled by perDartNumberPad.doubleModifierEnabled.collectAsState()
         val tripleEnabled by perDartNumberPad.tripleModifierEnabled.collectAsState()
@@ -182,6 +181,12 @@ private fun PickNumberPadVersion(
             onDoubleModifierClicked = { coroutineScope.launch { perDartNumberPad.toggleDoubleModifier() } },
             tripleModifierEnabled = tripleEnabled,
             onTripleModifierClicked = { coroutineScope.launch { perDartNumberPad.toggleTripleModifier() } },
+            onEnterClicked = viewModel::onEnterClicked
+        )
+    } else {
+        PerServeNumPad(
+            onDigitClicked = viewModel::onNumberTyped,
+            onClearClicked = viewModel::clearNumberPad,
             onEnterClicked = viewModel::onEnterClicked
         )
     }

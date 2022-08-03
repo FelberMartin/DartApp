@@ -41,6 +41,7 @@ class PerDartNumberPad : NumberPadBase() {
             _tripleModifierEnabled.emit(false)
         }
         _doubleModifierEnabled.emit(!currentlyEnabled)
+        recomputeNumber()
     }
 
     suspend fun toggleTripleModifier() {
@@ -49,5 +50,6 @@ class PerDartNumberPad : NumberPadBase() {
             _doubleModifierEnabled.emit(false)
         }
         _tripleModifierEnabled.emit(!currentlyEnabled)
+        recomputeNumber()
     }
 }
