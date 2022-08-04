@@ -1,5 +1,8 @@
 package com.example.dartapp.ui.screens.game
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -11,7 +14,7 @@ import com.example.dartapp.game.numberpad.NumberPadBase
 import com.example.dartapp.game.numberpad.PerDartNumberPad
 import com.example.dartapp.game.numberpad.PerServeNumberPad
 import com.example.dartapp.ui.navigation.NavigationManager
-import com.example.dartapp.ui.navigation.command.NavigationCommand
+import com.example.dartapp.ui.screens.game.dialog.DialogUiState
 import com.example.dartapp.ui.shared.NavigationViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -48,6 +51,9 @@ class GameViewModel @Inject constructor(
     val usePerDartNumberPad
         get() = numberPad.value is PerDartNumberPad
 
+    var dialogUiState by mutableStateOf(DialogUiState())
+        private set
+
     private val game = Game()
 
     init {
@@ -55,8 +61,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun closeClicked() {
-        // TODO: Launch Confirm Dialog
-        navigationManager.navigate(NavigationCommand.NAVIGATE_UP)
+        dialogUiState = DialogUiState(exitDialogOpen = true)
     }
 
     fun onUndoClicked() {
@@ -127,6 +132,10 @@ class GameViewModel @Inject constructor(
 
         _checkoutTip.postValue(CheckoutTip.checkoutTips[game.pointsLeft])
         updateEnterButton()
+    }
+
+    fun dismissExitDialog() {
+        dialogUiState = DialogUiState(exitDialogOpen = false)
     }
 
     // TODO: Dialogs

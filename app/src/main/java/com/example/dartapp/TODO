@@ -4,11 +4,5 @@
 ===========================================
 
 TODO:
- - Stats selection
-    - Test empty Database with graphs
- - ModeSelectionFragment use RecyclerView in Layout
- - Menu design
- - Multiple DataSets for bar and line charts
- - gradient code in LineChart
- - Selection animations
- - UIStrings from YT tutorial (clean access without context)
+ - Fix App Icon
+ - Decide on App primary Color

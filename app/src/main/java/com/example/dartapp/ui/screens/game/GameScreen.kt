@@ -23,6 +23,8 @@ import com.example.dartapp.game.numberpad.NumberPadBase
 import com.example.dartapp.game.numberpad.PerDartNumberPad
 import com.example.dartapp.game.numberpad.PerServeNumberPad
 import com.example.dartapp.ui.navigation.NavigationManager
+import com.example.dartapp.ui.navigation.command.NavigationCommand
+import com.example.dartapp.ui.screens.game.dialog.ExitDialog
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.theme.DartAppTheme
@@ -49,6 +51,8 @@ fun GameScreen(
             }
         }
     }
+
+    showDialogs(viewModel)
 }
 
 @Composable
@@ -261,6 +265,19 @@ private fun NumPadInfoAndActionsRow(
                 imageVector = Icons.Default.AppRegistration,
                 contentDescription = "Change NumPad Layout"
             )
+        }
+    }
+}
+
+@Composable
+private fun showDialogs(viewModel: GameViewModel) {
+    val uiState = viewModel.dialogUiState
+    if (uiState.exitDialogOpen) {
+        ExitDialog(
+            dialogOpen = uiState.exitDialogOpen,
+            onDismissDialog = viewModel::dismissExitDialog) {
+            viewModel.dismissExitDialog()
+            viewModel.navigate(NavigationCommand.NAVIGATE_UP)
         }
     }
 }
