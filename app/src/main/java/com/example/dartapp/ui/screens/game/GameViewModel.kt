@@ -42,6 +42,9 @@ class GameViewModel @Inject constructor(
     private val _checkoutTip: MutableLiveData<String?> = MutableLiveData(null)
     val checkoutTip: LiveData<String?> = _checkoutTip
 
+    private val _enterDisabled = MutableLiveData(false)
+    val enterDisabled: LiveData<Boolean> = _enterDisabled
+
     val usePerDartNumberPad
         get() = numberPad.value is PerDartNumberPad
 
@@ -75,29 +78,42 @@ class GameViewModel @Inject constructor(
     }
 
     fun onNumberTyped(number: Int) {
+        if (numberPad.value!!.number.value >= 100) {
+            return
+        }
         viewModelScope.launch {
             numberPad.value!!.numberTyped(number)
+            updateEnterButton()
         }
+    }
+
+    private fun updateEnterButton() {
+        val number = numberPad.value!!.number.value
+        val valid = game.isNumberValid(number, usePerDartNumberPad)
+        _enterDisabled.postValue(!valid)
     }
 
     fun clearNumberPad() {
         viewModelScope.launch {
             numberPad.value!!.clear()
+            updateEnterButton()
         }
     }
 
     fun onEnterClicked() {
         viewModelScope.launch {
             val number = numberPad.value!!.number.value
-
-            if (usePerDartNumberPad) {
-                game.applyAction(AddDartGameAction(number))
-            } else {
-                game.applyAction(AddServeGameAction(number))
-            }
-
+            enterNumberToGame(number)
             numberPad.value!!.clear()
             updateUI()
+        }
+    }
+
+    private fun enterNumberToGame(number: Int) {
+        if (usePerDartNumberPad) {
+            game.applyAction(AddDartGameAction(number))
+        } else {
+            game.applyAction(AddServeGameAction(number))
         }
     }
 
@@ -110,7 +126,8 @@ class GameViewModel @Inject constructor(
         _last.postValue(lastString ?: PLACEHOLDER_STRING)
 
         _checkoutTip.postValue(CheckoutTip.checkoutTips[game.pointsLeft])
+        updateEnterButton()
     }
 
-    // TODO: Dialogs + Invalid Serves
+    // TODO: Dialogs
 }

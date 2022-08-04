@@ -4,6 +4,7 @@ import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.game.gameaction.FillServeGameAction
 import com.example.dartapp.game.gameaction.GameActionBase
+import com.example.dartapp.util.GameUtil
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
@@ -70,6 +71,32 @@ class Game() {
         }
         applyAction(FillServeGameAction(3 - started))
     }
+
+    fun isNumberValid(number: Int, singleDart: Boolean) : Boolean {
+        if (singleDart) {
+            return isDartValid(number)
+        } else {
+            return isServeValid(number)
+        }
+    }
+
+    private fun isServeValid(serve: Int) : Boolean {
+        if (serve > 180) {
+            return false
+        }
+        if (pointsLeft - serve < 0) {
+            return false
+        }
+        if (GameUtil.INVALID_SERVES.contains(serve)) {
+            return false
+        }
+        return true
+    }
+
+    private fun isDartValid(dart: Int) : Boolean {
+        return pointsLeft - dart >= 0
+    }
+
 
     private fun getServes() : List<Int> {
         val serves = ArrayList<Int>()

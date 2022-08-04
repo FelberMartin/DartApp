@@ -169,6 +169,7 @@ private fun PickNumberPadVersion(
     numberPad: NumberPadBase,
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val enterDisabled by viewModel.enterDisabled.observeAsState(false)
 
     if (viewModel.usePerDartNumberPad) {
         val perDartNumberPad = numberPad as PerDartNumberPad
@@ -181,13 +182,15 @@ private fun PickNumberPadVersion(
             onDoubleModifierClicked = { coroutineScope.launch { perDartNumberPad.toggleDoubleModifier() } },
             tripleModifierEnabled = tripleEnabled,
             onTripleModifierClicked = { coroutineScope.launch { perDartNumberPad.toggleTripleModifier() } },
-            onEnterClicked = viewModel::onEnterClicked
+            onEnterClicked = viewModel::onEnterClicked,
+            enterDisabled = enterDisabled
         )
     } else {
         PerServeNumPad(
             onDigitClicked = viewModel::onNumberTyped,
             onClearClicked = viewModel::clearNumberPad,
-            onEnterClicked = viewModel::onEnterClicked
+            onEnterClicked = viewModel::onEnterClicked,
+            enterDisabled = enterDisabled
         )
     }
 }

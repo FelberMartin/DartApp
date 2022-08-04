@@ -15,7 +15,8 @@ import com.example.dartapp.ui.theme.DartAppTheme
 fun PerServeNumPad(
     onDigitClicked: (Int) -> Unit,
     onClearClicked: () -> Unit,
-    onEnterClicked: () -> Unit
+    onEnterClicked: () -> Unit,
+    enterDisabled: Boolean = false
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -33,7 +34,7 @@ fun PerServeNumPad(
         ) {
             ClearButton(onClearClicked = onClearClicked)
             NumberButton(onNumberClicked = onDigitClicked, number = 0)
-            EnterButton(onEnterClicked = onEnterClicked)
+            EnterButton(onEnterClicked = onEnterClicked, disabled = enterDisabled)
         }
     }
 }
@@ -45,7 +46,8 @@ fun PerDartNumPad(
     onDoubleModifierClicked: () -> Unit,
     tripleModifierEnabled: Boolean,
     onTripleModifierClicked: () -> Unit,
-    onEnterClicked: () -> Unit
+    onEnterClicked: () -> Unit,
+    enterDisabled: Boolean = false
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -65,7 +67,7 @@ fun PerDartNumPad(
             BullsEyeButton(onNumberClicked = onNumberClicked, tripleModifierEnabled = tripleModifierEnabled)
             ModifierButton(text = "2x", enabled = doubleModifierEnabled, onClicked = onDoubleModifierClicked)
             ModifierButton(text = "3x", enabled = tripleModifierEnabled, onClicked = onTripleModifierClicked)
-            EnterButton(onEnterClicked = onEnterClicked)
+            EnterButton(onEnterClicked = onEnterClicked, disabled = enterDisabled)
         }
     }
 }
@@ -133,11 +135,16 @@ private fun RowScope.ClearButton(
 @Composable
 private fun RowScope.EnterButton(
     onEnterClicked: () -> Unit,
+    disabled: Boolean = false
 ) {
     OutlinedButton(
         onClick = onEnterClicked,
         shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primary),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            disabledContainerColor = MaterialTheme.colorScheme.secondary
+        ),
+        enabled = !disabled,
         modifier = Modifier
             .fillMaxHeight()
             .weight(1f)
