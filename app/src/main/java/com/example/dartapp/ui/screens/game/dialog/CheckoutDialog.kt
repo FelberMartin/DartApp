@@ -16,14 +16,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun CheckoutDialog(
-    dialogOpen: Boolean,
     minimumRequiredDarts: Int,
     onNumberClicked: (Int) -> Unit
 ) {
-    if (!dialogOpen) {
-        return
-    }
-
     AlertDialog(
         onDismissRequest = { },
         title = {
@@ -57,7 +52,6 @@ fun CheckoutDialog(
 @Composable
 private fun CheckoutDialogPreview() {
     CheckoutDialog(
-        dialogOpen = true,
         minimumRequiredDarts = 2,
         onNumberClicked = {}
     )

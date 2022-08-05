@@ -16,13 +16,8 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun DoubleAttemptsDialog(
-    dialogOpen: Boolean,
     onNumberClicked: (Int) -> Unit
 ) {
-    if (!dialogOpen) {
-        return
-    }
-
     AlertDialog(
         onDismissRequest = { },
         title = {
@@ -55,7 +50,6 @@ fun DoubleAttemptsDialog(
 @Composable
 private fun DoubleAttemptsDialogPreview() {
     DoubleAttemptsDialog(
-        dialogOpen = true,
         onNumberClicked = {}
     )
 }

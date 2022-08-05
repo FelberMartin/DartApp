@@ -28,7 +28,7 @@ class Game() {
     var unusedDartCount = 0
 
     val dartCount
-        get() = dartsEntered.size
+        get() = dartsEntered.size - unusedDartCount
 
 
     fun applyAction(action: GameActionBase) {

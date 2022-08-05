@@ -1,7 +1,12 @@
 package com.example.dartapp.ui.screens.game.dialog
 
 data class DialogUiState(
-    val exitDialogOpen: Boolean = false,
-    val doubleAttemptsDialogOpen: Boolean = false,
-    val checkoutDialogOpen: Boolean = false
-)
+    var exitDialogOpen: Boolean = false,
+    var simpleDoubleAttemptsDialogOpen: Boolean = false,
+    var doubleAttemptsDialogOpen: Boolean = false,
+    var checkoutDialogOpen: Boolean = false,
+) {
+    fun anyDialogOpen() : Boolean {
+        return exitDialogOpen || simpleDoubleAttemptsDialogOpen || doubleAttemptsDialogOpen || checkoutDialogOpen
+    }
+}

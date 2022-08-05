@@ -1,4 +1,4 @@
-package com.example.dartapp.game
+package com.example.dartapp.util
 
 object CheckoutTip {
 

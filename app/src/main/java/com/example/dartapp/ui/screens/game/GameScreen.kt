@@ -19,12 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
+import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.game.numberpad.NumberPadBase
 import com.example.dartapp.game.numberpad.PerDartNumberPad
 import com.example.dartapp.game.numberpad.PerServeNumberPad
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.navigation.command.NavigationCommand
-import com.example.dartapp.ui.screens.game.dialog.ExitDialog
+import com.example.dartapp.ui.screens.game.dialog.*
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.theme.DartAppTheme
@@ -271,14 +273,41 @@ private fun NumPadInfoAndActionsRow(
 
 @Composable
 private fun showDialogs(viewModel: GameViewModel) {
-    val uiState = viewModel.dialogUiState
+    val uiState by viewModel.dialogUiState.observeAsState(DialogUiState())
+    val legFinished by viewModel.legFinished.observeAsState(false)
+
     if (uiState.exitDialogOpen) {
         ExitDialog(
-            dialogOpen = uiState.exitDialogOpen,
             onDismissDialog = viewModel::dismissExitDialog) {
             viewModel.dismissExitDialog()
             viewModel.navigate(NavigationCommand.NAVIGATE_UP)
         }
+    }
+
+    if (uiState.simpleDoubleAttemptsDialogOpen) {
+        SimpleDoubleAttemptsDialog(
+            onAttemptClicked = viewModel::simpleDoubleAttemptsEntered
+        )
+    }
+
+    if (uiState.doubleAttemptsDialogOpen) {
+        DoubleAttemptsDialog(
+            onNumberClicked = viewModel::doubleAttemptsEntered
+        )
+    }
+
+    if (uiState.checkoutDialogOpen) {
+        CheckoutDialog(
+            minimumRequiredDarts = viewModel.getLastDoubleAttempts(),
+            onNumberClicked = viewModel::checkoutDartsEntered
+        )
+    }
+
+    if (legFinished) {
+        LegFinishedDialog(
+            onPlayAgainClicked = viewModel::onPlayAgainClicked,
+            onMenuClicked = { viewModel.navigate(NavigationCommand.NAVIGATE_UP) }
+        )
     }
 }
 
@@ -288,7 +317,7 @@ private fun showDialogs(viewModel: GameViewModel) {
 @Composable
 private fun GameScreenPreview() {
     DartAppTheme() {
-        val viewModel = GameViewModel(NavigationManager())
+        val viewModel = GameViewModel(NavigationManager(), SettingsRepository(InMemoryKeyValueStorage()))
         GameScreen(viewModel)
     }
 }

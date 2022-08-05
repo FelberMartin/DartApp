@@ -14,14 +14,9 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun ExitDialog(
-    dialogOpen: Boolean,
     onDismissDialog: () -> Unit,
     onExitClicked: () -> Unit
 ) {
-    if (!dialogOpen) {
-        return
-    }
-
     AlertDialog(
         onDismissRequest = onDismissDialog,
         title = {
@@ -51,7 +46,6 @@ fun ExitDialog(
 @Composable
 private fun ExitDialogPreview() {
     ExitDialog(
-        dialogOpen = true,
         onDismissDialog = {}
     ) {}
 }
