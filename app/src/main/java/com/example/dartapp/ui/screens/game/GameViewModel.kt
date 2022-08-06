@@ -1,9 +1,6 @@
 package com.example.dartapp.ui.screens.game
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.game.Game
 import com.example.dartapp.game.gameaction.AddDartGameAction
@@ -16,7 +13,9 @@ import com.example.dartapp.ui.screens.game.dialog.DialogUiState
 import com.example.dartapp.ui.shared.NavigationViewModel
 import com.example.dartapp.util.CheckoutTip
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -55,17 +54,20 @@ class GameViewModel @Inject constructor(
     val usePerDartNumberPad
         get() = numberPad.value is PerDartNumberPad
 
-    private val _dialogUiState = MutableLiveData(DialogUiState())
-    val dialogUiState: LiveData<DialogUiState> = _dialogUiState
+    private val _dialogUiState = MutableStateFlow(DialogUiState())
+    val dialogUiState: LiveData<DialogUiState> = _dialogUiState.asLiveData()
 
     private var game = Game()
 
     init {
         updateUI()
+        checkLegFinished { legFinished() }
     }
 
     fun closeClicked() {
-        dialogUiState.value!!.exitDialogOpen = true
+        _dialogUiState.update { currentState ->
+            currentState.copy(exitDialogOpen = true)
+        }
     }
 
     fun onUndoClicked() {
@@ -117,33 +119,33 @@ class GameViewModel @Inject constructor(
             enterNumberToGame(number)
             numberPad.value!!.clear()
             updateUI()
-            checkLegFinished()
         }
     }
 
     private suspend fun enterNumberToGame(number: Int) {
         if (usePerDartNumberPad) {
             game.applyAction(AddDartGameAction(number))
-            if (shouldShowSimpleDoubleAttemptDialog()) {
-                dialogUiState.value!!.simpleDoubleAttemptsDialogOpen = true
-            }
         } else {
             game.applyAction(AddServeGameAction(number))
-            if (shouldShowDoubleAttemptsDialog()) {
-                dialogUiState.value!!.doubleAttemptsDialogOpen = true
-            }
         }
 
+        _dialogUiState.update { state ->
+            state.copy(
+                simpleDoubleAttemptsDialogOpen = shouldShowSimpleDoubleAttemptDialog(number),
+                doubleAttemptsDialogOpen = shouldShowDoubleAttemptsDialog(),
+                checkoutDialogOpen = shouldShowCheckoutDialog()
+            )
+        }
     }
 
-    private suspend fun shouldShowSimpleDoubleAttemptDialog() : Boolean {
+    private suspend fun shouldShowSimpleDoubleAttemptDialog(lastDart: Int) : Boolean {
         if (!usePerDartNumberPad) {
             return false
         }
-        if (!settingsRepository.askForDoubleFlow.last()) {
+        if (!settingsRepository.askForDoubleFlow.first()) {
             return false
         }
-        val points = game.pointsLeft
+        val points = game.pointsLeft + lastDart
         return points % 2 == 0 && (points == 50 || points <= 40)
     }
 
@@ -151,7 +153,7 @@ class GameViewModel @Inject constructor(
         if (usePerDartNumberPad) {
             return false
         }
-        if (settingsRepository.askForDoubleFlow.last()) {
+        if (!settingsRepository.askForDoubleFlow.first()) {
             return false
         }
         return CheckoutTip.checkoutTips.contains(pointsLeft.value!!)
@@ -170,24 +172,22 @@ class GameViewModel @Inject constructor(
     }
 
     fun dismissExitDialog() {
-        dialogUiState.value!!.exitDialogOpen = false
+        _dialogUiState.update { state -> state.copy(exitDialogOpen = false) }
     }
 
     fun simpleDoubleAttemptsEntered(attempt: Boolean) {
         if (attempt) {
             game.doubleAttemptsList.add(1)
         }
-        dialogUiState.value!!.simpleDoubleAttemptsDialogOpen = false
+        _dialogUiState.update { state -> state.copy(simpleDoubleAttemptsDialogOpen = false) }
     }
 
     fun doubleAttemptsEntered(attempts: Int) {
         game.doubleAttemptsList.add(attempts)
 
         viewModelScope.launch {
-            if (shouldShowCheckoutDialog()) {
-                dialogUiState.value!!.checkoutDialogOpen = true
-            } else {
-                dialogUiState.value!!.doubleAttemptsDialogOpen = false
+            _dialogUiState.update { state ->
+                state.copy(doubleAttemptsDialogOpen = false, checkoutDialogOpen = shouldShowCheckoutDialog())
             }
         }
     }
@@ -199,7 +199,7 @@ class GameViewModel @Inject constructor(
         if (pointsLeft.value!! > 0) {
             return false
         }
-        if (!settingsRepository.askForCheckoutFlow.last()) {
+        if (!settingsRepository.askForCheckoutFlow.first()) {
             return false
         }
         if (getLastDoubleAttempts() == 3) {
@@ -214,19 +214,15 @@ class GameViewModel @Inject constructor(
 
     fun checkoutDartsEntered(darts: Int) {
         game.unusedDartCount += 3 - darts
-        dialogUiState.value!!.checkoutDialogOpen = false
+        _dialogUiState.update { state -> state.copy(checkoutDialogOpen = false) }
+
     }
 
-    private fun checkLegFinished() {
-        if (game.pointsLeft == 0) {
-            waitForDialogsToClose { legFinished() }
-        }
-    }
-
-    private fun waitForDialogsToClose(action: () -> Unit) {
+    private fun checkLegFinished(action: () -> Unit) {
         viewModelScope.launch {
             dialogUiState.asFlow().collect {
-                if (!dialogUiState.value!!.anyDialogOpen()) {
+                if (!_dialogUiState.value.anyDialogOpen() && game.pointsLeft == 0) {
+                    println("flow collect Action invoked")
                     action.invoke()
                 }
             }

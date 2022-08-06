@@ -149,23 +149,23 @@ private fun BottomElements(
 ) {
     val numberPad by viewModel.numberPad.observeAsState(PerServeNumberPad())
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(450.dp)
-    ) {
-        CheckoutInfo(viewModel.checkoutTip.observeAsState().value)
+    Column() {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            CheckoutInfo(viewModel.checkoutTip.observeAsState().value)
 
-        NumPadInfoAndActionsRow(
-            onUndoClicked = viewModel::onUndoClicked,
-            numberState = numberPad.number.collectAsState(),
-            onSwapNumberPadClicked = viewModel::onSwapNumberPadClicked
-        )
+            NumPadInfoAndActionsRow(
+                onUndoClicked = viewModel::onUndoClicked,
+                numberState = numberPad.number.collectAsState(),
+                onSwapNumberPadClicked = viewModel::onSwapNumberPadClicked
+            )
 
-        PickNumberPadVersion(viewModel, numberPad)
-
+            PickNumberPadVersion(viewModel, numberPad)
+        }
     }
 }
 
@@ -177,27 +177,29 @@ private fun PickNumberPadVersion(
     val coroutineScope = rememberCoroutineScope()
     val enterDisabled by viewModel.enterDisabled.observeAsState(false)
 
-    if (viewModel.usePerDartNumberPad) {
-        val perDartNumberPad = numberPad as PerDartNumberPad
-        val doubleEnabled by perDartNumberPad.doubleModifierEnabled.collectAsState()
-        val tripleEnabled by perDartNumberPad.tripleModifierEnabled.collectAsState()
+    Column(Modifier.fillMaxWidth().height(380.dp)) {
+        if (viewModel.usePerDartNumberPad) {
+            val perDartNumberPad = numberPad as PerDartNumberPad
+            val doubleEnabled by perDartNumberPad.doubleModifierEnabled.collectAsState()
+            val tripleEnabled by perDartNumberPad.tripleModifierEnabled.collectAsState()
 
-        PerDartNumPad(
-            onNumberClicked = viewModel::onNumberTyped,
-            doubleModifierEnabled = doubleEnabled,
-            onDoubleModifierClicked = { coroutineScope.launch { perDartNumberPad.toggleDoubleModifier() } },
-            tripleModifierEnabled = tripleEnabled,
-            onTripleModifierClicked = { coroutineScope.launch { perDartNumberPad.toggleTripleModifier() } },
-            onEnterClicked = viewModel::onEnterClicked,
-            enterDisabled = enterDisabled
-        )
-    } else {
-        PerServeNumPad(
-            onDigitClicked = viewModel::onNumberTyped,
-            onClearClicked = viewModel::clearNumberPad,
-            onEnterClicked = viewModel::onEnterClicked,
-            enterDisabled = enterDisabled
-        )
+            PerDartNumPad(
+                onNumberClicked = viewModel::onNumberTyped,
+                doubleModifierEnabled = doubleEnabled,
+                onDoubleModifierClicked = { coroutineScope.launch { perDartNumberPad.toggleDoubleModifier() } },
+                tripleModifierEnabled = tripleEnabled,
+                onTripleModifierClicked = { coroutineScope.launch { perDartNumberPad.toggleTripleModifier() } },
+                onEnterClicked = viewModel::onEnterClicked,
+                enterDisabled = enterDisabled
+            )
+        } else {
+            PerServeNumPad(
+                onDigitClicked = viewModel::onNumberTyped,
+                onClearClicked = viewModel::clearNumberPad,
+                onEnterClicked = viewModel::onEnterClicked,
+                enterDisabled = enterDisabled
+            )
+        }
     }
 }
 

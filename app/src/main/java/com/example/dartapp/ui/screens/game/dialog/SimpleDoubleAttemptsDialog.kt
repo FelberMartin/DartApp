@@ -21,10 +21,10 @@ fun SimpleDoubleAttemptsDialog(
     AlertDialog(
         onDismissRequest = { },
         title = {
-            Text("Double Attempts")
+            Text("Double Attempt?")
         },
         text = {
-            Text("Number of attempted double-finishes. Used for double-rate Statistics.")
+            Text("Did you attempt to hit a double? Used for double-rate Statistics.")
         },
         confirmButton = {
             Row(
