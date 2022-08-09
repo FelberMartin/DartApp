@@ -22,7 +22,7 @@ class Game() {
         get() = startPoints - dartsEntered.sum()
 
     var doubleAttemptsList = ArrayList<Int>()
-    private val doubleAttempts: Int
+    val doubleAttempts: Int
         get() = doubleAttemptsList.sum()
 
     var unusedDartCount = 0

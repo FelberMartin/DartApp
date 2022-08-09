@@ -133,6 +133,7 @@ dependencies {
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
 
     // Coroutine Lifecycle Scopes
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
@@ -146,5 +147,9 @@ dependencies {
 
     // Hilt compose navigation
     implementation 'androidx.hilt:hilt-navigation-compose:1.0.0'
+
+    // InstantTaskExecutorRule
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+
 
 }

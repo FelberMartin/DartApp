@@ -57,7 +57,8 @@ class GameViewModel @Inject constructor(
     private val _dialogUiState = MutableStateFlow(DialogUiState())
     val dialogUiState: LiveData<DialogUiState> = _dialogUiState.asLiveData()
 
-    private var game = Game()
+    var game = Game()
+        private set
 
     init {
         updateUI()
@@ -239,6 +240,20 @@ class GameViewModel @Inject constructor(
         _legFinished.value = false
         game = Game()
         updateUI()
+    }
+
+    fun onDoubleModifierToggled() {
+        viewModelScope.launch {
+            val perDartNumberPad = numberPad.value as PerDartNumberPad
+            perDartNumberPad.toggleDoubleModifier()
+        }
+    }
+
+    fun onTripleModifierToggled() {
+        viewModelScope.launch {
+            val perDartNumberPad = numberPad.value as PerDartNumberPad
+            perDartNumberPad.toggleTripleModifier()
+        }
     }
 
 }
