@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+
 package com.example.dartapp.ui.screens.game
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
@@ -10,6 +12,7 @@ import com.example.dartapp.ui.screens.game.testutil.PerDartNumPadEnter
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -64,34 +67,32 @@ class GameViewModelTest {
     // ------------ Double Attempts --------------
 
     @Test
-    fun `enter serve within finish range, show double attempts dialog`() {
+    fun `enter serve within finish range, show double attempts dialog`() = runTest {
         enterServes(listOf(180, 180, 100))
         val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().doubleAttemptsDialogOpen
         assertThat(showDialog).isTrue()
     }
 
     @Test
-    fun `enter serve within finish range with ask for double disabled, do not show double attempts dialog`() {
-        runBlocking {
-            settingsRepository.setAskForDouble(false)
-            enterServes(listOf(180, 180, 100))
-            val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().doubleAttemptsDialogOpen
-            assertThat(showDialog).isFalse()
-        }
+    fun `enter serve within finish range with ask for double disabled, do not show double attempts dialog`() = runTest {
+        settingsRepository.setAskForDouble(false)
+        enterServes(listOf(180, 180, 100))
+        val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().doubleAttemptsDialogOpen
+        assertThat(showDialog).isFalse()
     }
 
     @Test
-    fun `enter dart within finish range, show simple double attempts dialog`() {
-        enterServes(listOf(180, 180))
-        enterDart(PerDartNumPadEnter(20, triple = true))
-        enterDart(PerDartNumPadEnter(20, triple = true))
+    fun `enter dart within finish range, show simple double attempts dialog`() = runTest {
+        enterServes(listOf(180, 180))                                       // 141 left
+        enterDart(PerDartNumPadEnter(20, triple = true))        // 81
+        enterDart(PerDartNumPadEnter(19, triple = true))        // 24
         enterDart(PerDartNumPadEnter(10))
         val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().simpleDoubleAttemptsDialogOpen
         assertThat(showDialog).isTrue()
     }
 
     @Test
-    fun `enter last dart, do not show simple double attempts dialog`() {
+    fun `enter last dart, do not show simple double attempts dialog`() = runTest {
         enterServes(listOf(180, 180))
         enterDart(PerDartNumPadEnter(20, triple = true))
         enterDart(PerDartNumPadEnter(20, triple = true))
@@ -111,32 +112,50 @@ class GameViewModelTest {
     // ------------------ Checkout ----------------------------
 
     @Test
-    fun `enter last serve, show checkout dialog`() {
+    fun `enter last serve, show checkout dialog`() = runTest {
         enterServes(listOf(180, 180, 141))
         val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().checkoutDialogOpen
         assertThat(showDialog).isTrue()
     }
 
     @Test
-    fun `enter last serve with ask checkout disabled, do not show checkout dialog`() {
-        runBlocking {
-            settingsRepository.setAskForCheckout(false)
-            enterServes(listOf(180, 180, 141))
-            val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().checkoutDialogOpen
-            assertThat(showDialog).isFalse()
-        }
+    fun `enter last serve with ask checkout disabled, do not show checkout dialog`() = runTest {
+        settingsRepository.setAskForCheckout(false)
+        enterServes(listOf(180, 180, 141))
+        val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().checkoutDialogOpen
+        assertThat(showDialog).isFalse()
     }
 
     @Test
     fun `enter single checkout dart, do only count one dart for serve`() {
         enterServes(listOf(180, 180, 139))
         enterServe(2)
+        viewModel.checkoutDartsEntered(1)
         val dartCount = viewModel.dartCount.getOrAwaitValueTest()
         assertThat(dartCount).isEqualTo(10)
     }
 
 
+    // ---------- Leg Finished ---------------
 
+    @Test
+    fun `enter finish serve, show leg finished dialog`() {
+        enterServes(listOf(180, 180, 141))
+        val showDialog = viewModel.legFinished.getOrAwaitValueTest()
+        assertThat(showDialog).isTrue()
+    }
+
+    @Test
+    fun `enter finish serve with all other dialogs disabled, show leg finished dialog`() {
+        runBlocking {
+            settingsRepository.setAskForDouble(false)
+            settingsRepository.setAskForCheckout(false)
+            enterServes(listOf(180, 180, 141))
+            val showDialog = viewModel.legFinished.getOrAwaitValueTest()
+            assertThat(showDialog).isTrue()
+        }
+
+    }
 
 
     // ++++++++++++++ Utility ++++++++++++++++++++++

@@ -1,6 +1,9 @@
 package com.example.dartapp.ui.screens.game
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.game.Game
 import com.example.dartapp.game.gameaction.AddDartGameAction
@@ -61,8 +64,7 @@ class GameViewModel @Inject constructor(
         private set
 
     init {
-        updateUI()
-        checkLegFinished { legFinished() }
+        update()
     }
 
     fun closeClicked() {
@@ -75,7 +77,7 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             game.undo()
             numberPad.value!!.clear()
-            updateUI()
+            update()
         }
     }
 
@@ -86,7 +88,7 @@ class GameViewModel @Inject constructor(
         } else {
             _numberPad.value = PerDartNumberPad()
         }
-        updateUI()
+        update()
     }
 
     fun onNumberTyped(number: Int) {
@@ -102,7 +104,7 @@ class GameViewModel @Inject constructor(
     private fun updateEnterButton() {
         val number = numberPad.value!!.number.value
         val valid = game.isNumberValid(number, usePerDartNumberPad)
-        _enterDisabled.postValue(!valid)
+        _enterDisabled.value = !valid
     }
 
     fun clearNumberPad() {
@@ -119,7 +121,7 @@ class GameViewModel @Inject constructor(
             val number = numberPad.value!!.number.value
             enterNumberToGame(number)
             numberPad.value!!.clear()
-            updateUI()
+            update()
         }
     }
 
@@ -130,6 +132,7 @@ class GameViewModel @Inject constructor(
             game.applyAction(AddServeGameAction(number))
         }
 
+        update()
         _dialogUiState.update { state ->
             state.copy(
                 simpleDoubleAttemptsDialogOpen = shouldShowSimpleDoubleAttemptDialog(number),
@@ -160,16 +163,17 @@ class GameViewModel @Inject constructor(
         return CheckoutTip.checkoutTips.contains(pointsLeft.value!!)
     }
 
-    private fun updateUI() {
-        _pointsLeft.postValue(game.pointsLeft)
-        _dartCount.postValue(game.dartCount)
+    private fun update() {
+        _pointsLeft.value = game.pointsLeft
+        _dartCount.value = game.dartCount
         val average = game.getAverage(usePerDartNumberPad)
-        _average.postValue(if (average != null) String.format("%.2f", average) else PLACEHOLDER_STRING)
+        _average.value = if (average != null) String.format("%.2f", average) else PLACEHOLDER_STRING
         val lastString = game.getLast(usePerDartNumberPad)?.toString()
-        _last.postValue(lastString ?: PLACEHOLDER_STRING)
+        _last.value = lastString ?: PLACEHOLDER_STRING
 
-        _checkoutTip.postValue(CheckoutTip.checkoutTips[game.pointsLeft])
+        _checkoutTip.value = CheckoutTip.checkoutTips[game.pointsLeft]
         updateEnterButton()
+        checkLegFinished()
     }
 
     fun dismissExitDialog() {
@@ -210,23 +214,18 @@ class GameViewModel @Inject constructor(
     }
 
     fun getLastDoubleAttempts() : Int {
-        return game.doubleAttemptsList.last()
+        return game.doubleAttemptsList.lastOrNull() ?: 0
     }
 
     fun checkoutDartsEntered(darts: Int) {
         game.unusedDartCount += 3 - darts
         _dialogUiState.update { state -> state.copy(checkoutDialogOpen = false) }
-
+        update()
     }
 
-    private fun checkLegFinished(action: () -> Unit) {
-        viewModelScope.launch {
-            dialogUiState.asFlow().collect {
-                if (!_dialogUiState.value.anyDialogOpen() && game.pointsLeft == 0) {
-                    println("flow collect Action invoked")
-                    action.invoke()
-                }
-            }
+    private fun checkLegFinished() {
+        if (game.pointsLeft == 0) {
+            legFinished()
         }
     }
 
@@ -239,7 +238,7 @@ class GameViewModel @Inject constructor(
     fun onPlayAgainClicked() {
         _legFinished.value = false
         game = Game()
-        updateUI()
+        update()
     }
 
     fun onDoubleModifierToggled() {
