@@ -279,23 +279,12 @@ private fun showDialogs(viewModel: GameViewModel) {
     val uiState by viewModel.dialogUiState.observeAsState(DialogUiState())
     val legFinished by viewModel.legFinished.observeAsState(false)
 
-    if (uiState.exitDialogOpen) {
-        ExitDialog(
-            onDismissDialog = viewModel::dismissExitDialog) {
-            viewModel.dismissExitDialog()
-            viewModel.navigate(NavigationCommand.NAVIGATE_UP)
-        }
-    }
+    // The upper dialogs are hidden behind the dialogs listed later
 
-    if (uiState.simpleDoubleAttemptsDialogOpen) {
-        SimpleDoubleAttemptsDialog(
-            onAttemptClicked = viewModel::simpleDoubleAttemptsEntered
-        )
-    }
-
-    if (uiState.doubleAttemptsDialogOpen) {
-        DoubleAttemptsDialog(
-            onNumberClicked = viewModel::doubleAttemptsEntered
+    if (legFinished) {
+        LegFinishedDialog(
+            onPlayAgainClicked = viewModel::onPlayAgainClicked,
+            onMenuClicked = { viewModel.navigate(NavigationCommand.NAVIGATE_UP) }
         )
     }
 
@@ -306,11 +295,24 @@ private fun showDialogs(viewModel: GameViewModel) {
         )
     }
 
-    if (legFinished) {
-        LegFinishedDialog(
-            onPlayAgainClicked = viewModel::onPlayAgainClicked,
-            onMenuClicked = { viewModel.navigate(NavigationCommand.NAVIGATE_UP) }
+    if (uiState.doubleAttemptsDialogOpen) {
+        DoubleAttemptsDialog(
+            onNumberClicked = viewModel::doubleAttemptsEntered
         )
+    }
+
+    if (uiState.simpleDoubleAttemptsDialogOpen) {
+        SimpleDoubleAttemptsDialog(
+            onAttemptClicked = viewModel::simpleDoubleAttemptsEntered
+        )
+    }
+
+    if (uiState.exitDialogOpen) {
+        ExitDialog(
+            onDismissDialog = viewModel::dismissExitDialog) {
+            viewModel.dismissExitDialog()
+            viewModel.navigate(NavigationCommand.NAVIGATE_UP)
+        }
     }
 }
 
