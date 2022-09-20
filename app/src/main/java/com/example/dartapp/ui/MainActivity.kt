@@ -17,6 +17,7 @@ import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.game.GameScreen
 import com.example.dartapp.ui.screens.home.HomeScreen
 import com.example.dartapp.ui.screens.settings.SettingsScreen
+import com.example.dartapp.ui.screens.statistics.StatisticsScreen
 import com.example.dartapp.ui.theme.DartAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -67,6 +68,9 @@ class MainActivity : ComponentActivity() {
                     GameScreen(hiltViewModel())
                 }
 
+                composable(NavigationDirections.Statistics.destination) {
+                    StatisticsScreen(hiltViewModel())
+                }
             }
         }
     }

@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dartapp.R
+import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
@@ -39,10 +40,10 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            SettingsRow(viewModel::onSettingsPressed)
-            StatisticsCard()
+            SettingsRow(onSettingsClicked = { viewModel.navigate(NavigationDirections.Settings) })
+            StatisticsCard(viewModel)
             AppIconAndName()
-            PlayButtonAndModeSelection(viewModel::onPlayPressed)
+            PlayButtonAndModeSelection(onPlayClicked = { viewModel.navigate(NavigationDirections.Game) })
         }
     }
 
@@ -70,7 +71,9 @@ private fun SettingsRow(
 }
 
 @Composable
-private fun StatisticsCard() {
+private fun StatisticsCard(
+    viewModel: HomeViewModel
+) {
     MyCard {
         Column(
             modifier = Modifier
@@ -90,7 +93,7 @@ private fun StatisticsCard() {
             )
 
             OutlinedButton(
-                onClick = { /*TODO*/ }
+                onClick = { viewModel.navigate(NavigationDirections.Statistics) }
             ) {
                 Icon(
                     imageVector = Icons.Filled.StackedLineChart,

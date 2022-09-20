@@ -5,7 +5,7 @@ import androidx.navigation.NavController
 
 class NavigationDirectionCommand(
     val destination: String,
-    val arguments: List<NamedNavArgument>
+    val arguments: List<NamedNavArgument> = emptyList()
 ) : NavigationCommand {
 
     override fun navigateWith(navController: NavController) {
