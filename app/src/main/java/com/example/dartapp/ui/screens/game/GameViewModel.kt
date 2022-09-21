@@ -68,6 +68,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun closeClicked() {
+        // TODO: 21.09.22 Also do this onBackPressed
         _dialogUiState.update { currentState ->
             currentState.copy(exitDialogOpen = true)
         }

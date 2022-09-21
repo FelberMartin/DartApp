@@ -11,7 +11,7 @@ abstract class VersusTypeBase (
 ){
 
     open fun filterSeekBarIndexChanged(index: Int) {
-        if (legFilter?.filterOptions?.size ?: 0 <= index) {
+        if ((legFilter?.filterOptions?.size ?: 0) <= index) {
             return
         }
         legFilter?.filterOptionIndex = index
@@ -19,4 +19,10 @@ abstract class VersusTypeBase (
 
     open fun modifyChart(chart: Chart) {}
 
+    override fun equals(other: Any?): Boolean {
+        if (other !is VersusTypeBase) {
+            return false
+        }
+        return name == other.name
+    }
 }

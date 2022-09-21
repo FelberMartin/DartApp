@@ -36,6 +36,13 @@ abstract class StatisticTypeBase (
         return availableVersusTypes.toList()
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (other !is StatisticTypeBase) {
+            return false
+        }
+        return this.name == other.name
+    }
+
     companion object {
         val all = listOf(
             PointsPerServeAverage(),

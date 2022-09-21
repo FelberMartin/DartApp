@@ -2,10 +2,10 @@ package com.example.dartapp.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
+import com.example.dartapp.data.persistent.database.LegDatabase
 import com.example.dartapp.data.persistent.keyvalue.IKeyValueStorage
 import com.example.dartapp.data.persistent.keyvalue.KeyValueStorage
-import com.example.dartapp.data.persistent.database.ExampleLegDatabase
-import com.example.dartapp.data.persistent.database.LegDatabase
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.util.Constants.DATABASE_NAME
 import dagger.Module
@@ -22,22 +22,21 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideShoppingItemDatabase(
+    fun provideLegDatabase(
         @ApplicationContext context: Context
     ) = Room.databaseBuilder(context, LegDatabase::class.java, DATABASE_NAME).build()
 
-    @Singleton
-    @Provides
-    @Named("example_data_db")
-    fun provideExampleDataDatabase(
-        @ApplicationContext context: Context
-    ) = ExampleLegDatabase.generate(context)
 
     @Singleton
     @Provides
-    fun provideShoppingDao(
+    fun provideLegDatabaseDao(
         database: LegDatabase
     ) = database.legDatabaseDao()
+
+    @Singleton
+    @Provides
+    @Named("fake_leg_dao")
+    fun provideExampleDataDatabase() = FakeLegDatabaseDao()
 
     @Singleton
     @Provides

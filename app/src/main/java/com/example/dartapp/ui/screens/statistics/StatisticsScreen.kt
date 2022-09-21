@@ -1,28 +1,41 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.dartapp.ui.screens.statistics
 
-import androidx.compose.foundation.Image
+import android.view.Gravity
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.dartapp.R
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.children
+import com.example.dartapp.chartstuff.graphs.statistics.StatisticTypeBase
+import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
+import com.example.dartapp.util.extensions.observeAsStateNonOptional
+import com.example.dartapp.views.chart.BarChart
+import com.example.dartapp.views.chart.EChartType
+import com.example.dartapp.views.chart.LineChart
+import com.example.dartapp.views.chart.PieChart
+import com.example.dartapp.views.chart.legend.Legend
+import com.example.dartapp.views.chart.util.DataSet
 
 @Composable
 fun StatisticsScreen(
@@ -37,18 +50,22 @@ fun StatisticsScreen(
                 navigationViewModel = viewModel
             )
 
-            Column(
+            LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp)
                     .padding(top = 12.dp)
             ) {
-                MainStatisticsCard()
+                item {
+                    MainStatisticsCard(viewModel)
+                }
 
-                Spacer(Modifier.height(24.dp))
-
-                OtherStatistics(viewModel)
+                item {
+                    Spacer(Modifier.height(24.dp))
+                    OtherStatistics(viewModel)
+                    Spacer(Modifier.height(40.dp))
+                }
             }
 
         }
@@ -57,7 +74,9 @@ fun StatisticsScreen(
 
 
 @Composable
-private fun MainStatisticsCard() {
+private fun MainStatisticsCard(
+    viewModel: StatisticsViewModel
+) {
     MyCard(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -66,58 +85,202 @@ private fun MainStatisticsCard() {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
+                .padding(vertical = 16.dp)
         ) {
-            Graph()
+            Box(Modifier.height(400.dp)) {
+                Graph(viewModel)
+            }
 
-            StatisticSection()
-            Divider(color = MaterialTheme.colorScheme.outline)
-            XAxisSection()
-            Divider(color = MaterialTheme.colorScheme.outline)
-            FilterOptionSection()
+            Box(Modifier.padding(horizontal = 16.dp)) {
+                StatisticSection(viewModel)
+            }
+
+            Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
+
+            Box(Modifier.padding(horizontal = 16.dp)) {
+                XAxisSection(viewModel)
+            }
+
+            Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
+
+            Box(Modifier.padding(horizontal = 16.dp)) {
+                FilterOptionSection(viewModel)
+            }
         }
     }
 }
 
 @Composable
-private fun Graph() {
-    Image(
-        painter = painterResource(id = R.drawable.graph_placeholder),
-        contentDescription = "Preview of statistics",
-        modifier = Modifier
-            .height(240.dp)
-            .padding(32.dp)
-    )
-
-//    AndroidView(
-//        modifier = Modifier.padding(32.dp),
-//        factory = { context ->
-//
-//        }
-//    )
+private fun Graph(
+    viewModel: StatisticsViewModel
+) {
+    val statisticType by viewModel.statisticType.observeAsStateNonOptional()
+    val dataSet by viewModel.dataSet.observeAsStateNonOptional()
+    println("Recomposed graph")
+    when (statisticType.chartType) {
+        EChartType.LINE_CHART -> LineGraph(dataSet)
+        EChartType.BAR_CHART -> BarGraph(dataSet)
+        EChartType.PIE_CHART -> PieGraph(dataSet)
+    }
 }
 
 @Composable
-private fun ColumnScope.StatisticSection() {
-    SectionTitle(
-        icon = Icons.Default.BarChart,
-        title = "Statistic"
+fun LineGraph(
+    dataSet: DataSet
+) {
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = { context ->
+            LineChart(context).apply {
+                showXAxisMarkers = false
+                showVerticalGrid = false
+                data = dataSet
+            }
+        },
+        update = { chart -> chart.data = dataSet }
     )
 }
 
 @Composable
-private fun ColumnScope.XAxisSection() {
-    SectionTitle(
-        icon = Icons.Default.TextRotationNone,
-        title = "X-Axis"
+fun BarGraph(
+    dataSet: DataSet
+) {
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = { context ->
+            BarChart(context).apply {
+                showXAxisMarkers = false
+                showVerticalGrid = false
+                data = dataSet
+            }
+        },
+        update = { chart -> chart.data = dataSet }
     )
 }
 
 @Composable
-private fun ColumnScope.FilterOptionSection() {
-    SectionTitle(
-        icon = Icons.Default.Tune,
-        title = "Filter Options"
-    )
+fun PieGraph(
+    dataSet: DataSet
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        AndroidView(
+            modifier = Modifier.fillMaxSize(0.95f),
+            factory = { context ->
+                val chart = PieChart(context).apply {
+                    data = dataSet
+                }
+                val legend = Legend(context).apply {
+                    linkedChart = chart
+
+                }
+                LinearLayout(context).apply {
+                    orientation = LinearLayout.VERTICAL
+                    addView(chart, 0)
+                    addView(legend, 1)
+                    gravity = Gravity.CENTER_HORIZONTAL
+                }
+            },
+            update = { layout ->
+                val chart = layout.children.first { view -> view is PieChart } as PieChart
+                chart.data = dataSet
+                val legend = layout.children.first { view -> view is Legend } as Legend
+                legend.apply {
+                    val params = layoutParams as ViewGroup.MarginLayoutParams
+                    params.width = 600
+                    params.topMargin = 10
+                    layoutParams = params
+
+                }
+            }
+        )
+    }
+}
+
+@Composable
+private fun StatisticSection(
+    viewModel: StatisticsViewModel
+) {
+    Column {
+        SectionTitle(
+            icon = Icons.Default.BarChart,
+            title = "Statistic"
+        )
+
+        val statisticType by viewModel.statisticType.observeAsStateNonOptional()
+        println("Current Stat type at composable is ${statisticType.name}")
+        SingleSelectChipGroup(
+            itemLabels = StatisticTypeBase.all.map { x -> x.name },
+            selectedIndex = StatisticTypeBase.all.indexOf(statisticType),
+            onSelectionIndexChanged = {
+                viewModel.setStatisticType(StatisticTypeBase.all[it])
+            }
+        )
+    }
+}
+
+@Composable
+fun SingleSelectChipGroup(
+    itemLabels: List<String>,
+    selectedIndex: Int,
+    onSelectionIndexChanged: (Int) -> Unit
+) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        itemLabels.forEachIndexed { index, label ->
+            val selected = index == selectedIndex
+            item {
+                FilterChip(selected = selected, onClick = { if (!selected) onSelectionIndexChanged(index) }, label = {
+                    Text(text = label)
+                })
+            }
+        }
+    }
+}
+
+@Composable
+private fun XAxisSection(
+    viewModel: StatisticsViewModel
+) {
+    Column {
+        SectionTitle(
+            icon = Icons.Default.TextRotationNone,
+            title = "X-Axis"
+        )
+
+        val versusType by viewModel.versusType.observeAsStateNonOptional()
+        val availableVersusTypes = viewModel.statisticType.value!!.getAvailableVersusTypes()
+        SingleSelectChipGroup(
+            itemLabels = availableVersusTypes.map { x -> x.name },
+            selectedIndex = availableVersusTypes.indexOf(versusType),
+            onSelectionIndexChanged = { viewModel.setVersusType(availableVersusTypes[it]) }
+        )
+    }
+}
+
+@Composable
+private fun FilterOptionSection(
+    viewModel: StatisticsViewModel
+) {
+    Column {
+        SectionTitle(
+            icon = Icons.Default.Tune,
+            title = "Filter Options"
+        )
+
+        val legFilter by viewModel.legFilter.observeAsStateNonOptional()
+        SingleSelectChipGroup(
+            itemLabels = legFilter.filterOptions.map { x -> x.name },
+            selectedIndex = legFilter.filterOptionIndex,
+            onSelectionIndexChanged = {
+                legFilter.filterOptionIndex = it
+                viewModel.setLegFilter(legFilter)
+            }
+        )
+    }
 }
 
 
@@ -211,11 +374,11 @@ private fun BigIconButton(
 }
 
 
-@Preview(widthDp = 380, heightDp = 780)
+@Preview(widthDp = 380, heightDp = 1000)
 @Composable
 private fun StatisticsScreenPreview() {
     DartAppTheme() {
-        val viewModel = StatisticsViewModel(NavigationManager())
+        val viewModel = StatisticsViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true))
         StatisticsScreen(viewModel)
     }
 }
