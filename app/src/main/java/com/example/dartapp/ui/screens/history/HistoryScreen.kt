@@ -1,11 +1,20 @@
 package com.example.dartapp.ui.screens.history
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.NavigateNext
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.data.persistent.database.TestLegData
 import com.example.dartapp.ui.navigation.NavigationManager
@@ -14,6 +23,8 @@ import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.NavigationViewModel
 import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun HistoryScreen(
@@ -30,15 +41,20 @@ fun HistoryScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            Column(
+            LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp)
+                    .padding(16.dp)
             ) {
                 val legs = TestLegData.createExampleLegs()
                 for (leg in legs) {
-                    HistoryItem(leg)
+                    item {
+                        HistoryItem(
+                            leg = leg,
+                            onSeeMorePressed = { }
+                        )
+                    }
                 }
             }
         }
@@ -47,15 +63,99 @@ fun HistoryScreen(
 
 @Composable
 private fun HistoryItem(
-    leg: Leg
+    leg: Leg,
+    onSeeMorePressed: (Leg) -> Unit
 ) {
     MyCard() {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp)
+                .padding(start = 8.dp)
         ) {
-
+            val date = Converters.toLocalDateTime(leg.endTime)
+            WeekDayLabel(date)
+            DateAndTimeLabels(date)
+            LegShortInfo(leg)
+            SeeMoreIconButton {
+                onSeeMorePressed(leg)
+            }
         }
+    }
+}
+
+@Composable
+fun WeekDayLabel(
+    date: LocalDateTime
+) {
+    val weekdayFormatter = DateTimeFormatter.ofPattern("EEE")
+
+    Text(
+        text = weekdayFormatter.format(date),
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.SemiBold
+    )
+}
+
+@Composable
+fun DateAndTimeLabels(
+    date: LocalDateTime
+) {
+    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = dateFormatter.format(date),
+            style = MaterialTheme.typography.labelMedium
+        )
+
+        Text(
+            text = timeFormatter.format(date),
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@Composable
+private fun LegShortInfo(
+    leg: Leg
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        val average = leg.servesAvg
+        Text(
+            text = "Avg: ${String.format("%.2f", average)}",
+            color = MaterialTheme.colorScheme.secondary,
+            style = MaterialTheme.typography.labelMedium
+        )
+
+        Text(
+            text = "501",
+            color = MaterialTheme.colorScheme.secondary,
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@Composable
+fun SeeMoreIconButton(
+    onIconButtonPressed: () -> Unit
+) {
+    IconButton(
+        onClick = onIconButtonPressed,
+    ) {
+        Icon(
+            imageVector = Icons.Default.NavigateNext,
+            contentDescription = "Details",
+            tint = MaterialTheme.colorScheme.primary
+        )
     }
 }
 

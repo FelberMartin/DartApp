@@ -118,7 +118,7 @@ private fun Graph(
     val dataSet by viewModel.dataSet.observeAsStateNonOptional()
     println("Recomposed graph")
     when (statisticType.chartType) {
-        EChartType.LINE_CHART -> LineGraph(dataSet)
+        EChartType.LINE_CHART -> PieGraph(dataSet)
         EChartType.BAR_CHART -> BarGraph(dataSet)
         EChartType.PIE_CHART -> PieGraph(dataSet)
     }

@@ -1,6 +1,5 @@
 package com.example.dartapp.ui.screens.table
 
-import android.graphics.fonts.FontStyle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +15,6 @@ import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.NavigationViewModel
 import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
-import java.time.format.TextStyle
 
 @Composable
 fun TableScreen(
@@ -47,7 +45,7 @@ private fun Table(
     items: List<Pair<String, String>>
 ) {
     MyCard(
-        modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()
