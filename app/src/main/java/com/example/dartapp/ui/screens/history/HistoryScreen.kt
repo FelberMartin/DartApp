@@ -1,13 +1,12 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.dartapp.ui.screens.history
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.NavigateNext
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -166,7 +165,7 @@ fun SeeMoreIconButton(
 
 @Preview
 @Composable
-fun previewTableScreen() {
+fun PreviewTableScreen() {
     DartAppTheme() {
         HistoryScreen(HistoryViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true)))
     }

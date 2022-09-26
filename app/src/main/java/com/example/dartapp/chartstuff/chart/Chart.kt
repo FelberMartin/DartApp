@@ -92,7 +92,7 @@ abstract class Chart @JvmOverloads constructor(
 
     abstract fun getTouchedIndex(x: Float, y: Float) : Int
 
-    override fun onAnimationUpdate(p0: ValueAnimator?) {
+    override fun onAnimationUpdate(p0: ValueAnimator) {
         invalidate()
     }
 

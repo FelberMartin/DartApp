@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.dartapp.ui.shared
 
 import androidx.compose.foundation.layout.Column
@@ -15,7 +17,6 @@ import androidx.compose.ui.unit.dp
 import com.example.dartapp.ui.navigation.command.NavigationCommand
 import com.example.dartapp.ui.theme.DartAppTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RoundedTopAppBar(
     title: String,

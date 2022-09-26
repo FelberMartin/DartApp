@@ -1,8 +1,11 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.example.dartapp.ui.screens.table
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -125,7 +128,7 @@ private fun TableItem(
 
 @Preview
 @Composable
-fun previewTableScreen() {
+fun PreviewTableScreen() {
     DartAppTheme() {
         TableScreen(viewModel = TableViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true)))
     }
