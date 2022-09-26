@@ -1,6 +1,7 @@
 package com.example.dartapp.chartstuff.graphs.statistics
 
 import com.example.dartapp.chartstuff.graphs.filter.LegFilterBase
+import com.example.dartapp.chartstuff.graphs.partitioner.LegPartitioner
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.EChartType
@@ -11,7 +12,8 @@ abstract class StatisticTypeBase (
     val name: String,
     val chartType: EChartType,
     val availableFilterCategories: List<LegFilterBase.Category> = listOf(LegFilterBase.Category.ByGameCount,
-        LegFilterBase.Category.ByTime)
+        LegFilterBase.Category.ByTime),
+    private val statisticSpecificPartitioner: LegPartitioner? = null
 ) {
 
     abstract fun reduceLegsToNumber(legs: List<Leg>) : Number
@@ -20,7 +22,8 @@ abstract class StatisticTypeBase (
 
     open fun buildDataSet(legs: List<Leg>, filter: LegFilterBase) : DataSet {
         val filteredLegs = filter.filterLegs(legs)
-        val partitioned = filter.partitioner.partitionLegs(filteredLegs)
+        val partitioner = statisticSpecificPartitioner ?: filter.partitioner
+        val partitioned = partitioner.partitionLegs(filteredLegs)
         val dataPoints = partitioned.map { partition ->
             DataPoint(
                 partition.key,
@@ -43,9 +46,10 @@ abstract class StatisticTypeBase (
     companion object {
         val all = listOf(
             PointsPerServeAverage(),
-            DartsPerLegAverage(),
+//            DartsPerLegAverage(),
+            ServeDistribution(),
             TrainingCount(),
-            ServeDistribution()
+            TrainingCountByWeekday(),
         )
     }
 }

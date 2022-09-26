@@ -58,7 +58,6 @@ class StatisticsViewModel @Inject constructor(
     private fun rebuildDataSet() {
         val legs = legDatabaseDao.getAllLegs()
         _dataSet.value = statisticType.value!!.buildDataSet(legs, legFilter.value!!)
-        println("Rebuilt dataset ${dataSet.value.toString()}")
     }
 
 }

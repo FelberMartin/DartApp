@@ -14,12 +14,14 @@ import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Toc
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -34,10 +36,7 @@ import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.util.extensions.observeAsStateNonOptional
-import com.example.dartapp.views.chart.BarChart
-import com.example.dartapp.views.chart.EChartType
-import com.example.dartapp.views.chart.LineChart
-import com.example.dartapp.views.chart.PieChart
+import com.example.dartapp.views.chart.*
 import com.example.dartapp.views.chart.legend.Legend
 import com.example.dartapp.views.chart.util.DataSet
 
@@ -118,29 +117,64 @@ private fun Graph(
 
     val dataSet by viewModel.dataSet.observeAsStateNonOptional()
 
-    println("Recomposed graph")
-    when (statisticType.chartType) {
-        EChartType.LINE_CHART -> LineGraph(dataSet, showXMarkers)
-        EChartType.BAR_CHART -> BarGraph(dataSet)
-        EChartType.PIE_CHART -> PieGraph(dataSet)
+    if (dataSet.isEmpty()) {
+        NoDataWarning()
+    } else {
+        when (statisticType.chartType) {
+            EChartType.LINE_CHART -> LineGraph(dataSet, statisticType::modifyChart, showXMarkers)
+            EChartType.BAR_CHART -> BarGraph(dataSet, statisticType::modifyChart)
+            EChartType.PIE_CHART -> PieGraph(dataSet, statisticType::modifyChart)
+        }
+    }
+}
+
+@Composable
+private fun NoDataWarning() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(0.6f)
+        ) {
+            val color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+            Icon(
+                imageVector = Icons.Rounded.WarningAmber,
+                contentDescription = null,
+                modifier = Modifier.size(96.dp),
+                tint = color
+            )
+            Text(
+                text = "No data",
+                color = color,
+                style = MaterialTheme.typography.titleLarge
+            )
+            Text(
+                text = "You first have to train to explore your statistics.",
+                textAlign = TextAlign.Center,
+                color = color
+            )
+        }
     }
 }
 
 @Composable
 fun LineGraph(
     dataSet: DataSet,
+    modifyChart: (Chart) -> Unit,
     showXMarkers: Boolean
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
             LineChart(context).apply {
-                showVerticalGrid = false
                 data = dataSet
             }
         },
         update = { chart ->
             chart.data = dataSet
+            modifyChart(chart)
             chart.showXAxisMarkers = showXMarkers
         }
     )
@@ -148,7 +182,8 @@ fun LineGraph(
 
 @Composable
 fun BarGraph(
-    dataSet: DataSet
+    dataSet: DataSet,
+    modifyChart: (Chart) -> Unit
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
@@ -157,13 +192,17 @@ fun BarGraph(
                 data = dataSet
             }
         },
-        update = { chart -> chart.data = dataSet }
+        update = { chart ->
+            chart.data = dataSet
+            modifyChart(chart)
+        }
     )
 }
 
 @Composable
 fun PieGraph(
-    dataSet: DataSet
+    dataSet: DataSet,
+    modifyChart: (Chart) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -189,10 +228,12 @@ fun PieGraph(
             update = { layout ->
                 val chart = layout.children.first { view -> view is PieChart } as PieChart
                 chart.data = dataSet
+                modifyChart(chart)
+
                 val legend = layout.children.first { view -> view is Legend } as Legend
                 legend.apply {
                     val params = layoutParams as ViewGroup.MarginLayoutParams
-                    params.width = 600
+                    params.width = 575
                     params.topMargin = 10
                     layoutParams = params
 

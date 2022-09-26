@@ -6,7 +6,7 @@ import com.example.dartapp.views.chart.EChartType
 import com.example.dartapp.views.chart.LineChart
 
 class PointsPerServeAverage() : StatisticTypeBase(
-    "Serve Avg",
+    "Average",
     EChartType.LINE_CHART
 ) {
 
