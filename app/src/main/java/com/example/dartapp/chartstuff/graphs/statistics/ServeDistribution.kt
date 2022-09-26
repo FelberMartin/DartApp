@@ -1,10 +1,8 @@
 package com.example.dartapp.chartstuff.graphs.statistics
 
+import com.example.dartapp.chartstuff.graphs.filter.LegFilterBase
 import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.Leg
-import com.example.dartapp.graphs.versus.GamesVersusType
-import com.example.dartapp.graphs.versus.TimeVersusType
-import com.example.dartapp.graphs.versus.VersusTypeBase
 import com.example.dartapp.util.GameUtil
 import com.example.dartapp.views.chart.EChartType
 import com.example.dartapp.views.chart.data.DataPoint
@@ -12,8 +10,7 @@ import com.example.dartapp.views.chart.util.DataSet
 
 class ServeDistribution() : StatisticTypeBase(
     "Serve Distribution",
-    EChartType.PIE_CHART,
-    GamesVersusType(), TimeVersusType()
+    EChartType.PIE_CHART
 ) {
 
     override fun reduceLegsToNumber(legs: List<Leg>): Number {
@@ -22,8 +19,8 @@ class ServeDistribution() : StatisticTypeBase(
         return 0
     }
 
-    override fun buildDataSet(legs: List<Leg>, versusType: VersusTypeBase): DataSet {
-        val filteredLegs = versusType.legFilter?.filterLegs(legs) ?: legs
+    override fun buildDataSet(legs: List<Leg>, filter: LegFilterBase): DataSet {
+        val filteredLegs = filter.filterLegs(legs)
         val serves = filteredLegs.flatMap { leg -> Converters.toListOfInts(leg.servesList) }
         val categoryCounts = GameUtil.countServesForCategories(serves)
 

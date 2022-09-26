@@ -34,6 +34,10 @@ class DataPoint(var x: Any, var y: Number) {
         return result
     }
 
+    override fun toString(): String {
+        return "[$x : $y]"
+    }
+
 
     companion object {
         fun format(n: Number) : String {

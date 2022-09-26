@@ -10,7 +10,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Toc
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
+import com.example.dartapp.chartstuff.graphs.filter.LegFilterBase
 import com.example.dartapp.chartstuff.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationDirections
@@ -98,12 +102,6 @@ private fun MainStatisticsCard(
             Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
 
             Box(Modifier.padding(horizontal = 16.dp)) {
-                XAxisSection(viewModel)
-            }
-
-            Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
-
-            Box(Modifier.padding(horizontal = 16.dp)) {
                 FilterOptionSection(viewModel)
             }
         }
@@ -115,10 +113,14 @@ private fun Graph(
     viewModel: StatisticsViewModel
 ) {
     val statisticType by viewModel.statisticType.observeAsStateNonOptional()
+    val selectedFilterCategory by viewModel.selectedFilterCategory.observeAsStateNonOptional()
+    val showXMarkers = selectedFilterCategory == LegFilterBase.Category.ByTime
+
     val dataSet by viewModel.dataSet.observeAsStateNonOptional()
+
     println("Recomposed graph")
     when (statisticType.chartType) {
-        EChartType.LINE_CHART -> PieGraph(dataSet)
+        EChartType.LINE_CHART -> LineGraph(dataSet, showXMarkers)
         EChartType.BAR_CHART -> BarGraph(dataSet)
         EChartType.PIE_CHART -> PieGraph(dataSet)
     }
@@ -126,18 +128,21 @@ private fun Graph(
 
 @Composable
 fun LineGraph(
-    dataSet: DataSet
+    dataSet: DataSet,
+    showXMarkers: Boolean
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
             LineChart(context).apply {
-                showXAxisMarkers = false
                 showVerticalGrid = false
                 data = dataSet
             }
         },
-        update = { chart -> chart.data = dataSet }
+        update = { chart ->
+            chart.data = dataSet
+            chart.showXAxisMarkers = showXMarkers
+        }
     )
 }
 
@@ -149,8 +154,6 @@ fun BarGraph(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
             BarChart(context).apply {
-                showXAxisMarkers = false
-                showVerticalGrid = false
                 data = dataSet
             }
         },
@@ -242,26 +245,6 @@ fun SingleSelectChipGroup(
 }
 
 @Composable
-private fun XAxisSection(
-    viewModel: StatisticsViewModel
-) {
-    Column {
-        SectionTitle(
-            icon = Icons.Default.TextRotationNone,
-            title = "X-Axis"
-        )
-
-        val versusType by viewModel.versusType.observeAsStateNonOptional()
-        val availableVersusTypes = viewModel.statisticType.value!!.getAvailableVersusTypes()
-        SingleSelectChipGroup(
-            itemLabels = availableVersusTypes.map { x -> x.name },
-            selectedIndex = availableVersusTypes.indexOf(versusType),
-            onSelectionIndexChanged = { viewModel.setVersusType(availableVersusTypes[it]) }
-        )
-    }
-}
-
-@Composable
 private fun FilterOptionSection(
     viewModel: StatisticsViewModel
 ) {
@@ -271,16 +254,43 @@ private fun FilterOptionSection(
             title = "Filter Options"
         )
 
+        Spacer(Modifier.height(8.dp))
+
+        val statisticType by viewModel.statisticType.observeAsStateNonOptional()
+        val selectedFilterCategory by viewModel.selectedFilterCategory.observeAsStateNonOptional()
         val legFilter by viewModel.legFilter.observeAsStateNonOptional()
+
+        FilterOptionsSubTitle(text = "filter category")
         SingleSelectChipGroup(
-            itemLabels = legFilter.filterOptions.map { x -> x.name },
-            selectedIndex = legFilter.filterOptionIndex,
-            onSelectionIndexChanged = {
-                legFilter.filterOptionIndex = it
-                viewModel.setLegFilter(legFilter)
+            itemLabels = statisticType.availableFilterCategories.map { x -> x.displayedName },
+            selectedIndex = statisticType.availableFilterCategories.indexOf(selectedFilterCategory),
+            onSelectionIndexChanged = { index ->
+                val newlySelected = statisticType.availableFilterCategories[index]
+                viewModel.setSelectedFilterCategory(newlySelected)
             }
         )
+
+        FilterOptionsSubTitle(text = "limit by")
+        SingleSelectChipGroup(
+            itemLabels = selectedFilterCategory.filterOptions.map { x -> x.name },
+            selectedIndex = selectedFilterCategory.filterOptions.indexOf(legFilter),
+            onSelectionIndexChanged = { index ->
+                val newlySelected = selectedFilterCategory.filterOptions[index]
+                viewModel.setLegFilter(newlySelected)
+            }
+        )
+
     }
+}
+
+@Composable
+private fun FilterOptionsSubTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.secondary,
+        modifier = Modifier.padding(vertical = 4.dp)
+    )
 }
 
 

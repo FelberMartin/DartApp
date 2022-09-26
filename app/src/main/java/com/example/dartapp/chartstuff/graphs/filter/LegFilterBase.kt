@@ -1,18 +1,17 @@
 package com.example.dartapp.chartstuff.graphs.filter
 
+import com.example.dartapp.chartstuff.graphs.partitioner.LegPartitioner
 import com.example.dartapp.data.persistent.database.Leg
-import com.example.dartapp.graphs.filter.FilterOption
 
 abstract class LegFilterBase(
-    val filterOptions: List<FilterOption>,
+    val name: String,
+    val partitioner: LegPartitioner
 ) {
-
-    var filterOptionIndex = 0
-
-    fun currentFilterOption() : FilterOption {
-        return filterOptions[filterOptionIndex]
-    }
 
     abstract fun filterLegs(legs: List<Leg>): List<Leg>
 
+    enum class Category(val displayedName: String, val filterOptions: List<LegFilterBase>) {
+        ByGameCount("Games", GamesLegFilter.allFilters),
+        ByTime("Time", TimeLegFilter.allFilters)
+    }
 }

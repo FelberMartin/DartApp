@@ -1,7 +1,7 @@
 package com.example.dartapp.chartstuff.graphs.statistics
 
+import com.example.dartapp.chartstuff.graphs.filter.LegFilterBase
 import com.example.dartapp.data.persistent.database.Leg
-import com.example.dartapp.graphs.versus.VersusTypeBase
 import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.EChartType
 import com.example.dartapp.views.chart.data.DataPoint
@@ -10,16 +10,17 @@ import com.example.dartapp.views.chart.util.DataSet
 abstract class StatisticTypeBase (
     val name: String,
     val chartType: EChartType,
-    private vararg val availableVersusTypes: VersusTypeBase
+    val availableFilterCategories: List<LegFilterBase.Category> = listOf(LegFilterBase.Category.ByGameCount,
+        LegFilterBase.Category.ByTime)
 ) {
 
     abstract fun reduceLegsToNumber(legs: List<Leg>) : Number
 
     open fun modifyChart(chart: Chart) { }
 
-    open fun buildDataSet(legs: List<Leg>, versusType: VersusTypeBase) : DataSet {
-        val filteredLegs = versusType.legFilter?.filterLegs(legs) ?: legs
-        val partitioned = versusType.legPartitioner.partitionLegs(filteredLegs)
+    open fun buildDataSet(legs: List<Leg>, filter: LegFilterBase) : DataSet {
+        val filteredLegs = filter.filterLegs(legs)
+        val partitioned = filter.partitioner.partitionLegs(filteredLegs)
         val dataPoints = partitioned.map { partition ->
             DataPoint(
                 partition.key,
@@ -30,10 +31,6 @@ abstract class StatisticTypeBase (
         val dataSet = DataSet(dataPoints)
         dataSet.dataPointXType = DataSet.Type.STRING
         return dataSet
-    }
-
-    fun getAvailableVersusTypes() : List<VersusTypeBase> {
-        return availableVersusTypes.toList()
     }
 
     override fun equals(other: Any?): Boolean {

@@ -15,11 +15,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
+import com.example.dartapp.chartstuff.graphs.filter.GamesLegFilter
 import com.example.dartapp.chartstuff.graphs.statistics.ServeDistribution
 import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.data.persistent.database.TestLegData
-import com.example.dartapp.graphs.versus.GamesVersusType
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.history.DateAndTimeLabels
 import com.example.dartapp.ui.screens.history.WeekDayLabel
@@ -79,7 +79,7 @@ private fun ServeDistributionCard(leg: Leg) {
                 .height(200.dp),
             contentAlignment = Alignment.Center
         ) {
-            val dataSet = ServeDistribution().buildDataSet(listOf(leg), GamesVersusType())
+            val dataSet = ServeDistribution().buildDataSet(listOf(leg), GamesLegFilter.all)
             AndroidView(
                 factory = { context ->
                     val chart = PieChart(context).apply {

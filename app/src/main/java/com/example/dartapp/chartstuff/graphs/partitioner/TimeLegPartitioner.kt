@@ -9,10 +9,11 @@ import com.example.dartapp.util.time.units.Quarter
 import java.time.LocalDateTime
 
 
-class TimeLegPartitioner() : LegPartitioner {
-
-    var timeUnit: TimeUnit = Day
+class TimeLegPartitioner(
+    var timeUnit: TimeUnit = Day,
     var timeUnitCount: Int = 1
+) : LegPartitioner {
+
 
     override fun partitionLegs(sortedLegs: List<Leg>): Map<String, List<Leg>> {
         if (timeUnitCount == TimeLegFilter.ALL_TIME_COUNT) {
@@ -23,6 +24,10 @@ class TimeLegPartitioner() : LegPartitioner {
         oneForEachPartition.forEach { legsByUiKeys[timeUnit.toUiString(it)] = ArrayList() }
         for (leg in sortedLegs) {
             val timeUnitKey = timeUnit.toUiString(Converters.toLocalDateTime(leg.endTime))
+            if (!legsByUiKeys.containsKey(timeUnitKey)) {
+                println("No map entry for key $timeUnitKey")
+                continue
+            }
             legsByUiKeys[timeUnitKey]!!.add(leg)
         }
 
