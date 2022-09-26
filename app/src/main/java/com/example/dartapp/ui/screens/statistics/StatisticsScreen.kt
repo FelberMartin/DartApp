@@ -31,6 +31,7 @@ import com.example.dartapp.chartstuff.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
+import com.example.dartapp.ui.navigation.command.NavigationCommand
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.RoundedTopAppBar
@@ -58,9 +59,9 @@ fun StatisticsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp)
-                    .padding(top = 12.dp)
             ) {
                 item {
+                    Spacer(modifier = Modifier.height(16.dp))
                     MainStatisticsCard(viewModel)
                 }
 

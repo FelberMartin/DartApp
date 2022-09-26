@@ -58,14 +58,10 @@ class MainActivity : ComponentActivity() {
                 startDestination = NavigationDirections.Home.destination
             ) {
                 composable(NavigationDirections.Home.destination) {
-                    HomeScreen(
-                        hiltViewModel()
-                    )
+                    HomeScreen(hiltViewModel())
                 }
                 composable(NavigationDirections.Settings.destination) {
-                    SettingsScreen(
-                        hiltViewModel()
-                    )
+                    SettingsScreen(hiltViewModel())
                 }
 
                 composable(NavigationDirections.Game.destination) {

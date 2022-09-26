@@ -32,8 +32,9 @@ abstract class Chart @JvmOverloads constructor(
 
     var data: DataSet = DataSet()
         set(value) {
+            val newData = value != field
             field = value
-            dataChanged()
+            if (newData) dataChanged()
         }
 
     protected var selectable = true
