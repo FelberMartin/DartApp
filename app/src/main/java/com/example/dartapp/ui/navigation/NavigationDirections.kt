@@ -1,5 +1,7 @@
 package com.example.dartapp.ui.navigation
 
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import com.example.dartapp.ui.navigation.command.NavigationDirectionCommand
 
 object NavigationDirections {
@@ -27,5 +29,20 @@ object NavigationDirections {
     val Table = NavigationDirectionCommand(
         destination = "table"
     )
+
+    object HistoryDetails {
+
+        const val keyLegId = "legId"
+        private const val plainRoute = "historyDetails"
+        const val route = "$plainRoute/{$keyLegId}"
+        val arguments = listOf(
+            navArgument(keyLegId) { type = NavType.LongType }
+        )
+
+        fun navigationCommand(legId: Long) = NavigationDirectionCommand (
+            destination = "$plainRoute/$legId",
+            arguments = arguments
+        )
+    }
 
 }

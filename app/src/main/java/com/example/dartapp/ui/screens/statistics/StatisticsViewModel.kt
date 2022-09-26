@@ -2,6 +2,7 @@ package com.example.dartapp.ui.screens.statistics
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.example.dartapp.chartstuff.graphs.filter.GamesLegFilter
 import com.example.dartapp.chartstuff.graphs.filter.LegFilterBase
 import com.example.dartapp.chartstuff.graphs.statistics.PointsPerServeAverage
@@ -11,6 +12,7 @@ import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.NavigationViewModel
 import com.example.dartapp.views.chart.util.DataSet
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -56,8 +58,10 @@ class StatisticsViewModel @Inject constructor(
     }
 
     private fun rebuildDataSet() {
-        val legs = legDatabaseDao.getAllLegs()
-        _dataSet.value = statisticType.value!!.buildDataSet(legs, legFilter.value!!)
+        viewModelScope.launch {
+            val legs = legDatabaseDao.getAllLegs()
+            _dataSet.value = statisticType.value!!.buildDataSet(legs, legFilter.value!!)
+        }
     }
 
 }

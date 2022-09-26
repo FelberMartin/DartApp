@@ -15,7 +15,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -65,6 +64,7 @@ private fun SettingsRow(
             Icon(
                 imageVector = Icons.Outlined.Settings,
                 contentDescription = "Settings",
+                tint = MaterialTheme.colorScheme.secondary
             )
         }
     }
@@ -162,13 +162,6 @@ private fun ModeSelection() {
     val modes = listOf("501", "Free Play")
     var selectedMode by rememberSaveable { mutableStateOf("501") }
     var expanded by remember { mutableStateOf(false) }
-
-    var textfieldSize by remember { mutableStateOf(Size.Zero) }
-
-    val icon = if (expanded)
-        Icons.Filled.ArrowDropUp //it requires androidx.compose.material:material-icons-extended
-    else
-        Icons.Filled.ArrowDropDown
 
     Box() {
         Row(

@@ -10,3 +10,5 @@ TODO:
     - With link to stats, or show some different stats in the dialog
  - For scrollable screens fix top strip that shows only background
  - Graph at HomeScreen
+ - Checkmarks for chips in StatisticsScreen
+ - OnBackPressed show Exit dialog while training

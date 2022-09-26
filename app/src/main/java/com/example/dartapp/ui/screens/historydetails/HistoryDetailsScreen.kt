@@ -5,9 +5,11 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -18,8 +20,8 @@ import androidx.core.view.children
 import com.example.dartapp.chartstuff.graphs.filter.GamesLegFilter
 import com.example.dartapp.chartstuff.graphs.statistics.ServeDistribution
 import com.example.dartapp.data.persistent.database.Converters
+import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.data.persistent.database.Leg
-import com.example.dartapp.data.persistent.database.TestLegData
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.history.DateAndTimeLabels
 import com.example.dartapp.ui.screens.history.WeekDayLabel
@@ -32,7 +34,6 @@ import com.example.dartapp.views.chart.PieChart
 import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.legend.Legend
 import com.example.dartapp.views.chart.util.DataSet
-import kotlin.random.Random
 
 @Composable
 fun HistoryDetailsScreen(
@@ -47,23 +48,35 @@ fun HistoryDetailsScreen(
                 navigationViewModel = viewModel
             )
 
-            Spacer(Modifier.height(16.dp))
-            
-            val leg = TestLegData.createExampleLegs(random = Random(5)).first()
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-            ) {
-                item {
-                    ServeDistributionCard(leg = leg)
+            val leg = viewModel.leg.observeAsState().value
+
+            if (leg == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-                item { 
-                    NumbersAndDataCard(leg = leg)
-                }
-                item {
-                    ServeProgressCard(leg = leg)
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
+
+                    item {
+                        ServeDistributionCard(leg = leg)
+                    }
+                    item {
+                        NumbersAndDataCard(leg = leg)
+                    }
+                    item {
+                        ServeProgressCard(leg = leg)
+                    }
+
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
                 }
             }
         }
@@ -90,8 +103,8 @@ private fun ServeDistributionCard(leg: Leg) {
                     }
                     LinearLayout(context).apply {
                         orientation = LinearLayout.HORIZONTAL
-                        addView(chart, 0)
-                        addView(legend, 1)
+                        addView(chart)
+                        addView(legend)
                         gravity = Gravity.CENTER_VERTICAL
 
                     }
@@ -200,6 +213,7 @@ private fun ServeProgressCard(leg: Leg) {
         AndroidView(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
+                .padding(vertical = 6.dp)
                 .height(340.dp),
             factory = { context ->
                 LineChart(context).apply {
@@ -216,6 +230,6 @@ private fun ServeProgressCard(leg: Leg) {
 @Composable
 fun previewHistoryDetailsScreen() {
     DartAppTheme() {
-        HistoryDetailsScreen(HistoryDetailsViewModel(NavigationManager()))
+        HistoryDetailsScreen(HistoryDetailsViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true)))
     }
 }

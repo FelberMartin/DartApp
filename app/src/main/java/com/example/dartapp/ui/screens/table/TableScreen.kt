@@ -2,23 +2,26 @@ package com.example.dartapp.ui.screens.table
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
-import com.example.dartapp.ui.shared.NavigationViewModel
 import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
+import com.example.dartapp.util.extensions.observeAsStateNonOptional
 
 @Composable
 fun TableScreen(
-    viewModel: NavigationViewModel
+    viewModel: TableViewModel
 ) {
     Background {
         Column(
@@ -29,12 +32,30 @@ fun TableScreen(
                 navigationViewModel = viewModel
             )
 
-            Spacer(Modifier.height(16.dp))
+            val totalItems by viewModel.totalItems.observeAsStateNonOptional()
+            val averageItems by viewModel.averageItems.observeAsStateNonOptional()
+            val distributionItems by viewModel.distributionItems.observeAsStateNonOptional()
 
-            Table(
-                header = "Totals",
-                items = listOf(Pair("#Games", "80"), Pair("#Darts", "123"), Pair("Time spent", "11h 13m"))
-            )
+            LazyColumn {
+                item { Spacer(Modifier.height(16.dp)) }
+
+                item { Table(
+                        header = "Totals",
+                        items = totalItems
+                    )
+                }
+                item { Table(
+                        header = "Averages",
+                        items = averageItems
+                    )
+                }
+                item { Table(
+                        header = "Serve Distribution",
+                        items = distributionItems
+                    )
+                }
+            }
+
         }
     }
 }
@@ -61,10 +82,12 @@ private fun Table(
                     color = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
                         .background(MaterialTheme.colorScheme.primary)
                 )
             }
+
+            Spacer(Modifier.height(4.dp))
 
             for (item in items) {
                 TableItem(item)
@@ -82,7 +105,7 @@ private fun TableItem(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 6.dp)
+            .padding(horizontal = 20.dp, vertical = 6.dp)
     ) {
         Text(
             text = item.first,
@@ -104,7 +127,7 @@ private fun TableItem(
 @Composable
 fun previewTableScreen() {
     DartAppTheme() {
-        TableScreen(viewModel = TableViewModel(NavigationManager()))
+        TableScreen(viewModel = TableViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true)))
     }
 }
 

@@ -254,7 +254,6 @@ private fun StatisticSection(
         )
 
         val statisticType by viewModel.statisticType.observeAsStateNonOptional()
-        println("Current Stat type at composable is ${statisticType.name}")
         SingleSelectChipGroup(
             itemLabels = StatisticTypeBase.all.map { x -> x.name },
             selectedIndex = StatisticTypeBase.all.indexOf(statisticType),

@@ -21,7 +21,7 @@ interface LegDatabaseDao {
     fun clear()
 
     @Query("SELECT * FROM legs_table ORDER BY end_time DESC")
-    fun getAllLegs(): List<Leg>
+    suspend fun getAllLegs(): List<Leg>
 
     @Query("SELECT * FROM legs_table ORDER BY end_time DESC LIMIT 1")
     fun getLatestLeg(): Leg?

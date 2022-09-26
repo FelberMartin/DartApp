@@ -15,9 +15,13 @@ import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.game.GameScreen
+import com.example.dartapp.ui.screens.history.HistoryScreen
+import com.example.dartapp.ui.screens.historydetails.HistoryDetailsScreen
+import com.example.dartapp.ui.screens.historydetails.HistoryDetailsViewModel
 import com.example.dartapp.ui.screens.home.HomeScreen
 import com.example.dartapp.ui.screens.settings.SettingsScreen
 import com.example.dartapp.ui.screens.statistics.StatisticsScreen
+import com.example.dartapp.ui.screens.table.TableScreen
 import com.example.dartapp.ui.theme.DartAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -70,6 +74,23 @@ class MainActivity : ComponentActivity() {
 
                 composable(NavigationDirections.Statistics.destination) {
                     StatisticsScreen(hiltViewModel())
+                }
+
+                composable(NavigationDirections.History.destination) {
+                    HistoryScreen(hiltViewModel())
+                }
+
+                composable(NavigationDirections.HistoryDetails.route,
+                    arguments = NavigationDirections.HistoryDetails.arguments
+                ) { backstackEntry ->
+                    val legId = backstackEntry.arguments!!.getLong(NavigationDirections.HistoryDetails.keyLegId)
+                    val viewModel: HistoryDetailsViewModel = hiltViewModel()
+                    viewModel.setLegId(legId)
+                    HistoryDetailsScreen(hiltViewModel())
+                }
+
+                composable(NavigationDirections.Table.destination) {
+                    TableScreen(hiltViewModel())
                 }
             }
         }

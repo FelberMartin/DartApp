@@ -9,26 +9,28 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dartapp.data.persistent.database.Converters
+import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.data.persistent.database.Leg
-import com.example.dartapp.data.persistent.database.TestLegData
+import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
-import com.example.dartapp.ui.shared.NavigationViewModel
 import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
+import com.example.dartapp.util.extensions.observeAsStateNonOptional
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun HistoryScreen(
-    viewModel: NavigationViewModel
+    viewModel: HistoryViewModel
 ) {
     Background {
         Column(
@@ -39,20 +41,23 @@ fun HistoryScreen(
                 navigationViewModel = viewModel
             )
 
-            Spacer(Modifier.height(16.dp))
+            val legs by viewModel.legs.observeAsStateNonOptional()
 
             LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
             ) {
-                val legs = TestLegData.createExampleLegs()
+                item { Spacer(Modifier.height(32.dp)) }
+
                 for (leg in legs) {
                     item {
                         HistoryItem(
                             leg = leg,
-                            onSeeMorePressed = { }
+                            onSeeMorePressed = {
+                                viewModel.navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
+                            }
                         )
                     }
                 }
@@ -163,6 +168,6 @@ fun SeeMoreIconButton(
 @Composable
 fun previewTableScreen() {
     DartAppTheme() {
-        HistoryScreen(HistoryViewModel(NavigationManager()))
+        HistoryScreen(HistoryViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true)))
     }
 }

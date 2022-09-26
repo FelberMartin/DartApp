@@ -31,7 +31,7 @@ class FakeLegDatabaseDao(fillWithTestData: Boolean = false) : LegDatabaseDao {
         legsById.clear()
     }
 
-    override fun getAllLegs(): List<Leg> {
+    override suspend fun getAllLegs(): List<Leg> {
         return legsById.values.toList()
     }
 
