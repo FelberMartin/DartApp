@@ -1,5 +1,6 @@
 package com.example.dartapp.ui.screens.game
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -40,6 +41,9 @@ import com.example.dartapp.ui.values.Padding
 fun GameScreen(
     viewModel: GameViewModel
 ) {
+    BackHandler() {
+        viewModel.closeClicked()
+    }
     Background {
         Column(Modifier.fillMaxSize()) {
             TopRow(onCloseClicked = viewModel::closeClicked)
@@ -56,7 +60,7 @@ fun GameScreen(
         }
     }
 
-    showDialogs(viewModel)
+    DialogsOverlay(viewModel)
 }
 
 @Composable
@@ -178,7 +182,10 @@ private fun PickNumberPadVersion(
 ) {
     val enterDisabled by viewModel.enterDisabled.observeAsState(false)
 
-    Column(Modifier.fillMaxWidth().height(380.dp)) {
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .height(380.dp)) {
         if (viewModel.usePerDartNumberPad) {
             val perDartNumberPad = numberPad as PerDartNumberPad
             val doubleEnabled by perDartNumberPad.doubleModifierEnabled.collectAsState()
@@ -275,7 +282,7 @@ private fun NumPadInfoAndActionsRow(
 }
 
 @Composable
-private fun showDialogs(viewModel: GameViewModel) {
+private fun DialogsOverlay(viewModel: GameViewModel) {
     val uiState by viewModel.dialogUiState.observeAsState(DialogUiState())
     val legFinished by viewModel.legFinished.observeAsState(false)
 
