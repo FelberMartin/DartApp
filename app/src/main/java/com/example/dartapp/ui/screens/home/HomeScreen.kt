@@ -3,22 +3,22 @@
 package com.example.dartapp.ui.screens.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.StackedLineChart
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Popup
 import com.example.dartapp.R
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
@@ -34,7 +34,7 @@ fun HomeScreen(
     Background {
         Column(
             modifier = Modifier
-                .padding(24.dp)
+                .padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 12.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
@@ -136,7 +136,6 @@ private fun PlayButtonAndModeSelection(
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.padding(bottom = 36.dp)
     ) {
         Button(
             onClick = onPlayClicked,
@@ -153,53 +152,62 @@ private fun PlayButtonAndModeSelection(
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        ModeSelection()
+        SoloModeInformation()
     }
 }
 
 @Composable
-private fun ModeSelection() {
-    val modes = listOf("501", "Free Play")
-    var selectedMode by rememberSaveable { mutableStateOf("501") }
-    var expanded by remember { mutableStateOf(false) }
+private fun SoloModeInformation() {
+    var showInfo by remember { mutableStateOf(false) }
 
-    Box() {
-        Row(
-            modifier = Modifier.clickable { expanded = !expanded }
+    Box(Modifier.height(60.dp)) {
+        TextButton(
+            onClick = { showInfo = true },
+            shape = MaterialTheme.shapes.small,
+            contentPadding = PaddingValues(0.dp),
+            modifier = Modifier.height(24.dp)
         ) {
-            Text(
-                text = selectedMode,
-                color = MaterialTheme.colorScheme.primary
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Solo",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary
+                )
 
-            Icon(
-                imageVector = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
-
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            modes.forEach { mode ->
-                DropdownMenuItem(
-                    text = { Text(
-                        text = mode,
-                        color = if (mode == selectedMode) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onSurface
-                        }
-                    )
-                    },
-                    onClick = { selectedMode = mode }
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .padding(start = 6.dp, top = 2.dp)
+                        .size(18.dp)
                 )
             }
         }
-    }
 
+        if (showInfo) {
+            Popup(
+                alignment = Alignment.BottomCenter,
+                onDismissRequest = { showInfo = false }
+            ) {
+                Box(Modifier
+                    .clickable { showInfo = false }
+                    .background(
+                        color = MaterialTheme.colorScheme.inverseSurface,
+                        shape = MaterialTheme.shapes.medium
+                    )) {
+                    Text(
+                        text = "Multiplayer coming soon (TM)",
+                        color = MaterialTheme.colorScheme.inverseOnSurface,
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.padding(6.dp)
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true, widthDp = 380, heightDp = 780)
