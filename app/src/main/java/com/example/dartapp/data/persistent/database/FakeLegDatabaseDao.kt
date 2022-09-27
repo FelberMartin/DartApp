@@ -10,12 +10,16 @@ class FakeLegDatabaseDao(fillWithTestData: Boolean = false) : LegDatabaseDao {
         if (fillWithTestData) {
             val testData = TestLegData.createExampleLegs()
             for (leg in testData) {
-                this.insert(leg)
+                this.insertBlocking(leg)
             }
         }
     }
 
-    override fun insert(leg: Leg) {
+    override suspend fun insert(leg: Leg) {
+        insertBlocking(leg)
+    }
+
+    private fun insertBlocking(leg: Leg) {
         legsById[leg.id] = leg
     }
 

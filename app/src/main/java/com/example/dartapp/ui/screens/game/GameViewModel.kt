@@ -1,9 +1,11 @@
 package com.example.dartapp.ui.screens.game
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.dartapp.data.persistent.database.LegDatabaseDao
 import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.game.Game
 import com.example.dartapp.game.gameaction.AddDartGameAction
@@ -27,7 +29,8 @@ const val PLACEHOLDER_STRING = "--"
 @HiltViewModel
 class GameViewModel @Inject constructor(
     val navigationManager: NavigationManager,
-    val settingsRepository: SettingsRepository
+    val settingsRepository: SettingsRepository,
+    private val legDatabaseDao: LegDatabaseDao
 ) : NavigationViewModel(navigationManager) {
 
     private val _numberPad: MutableLiveData<NumberPadBase> = MutableLiveData(PerServeNumberPad())
@@ -231,9 +234,14 @@ class GameViewModel @Inject constructor(
     }
 
     private fun legFinished() {
+        if (legFinished.value == true) {
+            return
+        }
         _legFinished.value = true   // Shows Leg Finished Dialog
-
-        // TODO: enter leg into database
+        viewModelScope.launch {
+            Log.d("GameViewModel", "Saving game to legDatabase...")
+            legDatabaseDao.insert(leg = game.toLeg())
+        }
     }
 
     fun onPlayAgainClicked() {

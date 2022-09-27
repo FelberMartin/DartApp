@@ -19,6 +19,7 @@ import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
+import com.example.dartapp.ui.screens.statistics.NoDataWarning
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.RoundedTopAppBar
@@ -42,22 +43,26 @@ fun HistoryScreen(
 
             val legs by viewModel.legs.observeAsStateNonOptional()
 
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            ) {
-                item { Spacer(Modifier.height(32.dp)) }
+            if (legs.isEmpty()) {
+                NoDataWarning("You first have to train to explore your history.")
+            } else {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    item { Spacer(Modifier.height(32.dp)) }
 
-                for (leg in legs) {
-                    item {
-                        HistoryItem(
-                            leg = leg,
-                            onSeeMorePressed = {
-                                viewModel.navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
-                            }
-                        )
+                    for (leg in legs) {
+                        item {
+                            HistoryItem(
+                                leg = leg,
+                                onSeeMorePressed = {
+                                    viewModel.navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
+                                }
+                            )
+                        }
                     }
                 }
             }

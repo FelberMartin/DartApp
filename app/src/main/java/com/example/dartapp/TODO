@@ -4,9 +4,10 @@
 ===========================================
 
 TODO:
- - Fix App Icon
+ - Fix App Icon (with Asset builder interface from Android Studio)
  - Decide on App primary Color
+    - Dark Theme for all screens
+        - Fix issue with Android on Darktheme but app on light, then graphs look weird
  - Design advanced Game finished Dialog
     - With link to stats, or show some different stats in the dialog
  - Graph at HomeScreen
- - Checkmarks for chips in StatisticsScreen

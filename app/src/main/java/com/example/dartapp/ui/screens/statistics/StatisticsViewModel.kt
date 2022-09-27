@@ -34,6 +34,8 @@ class StatisticsViewModel @Inject constructor(
     private val _dataSet = MutableLiveData<DataSet>(DataSet())
     val dataSet: LiveData<DataSet> = _dataSet
 
+    var noLegDataAvailable = true
+
     init {
         rebuildDataSet()
     }
@@ -60,6 +62,7 @@ class StatisticsViewModel @Inject constructor(
     private fun rebuildDataSet() {
         viewModelScope.launch {
             val legs = legDatabaseDao.getAllLegs()
+            noLegDataAvailable = legs.isEmpty()
             _dataSet.value = statisticType.value!!.buildDataSet(legs, legFilter.value!!)
         }
     }

@@ -117,9 +117,10 @@ private fun Graph(
 
     val dataSet by viewModel.dataSet.observeAsStateNonOptional()
 
-    if (dataSet.isEmpty()) {
-        NoDataWarning()
+    if (viewModel.noLegDataAvailable) {
+        NoDataWarning("You first have to train to explore your statistics.")
     } else {
+        println("dataset: $dataSet")
         when (statisticType.chartType) {
             EChartType.LINE_CHART -> LineGraph(dataSet, statisticType::modifyChart, showXMarkers)
             EChartType.BAR_CHART -> BarGraph(dataSet, statisticType::modifyChart)
@@ -129,7 +130,7 @@ private fun Graph(
 }
 
 @Composable
-private fun NoDataWarning() {
+fun NoDataWarning(detailedText: String) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -151,7 +152,7 @@ private fun NoDataWarning() {
                 style = MaterialTheme.typography.titleLarge
             )
             Text(
-                text = "You first have to train to explore your statistics.",
+                text = detailedText,
                 textAlign = TextAlign.Center,
                 color = color
             )
