@@ -3,10 +3,8 @@ package com.example.dartapp.views.chart
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.*
-import android.os.Build
 import android.util.AttributeSet
 import android.view.animation.AccelerateDecelerateInterpolator
-import androidx.annotation.RequiresApi
 import androidx.core.graphics.plus
 import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.DataSet
@@ -24,7 +22,7 @@ class LineChart @JvmOverloads constructor(
     defStyleAttr: Int = 0
 ) : CoordinateBasedChart(context, attrs, defStyleAttr) {
 
-    private var points = arrayListOf<PointF>()
+    private var points = arrayListOf<PointF?>()
     private var linePath = Path()
     var smoothedLine = true
 
@@ -87,6 +85,9 @@ class LineChart @JvmOverloads constructor(
 
     private fun updatePath() {
         points.clear()
+        repeat(data.size) {
+            points.add(null)
+        }
 //        linePath.reset()
         linePath.rewind()
 
@@ -101,7 +102,7 @@ class LineChart @JvmOverloads constructor(
         linePath.moveTo(lastPoint.x, lastPoint.y)
         for (i in nonNaNIndices) {
             val nextPoint = inCoordSystem(i)
-            points.add(nextPoint)
+            points[i] = nextPoint
 
             if (smoothedLine) {
                 control = nextPoint.plus(lastPoint)
@@ -124,9 +125,7 @@ class LineChart @JvmOverloads constructor(
         info.description = data[selectedIndex].yString()
         info.update()
     }
-
-
-    @RequiresApi(Build.VERSION_CODES.O)
+    
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
@@ -135,7 +134,6 @@ class LineChart @JvmOverloads constructor(
         drawSelection(canvas)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun drawLines(canvas: Canvas) {
         if (linePath.isEmpty) {
             return
@@ -162,7 +160,9 @@ class LineChart @JvmOverloads constructor(
 
     private fun drawPoints(canvas: Canvas) {
         for (p in points) {
-            canvas.drawCircle(p.x, p.y, 5f, linePaint)
+            if (p != null) {
+                canvas.drawCircle(p.x, p.y, 5f, linePaint)
+            }
         }
     }
 
@@ -184,6 +184,9 @@ class LineChart @JvmOverloads constructor(
         var index = -1
         var minSqDistance = Float.MAX_VALUE
         for ((i, p) in points.withIndex()) {
+            if (p == null) {
+                continue
+            }
             val dx = x - p.x
             val dy = y - p.y
             val dist = dx * dx + dy * dy
