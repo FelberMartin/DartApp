@@ -70,7 +70,9 @@ private fun HistoryItem(
     leg: Leg,
     onSeeMorePressed: (Leg) -> Unit
 ) {
-    MyCard() {
+    MyCard(
+        onClick = { onSeeMorePressed(leg) }
+    ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,

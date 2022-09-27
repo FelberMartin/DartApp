@@ -159,10 +159,17 @@ private fun PlayButtonAndModeSelection(
 @Composable
 private fun SoloModeInformation() {
     var showInfo by remember { mutableStateOf(false) }
+    var lastDismissTime by remember { mutableStateOf(0L) }
 
     Box(Modifier.height(60.dp)) {
         TextButton(
-            onClick = { showInfo = true },
+            onClick = {
+                val delta = System.currentTimeMillis() - lastDismissTime
+                val clickCausedByDismissClick = delta < 100
+                if (!clickCausedByDismissClick) {
+                    showInfo = !showInfo
+                }
+            },
             shape = MaterialTheme.shapes.small,
             contentPadding = PaddingValues(0.dp),
             modifier = Modifier.height(24.dp)
@@ -190,10 +197,10 @@ private fun SoloModeInformation() {
         if (showInfo) {
             Popup(
                 alignment = Alignment.BottomCenter,
-                onDismissRequest = { showInfo = false }
+                onDismissRequest = { showInfo = false; lastDismissTime = System.currentTimeMillis() },
             ) {
                 Box(Modifier
-                    .clickable { showInfo = false }
+                    .clickable { showInfo = false; lastDismissTime = System.currentTimeMillis() }
                     .background(
                         color = MaterialTheme.colorScheme.inverseSurface,
                         shape = MaterialTheme.shapes.medium

@@ -57,6 +57,8 @@ fun TableScreen(
                         items = distributionItems
                     )
                 }
+
+                item { Spacer(Modifier.height(16.dp)) }
             }
 
         }
