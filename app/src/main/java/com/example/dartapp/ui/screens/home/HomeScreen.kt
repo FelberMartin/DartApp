@@ -199,7 +199,7 @@ private fun SoloModeInformation() {
                         shape = MaterialTheme.shapes.medium
                     )) {
                     Text(
-                        text = "Multiplayer coming soon (TM)",
+                        text = "Multiplayer coming soon™",
                         color = MaterialTheme.colorScheme.inverseOnSurface,
                         style = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.padding(6.dp)

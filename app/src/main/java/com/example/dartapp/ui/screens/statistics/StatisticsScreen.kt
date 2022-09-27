@@ -1,19 +1,19 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package com.example.dartapp.ui.screens.statistics
 
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.keyframes
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Toc
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -31,7 +31,6 @@ import com.example.dartapp.chartstuff.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
-import com.example.dartapp.ui.navigation.command.NavigationCommand
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.RoundedTopAppBar
@@ -273,17 +272,36 @@ fun SingleSelectChipGroup(
 ) {
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.animateContentSize()
     ) {
         itemLabels.forEachIndexed { index, label ->
             val selected = index == selectedIndex
             item {
-                FilterChip(selected = selected, onClick = { if (!selected) onSelectionIndexChanged(index) }, label = {
-                    Text(text = label)
-                })
+                FilterChip(
+                    selected = selected,
+                    onClick = { if (!selected) onSelectionIndexChanged(index) },
+                    leadingIcon = {
+                        Box(
+                            Modifier.animateContentSize(keyframes { durationMillis = 200 })
+                        ) {
+                            if (selected) {
+                                Icon(
+                                    imageVector = Icons.Default.Done,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            }
+                        }
+                    },
+                    label = {
+                        Text(text = label)
+                    },
+                )
             }
         }
     }
 }
+
 
 @Composable
 private fun FilterOptionSection(
