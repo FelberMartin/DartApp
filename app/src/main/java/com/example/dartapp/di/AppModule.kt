@@ -14,6 +14,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -27,15 +28,15 @@ object AppModule {
     ) = Room.databaseBuilder(context, LegDatabase::class.java, DATABASE_NAME).build()
 
 
-//    @Singleton
-//    @Provides
-//    fun provideLegDatabaseDao(
-//        database: LegDatabase
-//    ) = database.legDatabaseDao()
+    @Singleton
+    @Provides
+    fun provideLegDatabaseDao(
+        database: LegDatabase
+    ) = database.legDatabaseDao()
 
     @Singleton
     @Provides
-//    @Named("fake_leg_dao")
+    @Named("fake_leg_dao")
     fun provideExampleDataDatabase(): LegDatabaseDao = FakeLegDatabaseDao(fillWithTestData = true)
 
     @Singleton

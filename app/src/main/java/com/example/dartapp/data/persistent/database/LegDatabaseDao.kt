@@ -9,7 +9,7 @@ import androidx.room.Update
 interface LegDatabaseDao {
 
     @Insert
-    fun insert(leg: Leg)
+    suspend fun insert(leg: Leg)
 
     @Update
     fun update(leg: Leg)
@@ -20,7 +20,7 @@ interface LegDatabaseDao {
     @Query("DELETE FROM legs_table")
     fun clear()
 
-    @Query("SELECT * FROM legs_table ORDER BY end_time DESC")
+    @Query("SELECT * FROM legs_table ORDER BY end_time")
     suspend fun getAllLegs(): List<Leg>
 
     @Query("SELECT * FROM legs_table ORDER BY end_time DESC LIMIT 1")

@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.game.numberpad.NumberPadBase
@@ -329,7 +330,8 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
 @Composable
 private fun GameScreenPreview() {
     DartAppTheme() {
-        val viewModel = GameViewModel(NavigationManager(), SettingsRepository(InMemoryKeyValueStorage()))
+        val viewModel = GameViewModel(NavigationManager(), SettingsRepository(InMemoryKeyValueStorage()),
+            FakeLegDatabaseDao())
         GameScreen(viewModel)
     }
 }
