@@ -23,6 +23,9 @@ class BarChart @JvmOverloads constructor(
     private val barRects = arrayListOf<RectF>()
     var barMaxHeight = Float.MAX_VALUE
 
+    /** Corner radius of the upper tip of the bars. */
+    var roundedBarRadius: Float = 12f
+
     private val barDefaultSize = 0.7f
     private val barSelectedSize = 0.85f
 
@@ -114,8 +117,13 @@ class BarChart @JvmOverloads constructor(
             val rect = barRects[i]
 
             val height = min(barMaxHeight, rect.height())
-            canvas.drawRect(rect.left, rect.bottom - height,
-                rect.right, rect.bottom, barPaint)
+            val heightLimitedRect = RectF(rect.left, rect.bottom - height, rect.right, rect.bottom)
+            canvas.drawRoundRect(heightLimitedRect, roundedBarRadius, roundedBarRadius, barPaint)
+            
+            val bottomCutoutsCoverHeight = min(height, roundedBarRadius)
+            val bottomCutoutsCoverRect = RectF(rect.left, rect.bottom - bottomCutoutsCoverHeight, rect.right,
+                rect.bottom)
+            canvas.drawRect(bottomCutoutsCoverRect, barPaint)
         }
     }
 
