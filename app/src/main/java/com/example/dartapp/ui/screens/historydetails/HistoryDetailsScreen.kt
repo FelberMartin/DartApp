@@ -52,6 +52,7 @@ fun HistoryDetailsScreen(
             )
 
             val leg = viewModel.leg.observeAsState().value
+//            val leg = TestLegData.createExampleLegs().first()
 
             if (leg == null) {
                 Box(
@@ -221,6 +222,11 @@ private fun ServeProgressCard(leg: Leg) {
                 .height(340.dp),
             factory = { context ->
                 LineChart(context).apply {
+                    yStartAtZero = true
+                    verticalAutoPadding = false
+                    topAutoPadding = true
+                    showXAxisMarkers = false
+                    showVerticalGrid = false
                     data = dataSet
                 }
             },

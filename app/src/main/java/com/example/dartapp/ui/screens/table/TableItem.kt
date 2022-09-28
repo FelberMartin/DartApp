@@ -29,8 +29,12 @@ open class TableItem(
             TableItem("Avg. Points/Serve") {
                 String.format("%.1f", it.map { leg -> leg.servesAvg }.average())
             },
-            TableItem("Double Quote") {
-                String.format("%.0f%%", it.map { leg -> 100f / leg.doubleAttempts }.average())
+            TableItem("Double Rate") {
+                val doubleAttemptsAvg = it.map { leg -> leg.doubleAttempts }.average()
+                if (doubleAttemptsAvg == 0.0) {
+                    return@TableItem "-"
+                }
+                String.format("%.0f%%", doubleAttemptsAvg)
             },
             TableItem("Avg. Checkout") {
                 String.format("%.1f", it.map { leg -> leg.checkout }.average())

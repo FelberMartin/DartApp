@@ -36,7 +36,7 @@ object AppModule {
     @Singleton
     @Provides
 //    @Named("fake_leg_dao")
-    fun provideExampleDataDatabase(): LegDatabaseDao = FakeLegDatabaseDao(fillWithTestData = true)
+    fun provideExampleDataDatabase(): LegDatabaseDao = FakeLegDatabaseDao(fillWithTestData = false)
 
     @Singleton
     @Provides

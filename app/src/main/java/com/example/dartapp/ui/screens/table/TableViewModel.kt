@@ -34,6 +34,7 @@ class TableViewModel @Inject constructor(
 
         viewModelScope.launch {
             legDatabaseDao.getAllLegs().asFlow().collect {
+                legs = it
                 updateItems()
             }
         }
