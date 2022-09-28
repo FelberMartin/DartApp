@@ -177,9 +177,9 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
         val lines: ArrayList<Float> = ArrayList()
 
         // x Axis
-        lines.add(arrowOffset.x)
+        lines.add(arrowOffset.x + ARROW_STRENGTH / 2)
         lines.add(yArrowLength)
-        lines.add(arrowOffset.x + xArrowLength)
+        lines.add(arrowOffset.x + xArrowLength - ARROW_STRENGTH / 2)
         lines.add(yArrowLength)
 
         // y Axis

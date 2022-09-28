@@ -4,10 +4,15 @@
 ===========================================
 
 TODO:
- - Fix App Icon (with Asset builder interface from Android Studio)
  - Decide on App primary Color
+    - Fix App Icon (with Asset builder interface from Android Studio)
     - Dark Theme for all screens
         - Fix issue with Android on Darktheme but app on light, then graphs look weird
  - Design advanced Game finished Dialog
     - With link to stats, or show some different stats in the dialog
- - Graph at HomeScreen
+ - Days in Stats seem to be shifted by one day
+ - Felix Feedback:
+    - "Infinity%" for Double quote in Tables
+    - Ask for double only if under 170 before the serve
+    - When asking for checkout also ask for double attempts (see audio from Felix)
+    - Ask for double missing (see WA felix 27/09 17:46)

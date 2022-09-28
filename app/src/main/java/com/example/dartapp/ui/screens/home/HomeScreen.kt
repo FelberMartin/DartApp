@@ -14,14 +14,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import com.example.dartapp.R
+import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
+import com.example.dartapp.ui.screens.statistics.StatisticsChart
+import com.example.dartapp.ui.screens.statistics.StatisticsViewModel
 import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.extensions.withDropShadow
@@ -29,24 +33,24 @@ import com.example.dartapp.ui.theme.DartAppTheme
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    statisticsViewModel: StatisticsViewModel
 ) {
     Background {
         Column(
             modifier = Modifier
-                .padding(horizontal = 24.dp).padding(top = 24.dp, bottom = 12.dp)
+                .padding(horizontal = 24.dp)
+                .padding(top = 24.dp, bottom = 12.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            SettingsRow(onSettingsClicked = { viewModel.navigate(NavigationDirections.Settings) })
-            StatisticsCard(viewModel)
+            SettingsRow(onSettingsClicked = { homeViewModel.navigate(NavigationDirections.Settings) })
+            StatisticsCard(homeViewModel, statisticsViewModel)
             AppIconAndName()
-            PlayButtonAndModeSelection(onPlayClicked = { viewModel.navigate(NavigationDirections.Game) })
+            PlayButtonAndModeSelection(onPlayClicked = { homeViewModel.navigate(NavigationDirections.Game) })
         }
     }
-
-
 }
 
 @Composable
@@ -72,7 +76,8 @@ private fun SettingsRow(
 
 @Composable
 private fun StatisticsCard(
-    viewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    statisticsViewModel: StatisticsViewModel
 ) {
     MyCard {
         Column(
@@ -82,18 +87,10 @@ private fun StatisticsCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = "Average"
-            )
-
-            Image(
-                painter = painterResource(id = R.drawable.graph_placeholder),
-                contentDescription = "Preview of statistics",
-                modifier = Modifier.height(240.dp)
-            )
+            StatisticsPreview(statisticsViewModel)
 
             OutlinedButton(
-                onClick = { viewModel.navigate(NavigationDirections.Statistics) }
+                onClick = { homeViewModel.navigate(NavigationDirections.Statistics) }
             ) {
                 Icon(
                     imageVector = Icons.Filled.StackedLineChart,
@@ -105,6 +102,24 @@ private fun StatisticsCard(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun StatisticsPreview(
+    statisticsViewModel: StatisticsViewModel
+) {
+    Text(
+        text = "Average"
+    )
+
+    Box(
+        modifier = Modifier
+            .scale(0.8f)
+            .size(240.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        StatisticsChart(statisticsViewModel)
     }
 }
 
@@ -221,8 +236,9 @@ private fun SoloModeInformation() {
 @Composable
 fun DefaultPreview() {
     DartAppTheme {
-        HomeScreen(
-            viewModel = HomeViewModel(NavigationManager())
-        )
+        val navManager = NavigationManager()
+        val homeViewModel = HomeViewModel(navManager)
+        val statisticsViewModel = StatisticsViewModel(navManager, FakeLegDatabaseDao(fillWithTestData = true))
+        HomeScreen(homeViewModel, statisticsViewModel)
     }
 }

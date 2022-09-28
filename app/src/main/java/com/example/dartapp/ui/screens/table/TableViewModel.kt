@@ -2,6 +2,7 @@ package com.example.dartapp.ui.screens.table
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.data.persistent.database.LegDatabaseDao
@@ -30,9 +31,11 @@ class TableViewModel @Inject constructor(
 
     init {
         updateItems()
+
         viewModelScope.launch {
-            legs = legDatabaseDao.getAllLegs()
-            updateItems()
+            legDatabaseDao.getAllLegs().asFlow().collect {
+                updateItems()
+            }
         }
     }
 

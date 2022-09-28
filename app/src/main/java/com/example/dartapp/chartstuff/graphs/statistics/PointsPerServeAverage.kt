@@ -16,9 +16,9 @@ class PointsPerServeAverage() : StatisticTypeBase(
 
     override fun modifyChart(chart: Chart) {
         with(chart as LineChart) {
-            yStartAtZero = true
             verticalAutoPadding = false
             topAutoPadding = true
+            yStartAtZero = true
         }
     }
 }

@@ -1,10 +1,13 @@
 package com.example.dartapp.data.persistent.database
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import java.time.ZoneOffset
 
 class FakeLegDatabaseDao(fillWithTestData: Boolean = false) : LegDatabaseDao {
 
     private val legsById: HashMap<Long, Leg> = HashMap()
+    private val legLiveData = MutableLiveData<List<Leg>>(mutableListOf())
 
     init {
         if (fillWithTestData) {
@@ -21,10 +24,17 @@ class FakeLegDatabaseDao(fillWithTestData: Boolean = false) : LegDatabaseDao {
 
     private fun insertBlocking(leg: Leg) {
         legsById[leg.id] = leg
+        updateLiveData()
+    }
+
+    private fun updateLiveData() {
+        val sortedLegs = legsById.values.sortedBy { leg -> leg.endTime }
+        legLiveData.value = sortedLegs
     }
 
     override fun update(leg: Leg) {
         legsById[leg.id] = leg
+        updateLiveData()
     }
 
     override fun get(id: Long): Leg? {
@@ -33,10 +43,11 @@ class FakeLegDatabaseDao(fillWithTestData: Boolean = false) : LegDatabaseDao {
 
     override fun clear() {
         legsById.clear()
+        updateLiveData()
     }
 
-    override suspend fun getAllLegs(): List<Leg> {
-        return legsById.values.toList()
+    override fun getAllLegs(): LiveData<List<Leg>> {
+        return legLiveData
     }
 
     override fun getLatestLeg(): Leg? {

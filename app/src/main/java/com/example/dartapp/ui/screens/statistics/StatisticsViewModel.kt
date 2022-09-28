@@ -2,11 +2,13 @@ package com.example.dartapp.ui.screens.statistics
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.example.dartapp.chartstuff.graphs.filter.GamesLegFilter
 import com.example.dartapp.chartstuff.graphs.filter.LegFilterBase
 import com.example.dartapp.chartstuff.graphs.statistics.PointsPerServeAverage
 import com.example.dartapp.chartstuff.graphs.statistics.StatisticTypeBase
+import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.data.persistent.database.LegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.NavigationViewModel
@@ -30,14 +32,22 @@ class StatisticsViewModel @Inject constructor(
     private val _legFilter = MutableLiveData<LegFilterBase>(GamesLegFilter.last10)
     val legFilter: LiveData<LegFilterBase> = _legFilter
 
-
     private val _dataSet = MutableLiveData<DataSet>(DataSet())
     val dataSet: LiveData<DataSet> = _dataSet
+
+    private var legs: List<Leg> = listOf()
 
     var noLegDataAvailable = true
 
     init {
-        rebuildDataSet()
+        viewModelScope.launch {
+            legDatabaseDao.getAllLegs().asFlow().collect {
+                println("Collected legs (size = ${it.size})")
+                legs = it
+                noLegDataAvailable = legs.isEmpty()
+                rebuildDataSet()
+            }
+        }
     }
 
     fun setStatisticType(type: StatisticTypeBase) {
@@ -59,12 +69,12 @@ class StatisticsViewModel @Inject constructor(
         rebuildDataSet()
     }
 
+    fun update() {
+        rebuildDataSet()
+    }
+
     private fun rebuildDataSet() {
-        viewModelScope.launch {
-            val legs = legDatabaseDao.getAllLegs()
-            noLegDataAvailable = legs.isEmpty()
-            _dataSet.value = statisticType.value!!.buildDataSet(legs, legFilter.value!!)
-        }
+        _dataSet.value = statisticType.value!!.buildDataSet(legs, legFilter.value!!)
     }
 
 }

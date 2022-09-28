@@ -1,5 +1,6 @@
 package com.example.dartapp.data.persistent.database
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -21,7 +22,7 @@ interface LegDatabaseDao {
     fun clear()
 
     @Query("SELECT * FROM legs_table ORDER BY end_time")
-    suspend fun getAllLegs(): List<Leg>
+    fun getAllLegs(): LiveData<List<Leg>>
 
     @Query("SELECT * FROM legs_table ORDER BY end_time DESC LIMIT 1")
     fun getLatestLeg(): Leg?

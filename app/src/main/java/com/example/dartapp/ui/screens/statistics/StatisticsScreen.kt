@@ -91,7 +91,7 @@ private fun MainStatisticsCard(
                 .padding(vertical = 16.dp)
         ) {
             Box(Modifier.height(400.dp)) {
-                Graph(viewModel)
+                StatisticsChart(viewModel)
             }
 
             Box(Modifier.padding(horizontal = 16.dp)) {
@@ -108,21 +108,20 @@ private fun MainStatisticsCard(
 }
 
 @Composable
-private fun Graph(
+fun StatisticsChart(
     viewModel: StatisticsViewModel
 ) {
     val statisticType by viewModel.statisticType.observeAsStateNonOptional()
     val selectedFilterCategory by viewModel.selectedFilterCategory.observeAsStateNonOptional()
-    val showXMarkers = selectedFilterCategory == LegFilterBase.Category.ByTime
+    val filterByTime = selectedFilterCategory == LegFilterBase.Category.ByTime
 
     val dataSet by viewModel.dataSet.observeAsStateNonOptional()
 
     if (viewModel.noLegDataAvailable) {
         NoDataWarning("You first have to train to explore your statistics.")
     } else {
-        println("dataset: $dataSet")
         when (statisticType.chartType) {
-            EChartType.LINE_CHART -> LineGraph(dataSet, statisticType::modifyChart, showXMarkers)
+            EChartType.LINE_CHART -> LineGraph(dataSet, statisticType::modifyChart, filterByTime)
             EChartType.BAR_CHART -> BarGraph(dataSet, statisticType::modifyChart)
             EChartType.PIE_CHART -> PieGraph(dataSet, statisticType::modifyChart)
         }
@@ -164,19 +163,21 @@ fun NoDataWarning(detailedText: String) {
 fun LineGraph(
     dataSet: DataSet,
     modifyChart: (Chart) -> Unit,
-    showXMarkers: Boolean
+    xAxisIsTime: Boolean
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
             LineChart(context).apply {
+                modifyChart(this)
                 data = dataSet
             }
         },
         update = { chart ->
-            chart.data = dataSet
             modifyChart(chart)
-            chart.showXAxisMarkers = showXMarkers
+            chart.showXAxisMarkers = xAxisIsTime
+            chart.showVerticalGrid = xAxisIsTime
+            chart.data = dataSet
         }
     )
 }
