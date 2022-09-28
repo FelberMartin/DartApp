@@ -1,9 +1,10 @@
-@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class)
 
 package com.example.dartapp.ui.screens.game
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.dartapp.MainCoroutineRule
+import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.getOrAwaitValueTest
@@ -16,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.lang.Integer.min
 
 
 class GameViewModelTest {
@@ -33,7 +35,7 @@ class GameViewModelTest {
     @Before
     fun setup() {
         settingsRepository = SettingsRepository(InMemoryKeyValueStorage())
-        viewModel = GameViewModel(NavigationManager(), settingsRepository)
+        viewModel = GameViewModel(NavigationManager(), settingsRepository, FakeLegDatabaseDao())
     }
 
 
@@ -66,12 +68,41 @@ class GameViewModelTest {
 
     // ------------ Double Attempts --------------
 
+    // ~~~~~~ Show Dialog ~~~~~~~
     @Test
     fun `enter serve within finish range, show double attempts dialog`() = runTest {
         enterServes(listOf(180, 180, 100))
         val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().doubleAttemptsDialogOpen
         assertThat(showDialog).isTrue()
     }
+
+    @Test
+    fun `finish with serve, show double attempts dialog`() = runTest {
+        enterServes(generateServesTillAt(60))
+        enterServe(60)
+        val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().doubleAttemptsDialogOpen
+        assertThat(showDialog).isTrue()
+    }
+
+    @Test
+    fun `finish with serve, show double attempts dialog, version 2`() = runTest {
+        enterServes(generateServesTillAt(41))
+        enterServe(41)
+        val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().doubleAttemptsDialogOpen
+        assertThat(showDialog).isTrue()
+    }
+
+    @Test
+    fun `enter dart within finish range, show simple double attempts dialog`() = runTest {
+        enterServes(listOf(180, 180))                                       // 141 left
+        enterDart(PerDartNumPadEnter(20, triple = true))        // 81
+        enterDart(PerDartNumPadEnter(19, triple = true))        // 24
+        enterDart(PerDartNumPadEnter(12))
+        val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().simpleDoubleAttemptsDialogOpen
+        assertThat(showDialog).isTrue()
+    }
+
+    // ~~~~~~ Do NOT Show Dialog ~~~~~~~
 
     @Test
     fun `enter serve within finish range with ask for double disabled, do not show double attempts dialog`() = runTest {
@@ -82,24 +113,23 @@ class GameViewModelTest {
     }
 
     @Test
-    fun `enter dart within finish range, show simple double attempts dialog`() = runTest {
-        enterServes(listOf(180, 180))                                       // 141 left
-        enterDart(PerDartNumPadEnter(20, triple = true))        // 81
-        enterDart(PerDartNumPadEnter(19, triple = true))        // 24
-        enterDart(PerDartNumPadEnter(10))
-        val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().simpleDoubleAttemptsDialogOpen
-        assertThat(showDialog).isTrue()
+    fun `enter serve outside finish range, do not show double attempts dialog`() = runTest {
+        enterServes(listOf(180, 180))
+        val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().doubleAttemptsDialogOpen
+        assertThat(showDialog).isFalse()
     }
 
     @Test
     fun `enter last dart, do not show simple double attempts dialog`() = runTest {
         enterServes(listOf(180, 180))
         enterDart(PerDartNumPadEnter(20, triple = true))
-        enterDart(PerDartNumPadEnter(20, triple = true))
-        enterDart(PerDartNumPadEnter(15, double = true))
+        enterDart(PerDartNumPadEnter(19, triple = true))
+        enterDart(PerDartNumPadEnter(12, double = true))
         val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().simpleDoubleAttemptsDialogOpen
         assertThat(showDialog).isFalse()
     }
+
+    // ~~~~~~ Misc ~~~~~~~
 
     @Test
     fun `enter double attempts, get added to game list`() {
@@ -164,6 +194,17 @@ class GameViewModelTest {
         for (serve in serves) {
             enterServe(serve)
         }
+    }
+
+    private fun generateServesTillAt(wantedScore: Int): List<Int> {
+        var neededPoints = 501 - wantedScore
+        val serves = mutableListOf<Int>()
+        while (neededPoints > 0) {
+            val serve = min(180, neededPoints)
+            serves.add(serve)
+            neededPoints -= serve
+        }
+        return serves
     }
 
     private fun enterServe(serve: Int) {

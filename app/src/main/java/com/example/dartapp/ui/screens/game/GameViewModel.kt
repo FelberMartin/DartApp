@@ -71,7 +71,6 @@ class GameViewModel @Inject constructor(
     }
 
     fun closeClicked() {
-        // TODO: 21.09.22 Also do this onBackPressed
         _dialogUiState.update { currentState ->
             currentState.copy(exitDialogOpen = true)
         }
@@ -118,8 +117,6 @@ class GameViewModel @Inject constructor(
         }
     }
 
-    // TODO: Weird behaviour when entering numbers
-
     fun onEnterClicked() {
         viewModelScope.launch {
             val number = numberPad.value!!.number.value
@@ -140,7 +137,7 @@ class GameViewModel @Inject constructor(
         _dialogUiState.update { state ->
             state.copy(
                 simpleDoubleAttemptsDialogOpen = shouldShowSimpleDoubleAttemptDialog(number),
-                doubleAttemptsDialogOpen = shouldShowDoubleAttemptsDialog(),
+                doubleAttemptsDialogOpen = shouldShowDoubleAttemptsDialog(number),
                 checkoutDialogOpen = shouldShowCheckoutDialog()
             )
         }
@@ -153,18 +150,25 @@ class GameViewModel @Inject constructor(
         if (!settingsRepository.askForDoubleFlow.first()) {
             return false
         }
+        if (game.pointsLeft == 0) {
+            // The game was finished with a double, so do not ask, but automatically add a double attempt.
+            game.doubleAttemptsList.add(1)
+            return false
+        }
         val points = game.pointsLeft + lastDart
-        return points % 2 == 0 && (points == 50 || points <= 40)
+        val couldFinishWithDouble = points % 2 == 0 && (points == 50 || points <= 40)
+        return couldFinishWithDouble
     }
 
-    private suspend fun shouldShowDoubleAttemptsDialog() : Boolean {
+    private suspend fun shouldShowDoubleAttemptsDialog(lastServe: Int) : Boolean {
         if (usePerDartNumberPad) {
             return false
         }
         if (!settingsRepository.askForDoubleFlow.first()) {
             return false
         }
-        return CheckoutTip.checkoutTips.contains(pointsLeft.value!!)
+        val pointsBeforeServe = game.pointsLeft + lastServe
+        return CheckoutTip.checkoutTips.contains(pointsBeforeServe)
     }
 
     private fun update() {
@@ -193,12 +197,8 @@ class GameViewModel @Inject constructor(
 
     fun doubleAttemptsEntered(attempts: Int) {
         game.doubleAttemptsList.add(attempts)
-
-        viewModelScope.launch {
-            _dialogUiState.update { state ->
-                state.copy(doubleAttemptsDialogOpen = false, checkoutDialogOpen = shouldShowCheckoutDialog())
-            }
-        }
+        _dialogUiState.update { state -> state.copy(doubleAttemptsDialogOpen = false) }
+        update()
     }
 
     private suspend fun shouldShowCheckoutDialog() : Boolean {
@@ -224,7 +224,6 @@ class GameViewModel @Inject constructor(
     fun checkoutDartsEntered(darts: Int) {
         game.unusedDartCount += 3 - darts
         _dialogUiState.update { state -> state.copy(checkoutDialogOpen = false) }
-        update()
     }
 
     private fun checkLegFinished() {
