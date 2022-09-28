@@ -73,18 +73,26 @@ class Game() {
     }
 
     fun isNumberValid(number: Int, singleDart: Boolean) : Boolean {
-        if (singleDart) {
-            return isDartValid(number)
-        } else {
+        val pointsAfter = pointsLeft - number
+        if (pointsAfter < 0 || pointsAfter == 1) {
+            return false
+        }
+        if (!singleDart) {
             return isServeValid(number)
         }
+        return true
+    }
+
+    fun pointsLeftBeforeLastServe(): Int {
+        if (dartsEntered.isEmpty()) {
+            return 501
+        }
+        val lastServePoints = dartsEntered.subList(dartsEntered.size - 3, dartsEntered.size).sum()
+        return pointsLeft + lastServePoints
     }
 
     private fun isServeValid(serve: Int) : Boolean {
         if (serve > 180) {
-            return false
-        }
-        if (pointsLeft - serve < 0) {
             return false
         }
         if (GameUtil.INVALID_SERVES.contains(serve)) {
@@ -92,11 +100,6 @@ class Game() {
         }
         return true
     }
-
-    private fun isDartValid(dart: Int) : Boolean {
-        return pointsLeft - dart >= 0
-    }
-
 
     private fun getServes() : List<Int> {
         val serves = ArrayList<Int>()

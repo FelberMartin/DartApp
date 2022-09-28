@@ -4,11 +4,13 @@ import java.util.*
 
 object GameUtil {
 
-    const val MAX_VALUE_PER_SERVE = 180
     val DEFAULT_SERVE_CATEGORIES = listOf(0, 60, 100, 140, 180)
 
     // https://datagenetics.com/blog/november22021/index.html
     val INVALID_SERVES = listOf(179, 178, 176, 175, 173, 172, 169, 166, 163)
+
+
+
 
     /**
      * Counts for each category all the serves between the category bound (inclusive) and the next bigger category
@@ -34,6 +36,13 @@ object GameUtil {
         return if (categoryLimit != 180) "$categoryLimit+" else "180"
     }
 
-
+    fun minDartCountRequiredToFinishWithinServe(points: Int): Int? {
+        if (points == 50) {
+            // The CheckoutTip here is "S10D20", but the fastest is Bullseye.
+            return 1
+        }
+        val tip = CheckoutTip.checkoutTips[points] ?: return null
+        return tip.count { c -> c == ',' } + 1
+    }
 
 }

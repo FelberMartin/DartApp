@@ -23,6 +23,9 @@ class FakeLegDatabaseDao(fillWithTestData: Boolean = false) : LegDatabaseDao {
     }
 
     private fun insertBlocking(leg: Leg) {
+        if (legsById.containsKey(leg.id)) {
+            leg.id = legsById.keys.max() + 1
+        }
         legsById[leg.id] = leg
         updateLiveData()
     }

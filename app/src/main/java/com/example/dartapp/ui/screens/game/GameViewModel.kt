@@ -15,8 +15,10 @@ import com.example.dartapp.game.numberpad.PerDartNumberPad
 import com.example.dartapp.game.numberpad.PerServeNumberPad
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.game.dialog.DialogUiState
+import com.example.dartapp.ui.screens.game.dialog.DoubleAttemptsAndCheckoutDialogResult
 import com.example.dartapp.ui.shared.NavigationViewModel
 import com.example.dartapp.util.CheckoutTip
+import com.example.dartapp.util.GameUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -195,35 +197,43 @@ class GameViewModel @Inject constructor(
         _dialogUiState.update { state -> state.copy(simpleDoubleAttemptsDialogOpen = false) }
     }
 
-    fun doubleAttemptsEntered(attempts: Int) {
-        game.doubleAttemptsList.add(attempts)
-        _dialogUiState.update { state -> state.copy(doubleAttemptsDialogOpen = false) }
-        update()
-    }
-
     private suspend fun shouldShowCheckoutDialog() : Boolean {
         if (usePerDartNumberPad) {
-            return false
-        }
-        if (pointsLeft.value!! > 0) {
             return false
         }
         if (!settingsRepository.askForCheckoutFlow.first()) {
             return false
         }
-        if (getLastDoubleAttempts() == 3) {
-            return false
+        return game.pointsLeft == 0
+    }
+
+    fun getMinimumDartCount() : Int? {
+        return GameUtil.minDartCountRequiredToFinishWithinServe(game.pointsLeftBeforeLastServe())
+    }
+
+    fun onDoubleAttemptsAndCheckoutCancelled() {
+        _dialogUiState.update { state -> state.copy(doubleAttemptsDialogOpen = false, checkoutDialogOpen = false) }
+        onUndoClicked()
+    }
+
+    fun doubleAttemptsAndCheckoutConfirmed(result: DoubleAttemptsAndCheckoutDialogResult) {
+        if (result.doubleAttempts != null) {
+            enterDoubleAttempts(result.doubleAttempts)
         }
-        return true
+        if (result.checkout != null) {
+            enterCheckoutDarts(result.checkout)
+        }
+        _dialogUiState.update { state -> state.copy(doubleAttemptsDialogOpen = false, checkoutDialogOpen = false) }
+        update()
     }
 
-    fun getLastDoubleAttempts() : Int {
-        return game.doubleAttemptsList.lastOrNull() ?: 0
+    fun enterDoubleAttempts(attempts: Int) {
+        game.doubleAttemptsList.add(attempts)
     }
 
-    fun checkoutDartsEntered(darts: Int) {
-        game.unusedDartCount += 3 - darts
-        _dialogUiState.update { state -> state.copy(checkoutDialogOpen = false) }
+    fun enterCheckoutDarts(darts: Int) {
+        game.unusedDartCount += 3- darts
+        update()
     }
 
     private fun checkLegFinished() {
@@ -238,6 +248,11 @@ class GameViewModel @Inject constructor(
         }
         _legFinished.value = true   // Shows Leg Finished Dialog
         viewModelScope.launch {
+            val setDefaultDoubleAttempt = !settingsRepository.askForDoubleFlow.first()
+            if (setDefaultDoubleAttempt) {
+                enterDoubleAttempts(1)
+            }
+
             Log.d("GameViewModel", "Saving game to legDatabase...")
             legDatabaseDao.insert(leg = game.toLeg())
         }

@@ -19,7 +19,6 @@ import org.junit.Rule
 import org.junit.Test
 import java.lang.Integer.min
 
-
 class GameViewModelTest {
 
     @get:Rule
@@ -134,7 +133,7 @@ class GameViewModelTest {
     @Test
     fun `enter double attempts, get added to game list`() {
         enterServes(listOf(180, 180, 141))
-        viewModel.doubleAttemptsEntered(2)
+        viewModel.enterDoubleAttempts(2)
         val doubleAttempts = viewModel.game.doubleAttempts
         assertThat(doubleAttempts).isEqualTo(2)
     }
@@ -160,7 +159,7 @@ class GameViewModelTest {
     fun `enter single checkout dart, do only count one dart for serve`() {
         enterServes(listOf(180, 180, 139))
         enterServe(2)
-        viewModel.checkoutDartsEntered(1)
+        viewModel.enterCheckoutDarts(1)
         val dartCount = viewModel.dartCount.getOrAwaitValueTest()
         assertThat(dartCount).isEqualTo(10)
     }

@@ -296,16 +296,15 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
         )
     }
 
-    if (uiState.checkoutDialogOpen) {
-        CheckoutDialog(
-            minimumRequiredDarts = viewModel.getLastDoubleAttempts(),
-            onNumberClicked = viewModel::checkoutDartsEntered
-        )
-    }
-
-    if (uiState.doubleAttemptsDialogOpen) {
-        DoubleAttemptsDialog(
-            onNumberClicked = viewModel::doubleAttemptsEntered
+    val doubleAttempts = uiState.doubleAttemptsDialogOpen
+    val checkout = uiState.checkoutDialogOpen
+    if (doubleAttempts || checkout) {
+        DoubleAttemptsAndCheckoutDialog(
+            askForDoubleAttempts = doubleAttempts,
+            askForCheckout = checkout,
+            minDartCount = viewModel.getMinimumDartCount(),
+            onDialogCancelled = viewModel::onDoubleAttemptsAndCheckoutCancelled,
+            onDialogConfirmed = viewModel::doubleAttemptsAndCheckoutConfirmed
         )
     }
 
