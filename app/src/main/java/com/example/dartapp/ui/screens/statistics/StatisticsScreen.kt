@@ -116,8 +116,9 @@ fun StatisticsChart(
     val filterByTime = selectedFilterCategory == LegFilterBase.Category.ByTime
 
     val dataSet by viewModel.dataSet.observeAsStateNonOptional()
+    val noData by viewModel.noLegDataAvailable.observeAsStateNonOptional()
 
-    if (viewModel.noLegDataAvailable) {
+    if (noData) {
         NoDataWarning("You first have to train to explore your statistics.")
     } else {
         when (statisticType.chartType) {

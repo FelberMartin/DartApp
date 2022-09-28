@@ -37,14 +37,16 @@ class StatisticsViewModel @Inject constructor(
 
     private var legs: List<Leg> = listOf()
 
-    var noLegDataAvailable = true
+    private val _noLegDataAvailable = MutableLiveData(true)
+    val noLegDataAvailable: LiveData<Boolean> = _noLegDataAvailable
+
 
     init {
         viewModelScope.launch {
             legDatabaseDao.getAllLegs().asFlow().collect {
                 println("Collected legs (size = ${it.size})")
                 legs = it
-                noLegDataAvailable = legs.isEmpty()
+                _noLegDataAvailable.value = legs.isEmpty()
                 rebuildDataSet()
             }
         }
