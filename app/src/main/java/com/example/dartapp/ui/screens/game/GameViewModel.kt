@@ -69,7 +69,7 @@ class GameViewModel @Inject constructor(
         private set
 
     init {
-        update()
+        updateUi()
     }
 
     fun closeClicked() {
@@ -82,7 +82,7 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             game.undo()
             numberPad.value!!.clear()
-            update()
+            updateUi()
         }
     }
 
@@ -93,7 +93,7 @@ class GameViewModel @Inject constructor(
         } else {
             _numberPad.value = PerDartNumberPad()
         }
-        update()
+        updateUi()
     }
 
     fun onNumberTyped(number: Int) {
@@ -124,7 +124,6 @@ class GameViewModel @Inject constructor(
             val number = numberPad.value!!.number.value
             enterNumberToGame(number)
             numberPad.value!!.clear()
-            update()
         }
     }
 
@@ -135,7 +134,7 @@ class GameViewModel @Inject constructor(
             game.applyAction(AddServeGameAction(number))
         }
 
-        update()
+        updateUi()
         _dialogUiState.update { state ->
             state.copy(
                 simpleDoubleAttemptsDialogOpen = shouldShowSimpleDoubleAttemptDialog(number),
@@ -143,6 +142,8 @@ class GameViewModel @Inject constructor(
                 checkoutDialogOpen = shouldShowCheckoutDialog()
             )
         }
+
+        checkLegFinished()
     }
 
     private suspend fun shouldShowSimpleDoubleAttemptDialog(lastDart: Int) : Boolean {
@@ -173,7 +174,7 @@ class GameViewModel @Inject constructor(
         return CheckoutTip.checkoutTips.contains(pointsBeforeServe)
     }
 
-    private fun update() {
+    private fun updateUi() {
         _pointsLeft.value = game.pointsLeft
         _dartCount.value = game.dartCount
         val average = game.getAverage(usePerDartNumberPad)
@@ -183,7 +184,6 @@ class GameViewModel @Inject constructor(
 
         _checkoutTip.value = CheckoutTip.checkoutTips[game.pointsLeft]
         updateEnterButton()
-        checkLegFinished()
     }
 
     fun dismissExitDialog() {
@@ -223,21 +223,23 @@ class GameViewModel @Inject constructor(
         if (result.checkout != null) {
             enterCheckoutDarts(result.checkout)
         }
-        _dialogUiState.update { state -> state.copy(doubleAttemptsDialogOpen = false, checkoutDialogOpen = false) }
-        update()
     }
 
     fun enterDoubleAttempts(attempts: Int) {
         game.doubleAttemptsList.add(attempts)
+        _dialogUiState.update { state -> state.copy(doubleAttemptsDialogOpen = false) }
+        checkLegFinished()
     }
 
     fun enterCheckoutDarts(darts: Int) {
         game.unusedDartCount += 3- darts
-        update()
+        _dialogUiState.update { state -> state.copy(checkoutDialogOpen = false) }
+        updateUi()
+        checkLegFinished()
     }
 
     private fun checkLegFinished() {
-        if (game.pointsLeft == 0) {
+        if (game.pointsLeft == 0 && !_dialogUiState.value.anyDialogOpen()) {
             legFinished()
         }
     }
@@ -261,7 +263,7 @@ class GameViewModel @Inject constructor(
     fun onPlayAgainClicked() {
         _legFinished.value = false
         game = Game()
-        update()
+        updateUi()
     }
 
     fun onDoubleModifierToggled() {

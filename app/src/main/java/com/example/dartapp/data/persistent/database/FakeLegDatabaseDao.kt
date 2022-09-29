@@ -40,7 +40,7 @@ class FakeLegDatabaseDao(fillWithTestData: Boolean = false) : LegDatabaseDao {
         updateLiveData()
     }
 
-    override fun get(id: Long): Leg? {
+    override suspend fun get(id: Long): Leg? {
         return legsById[id]
     }
 
@@ -56,7 +56,7 @@ class FakeLegDatabaseDao(fillWithTestData: Boolean = false) : LegDatabaseDao {
     override fun getLatestLeg(): Leg? {
         return legsById.values.maxByOrNull { leg ->
             Converters.toLocalDateTime(leg.endTime).toEpochSecond(ZoneOffset.UTC)
-        }!!
+        }
     }
 
 }

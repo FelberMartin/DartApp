@@ -5,6 +5,7 @@ package com.example.dartapp.ui.screens.game
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.example.dartapp.MainCoroutineRule
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
+import com.example.dartapp.data.persistent.database.LegDatabaseDao
 import com.example.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.getOrAwaitValueTest
@@ -29,12 +30,14 @@ class GameViewModelTest {
     val coroutineRule = MainCoroutineRule()
 
     private lateinit var settingsRepository: SettingsRepository
+    private lateinit var legDatabaseDao: LegDatabaseDao
     private lateinit var viewModel: GameViewModel
 
     @Before
     fun setup() {
         settingsRepository = SettingsRepository(InMemoryKeyValueStorage())
-        viewModel = GameViewModel(NavigationManager(), settingsRepository, FakeLegDatabaseDao())
+        legDatabaseDao = FakeLegDatabaseDao()
+        viewModel = GameViewModel(NavigationManager(), settingsRepository, legDatabaseDao)
     }
 
 
@@ -138,6 +141,15 @@ class GameViewModelTest {
         assertThat(doubleAttempts).isEqualTo(2)
     }
 
+    @Test
+    fun `enter double attempts, gets saved to database`() = runTest {
+        settingsRepository.setAskForCheckout(false)
+        enterServes(listOf(180, 180, 141))
+        viewModel.enterDoubleAttempts(2)
+        val doubleAttempts = legDatabaseDao.getLatestLeg()?.doubleAttempts
+        assertThat(doubleAttempts).isEqualTo(2)
+    }
+
     // ------------------ Checkout ----------------------------
 
     @Test
@@ -168,7 +180,9 @@ class GameViewModelTest {
     // ---------- Leg Finished ---------------
 
     @Test
-    fun `enter finish serve, show leg finished dialog`() {
+    fun `enter finish serve, show leg finished dialog`() = runTest {
+        settingsRepository.setAskForDouble(false)
+        settingsRepository.setAskForCheckout(false)
         enterServes(listOf(180, 180, 141))
         val showDialog = viewModel.legFinished.getOrAwaitValueTest()
         assertThat(showDialog).isTrue()

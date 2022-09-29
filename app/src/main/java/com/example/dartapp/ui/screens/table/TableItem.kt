@@ -34,7 +34,7 @@ open class TableItem(
                 if (doubleAttemptsAvg == 0.0) {
                     return@TableItem "-"
                 }
-                String.format("%.0f%%", doubleAttemptsAvg)
+                String.format("%.0f%%", 100.0 / doubleAttemptsAvg)
             },
             TableItem("Avg. Checkout") {
                 String.format("%.1f", it.map { leg -> leg.checkout }.average())

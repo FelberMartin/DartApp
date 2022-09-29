@@ -16,7 +16,7 @@ interface LegDatabaseDao {
     fun update(leg: Leg)
 
     @Query("SELECT * FROM legs_table WHERE id = :id")
-    fun get(id: Long): Leg?
+    suspend fun get(id: Long): Leg?
 
     @Query("DELETE FROM legs_table")
     fun clear()

@@ -173,7 +173,7 @@ private fun NumbersAndDataCard(leg: Leg) {
             }
             
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                val doubleRate = if (leg.doubleAttempts > 0) "${100 / leg.doubleAttempts}%" else "-"
+                val doubleRate = if (leg.doubleAttempts > 0) "${100.0 / leg.doubleAttempts.toDouble()}%" else "-"
                 val legInfos = listOf(
                     Pair("Darts", leg.dartCount.toString()),
                     Pair("Average", String.format("%.1f", leg.servesAvg)),
