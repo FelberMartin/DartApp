@@ -1,11 +1,17 @@
 package com.example.dartapp.util.graphs.statistics
 
+import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.util.graphs.filter.LegFilterBase
 import com.example.dartapp.util.graphs.partitioner.LegPartitioner
-import com.example.dartapp.data.persistent.database.Leg
+import com.example.dartapp.util.graphs.statistics.barchart.TrainingCountByWeekdayStatistic
+import com.example.dartapp.util.graphs.statistics.barchart.TrainingCountStatistic
+import com.example.dartapp.util.graphs.statistics.linechart.AverageStatistic
+import com.example.dartapp.util.graphs.statistics.linechart.DartsPerLegStatistic
+import com.example.dartapp.util.graphs.statistics.linechart.FirstNineDartsAverageStatistic
+import com.example.dartapp.util.graphs.statistics.linechart.LineStatistic
+import com.example.dartapp.util.graphs.statistics.piechart.ServeDistributionStatistic
 import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.EChartType
-import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.util.DataSet
 
 abstract class StatisticTypeBase (
@@ -13,44 +19,31 @@ abstract class StatisticTypeBase (
     val chartType: EChartType,
     val availableFilterCategories: List<LegFilterBase.Category> = listOf(LegFilterBase.Category.ByGameCount,
         LegFilterBase.Category.ByTime),
-    private val statisticSpecificPartitioner: LegPartitioner? = null
+    protected val statisticSpecificPartitioner: LegPartitioner? = null
 ) {
-
-    abstract fun reduceLegsToNumber(legs: List<Leg>) : Number
 
     open fun modifyChart(chart: Chart) { }
 
-    open fun buildDataSet(legs: List<Leg>, filter: LegFilterBase) : DataSet {
-        val filteredLegs = filter.filterLegs(legs)
-        val partitioner = statisticSpecificPartitioner ?: filter.partitioner
-        val partitioned = partitioner.partitionLegs(filteredLegs)
-        val dataPoints = partitioned.map { partition ->
-            DataPoint(
-                partition.key,
-                reduceLegsToNumber(partition.value)
-            )
-        }
-
-        val dataSet = DataSet(dataPoints)
-        dataSet.dataPointXType = DataSet.Type.STRING
-        return dataSet
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other !is StatisticTypeBase) {
-            return false
-        }
-        return this.name == other.name
-    }
+    abstract fun buildDataSet(legs: List<Leg>, filter: LegFilterBase) : DataSet
 
     companion object {
         val all = listOf(
-            PointsPerServeAverage(),
-//            DartsPerLegAverage(),
-            ServeDistribution(),
-            TrainingCount(),
-            TrainingCountByWeekday(),
+            AverageStatistic,
+            FirstNineDartsAverageStatistic,
+            DartsPerLegStatistic,
+            ServeDistributionStatistic,
+            TrainingCountStatistic,
+            TrainingCountByWeekdayStatistic,
         )
+    }
+
+    // This is added for the initialization of the StatisticsViewModel. For some reason the use of a normal statistic
+    // at that place results in a NPE when calling the object :raised_eyebrow:
+    object PlaceHolderStatistic : LineStatistic("") {
+        override fun reduceLegsToNumber(legs: List<Leg>): Number {
+            return 0
+        }
+
     }
 }
 

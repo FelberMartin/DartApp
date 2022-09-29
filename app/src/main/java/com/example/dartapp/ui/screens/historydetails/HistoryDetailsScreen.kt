@@ -31,7 +31,7 @@ import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.util.graphs.filter.GamesLegFilter
-import com.example.dartapp.util.graphs.statistics.ServeDistribution
+import com.example.dartapp.util.graphs.statistics.piechart.ServeDistributionStatistic
 import com.example.dartapp.views.chart.LineChart
 import com.example.dartapp.views.chart.PieChart
 import com.example.dartapp.views.chart.data.DataPoint
@@ -96,7 +96,7 @@ private fun ServeDistributionCard(leg: Leg) {
                 .height(200.dp),
             contentAlignment = Alignment.Center
         ) {
-            val dataSet = ServeDistribution().buildDataSet(listOf(leg), GamesLegFilter.all)
+            val dataSet = ServeDistributionStatistic.buildDataSet(listOf(leg), GamesLegFilter.all)
             AndroidView(
                 factory = { context ->
                     val chart = PieChart(context).apply {

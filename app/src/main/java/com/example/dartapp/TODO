@@ -13,9 +13,8 @@ TODO:
  - Organize History (maybe with sections "Today", "Last week", ...)
     - Highlight good averages (?)
  - Days in Stats seem to be shifted by one day (?)          <------------------------- CHECK THIS OUT IN THE MORNING!!!
+ - Dropdown for stat selection
  - Felix Feedback:
     - In charts add information to point labels (currently when selecting a value it shows the index)
-    - New stat: average for first 9 darts
     - Visualize checkout (maybe like serve distribution)
-    - re-add Darts per Game?
     - Trend line for Charts?

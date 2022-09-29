@@ -4,14 +4,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import com.example.dartapp.util.graphs.filter.GamesLegFilter
-import com.example.dartapp.util.graphs.filter.LegFilterBase
-import com.example.dartapp.util.graphs.statistics.PointsPerServeAverage
-import com.example.dartapp.util.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.data.persistent.database.LegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.NavigationViewModel
+import com.example.dartapp.util.graphs.filter.GamesLegFilter
+import com.example.dartapp.util.graphs.filter.LegFilterBase
+import com.example.dartapp.util.graphs.statistics.StatisticTypeBase
+import com.example.dartapp.util.graphs.statistics.linechart.AverageStatistic
 import com.example.dartapp.views.chart.util.DataSet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -23,7 +23,7 @@ class StatisticsViewModel @Inject constructor(
     private val legDatabaseDao: LegDatabaseDao
 ): NavigationViewModel(navigationManager) {
 
-    private val _statisticType = MutableLiveData<StatisticTypeBase>(PointsPerServeAverage())
+    private val _statisticType = MutableLiveData<StatisticTypeBase>(StatisticTypeBase.PlaceHolderStatistic)
     val statisticType: LiveData<StatisticTypeBase> = _statisticType
 
     private val _selectedFilterCategory = MutableLiveData<LegFilterBase.Category>(LegFilterBase.Category.ByGameCount)
@@ -42,6 +42,7 @@ class StatisticsViewModel @Inject constructor(
 
 
     init {
+        _statisticType.value = AverageStatistic
         viewModelScope.launch {
             legDatabaseDao.getAllLegs().asFlow().collect {
                 println("Collected legs (size = ${it.size})")

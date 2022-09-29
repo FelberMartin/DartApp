@@ -26,8 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
-import com.example.dartapp.util.graphs.filter.LegFilterBase
-import com.example.dartapp.util.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
@@ -36,6 +34,8 @@ import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.util.extensions.observeAsStateNonOptional
+import com.example.dartapp.util.graphs.filter.LegFilterBase
+import com.example.dartapp.util.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.views.chart.*
 import com.example.dartapp.views.chart.legend.Legend
 import com.example.dartapp.views.chart.util.DataSet
@@ -119,18 +119,13 @@ fun StatisticsChart(
     val dataSet by viewModel.dataSet.observeAsStateNonOptional()
     val noData by viewModel.noLegDataAvailable.observeAsStateNonOptional()
 
-    val modifyChart = { chart: Chart ->
-        statisticType.modifyChart(chart)
-        chart.interactionEnabled = interactionEnabled
-    }
-
     if (noData) {
         NoDataWarning("You first have to train to explore your statistics.")
     } else {
         when (statisticType.chartType) {
-            EChartType.LINE_CHART -> LineGraph(dataSet, modifyChart, filterByTime)
-            EChartType.BAR_CHART -> BarGraph(dataSet, modifyChart)
-            EChartType.PIE_CHART -> PieGraph(dataSet, modifyChart)
+            EChartType.LINE_CHART -> LineGraph(dataSet, statisticType::modifyChart, filterByTime, interactionEnabled)
+            EChartType.BAR_CHART -> BarGraph(dataSet, statisticType::modifyChart, interactionEnabled)
+            EChartType.PIE_CHART -> PieGraph(dataSet, statisticType::modifyChart, interactionEnabled)
         }
     }
 }
@@ -170,7 +165,8 @@ fun NoDataWarning(detailedText: String) {
 fun LineGraph(
     dataSet: DataSet,
     modifyChart: (Chart) -> Unit,
-    xAxisIsTime: Boolean
+    xAxisIsTime: Boolean,
+    interactionEnabled: Boolean
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
@@ -182,6 +178,7 @@ fun LineGraph(
         },
         update = { chart ->
             modifyChart(chart)
+            chart.interactionEnabled = interactionEnabled
             chart.showXAxisMarkers = xAxisIsTime
             chart.showVerticalGrid = xAxisIsTime
             chart.data = dataSet
@@ -192,7 +189,8 @@ fun LineGraph(
 @Composable
 fun BarGraph(
     dataSet: DataSet,
-    modifyChart: (Chart) -> Unit
+    modifyChart: (Chart) -> Unit,
+    interactionEnabled: Boolean
 ) {
     AndroidView(
         modifier = Modifier.fillMaxSize(),
@@ -203,6 +201,7 @@ fun BarGraph(
         },
         update = { chart ->
             chart.data = dataSet
+            chart.interactionEnabled = interactionEnabled
             modifyChart(chart)
         }
     )
@@ -211,7 +210,8 @@ fun BarGraph(
 @Composable
 fun PieGraph(
     dataSet: DataSet,
-    modifyChart: (Chart) -> Unit
+    modifyChart: (Chart) -> Unit,
+    interactionEnabled: Boolean
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -237,6 +237,7 @@ fun PieGraph(
             update = { layout ->
                 val chart = layout.children.first { view -> view is PieChart } as PieChart
                 chart.data = dataSet
+                chart.interactionEnabled = interactionEnabled
                 modifyChart(chart)
 
                 val legend = layout.children.first { view -> view is Legend } as Legend
@@ -263,6 +264,7 @@ private fun StatisticSection(
         )
 
         val statisticType by viewModel.statisticType.observeAsStateNonOptional()
+        println(StatisticTypeBase.all)
         SingleSelectChipGroup(
             itemLabels = StatisticTypeBase.all.map { x -> x.name },
             selectedIndex = StatisticTypeBase.all.indexOf(statisticType),
