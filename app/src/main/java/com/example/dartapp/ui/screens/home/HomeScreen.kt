@@ -107,7 +107,7 @@ private fun StatisticsCard(
 
 @Composable
 private fun StatisticsPreview(
-    statisticsViewModel: StatisticsViewModel
+    statisticsViewModel: StatisticsViewModel,
 ) {
     Text(
         text = "Average"
@@ -119,7 +119,7 @@ private fun StatisticsPreview(
             .size(240.dp),
         contentAlignment = Alignment.Center
     ) {
-        StatisticsChart(statisticsViewModel)
+        StatisticsChart(statisticsViewModel, interactionEnabled = false)
     }
 }
 

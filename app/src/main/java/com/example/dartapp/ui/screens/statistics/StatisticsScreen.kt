@@ -109,7 +109,8 @@ private fun MainStatisticsCard(
 
 @Composable
 fun StatisticsChart(
-    viewModel: StatisticsViewModel
+    viewModel: StatisticsViewModel,
+    interactionEnabled: Boolean = true
 ) {
     val statisticType by viewModel.statisticType.observeAsStateNonOptional()
     val selectedFilterCategory by viewModel.selectedFilterCategory.observeAsStateNonOptional()
@@ -118,13 +119,18 @@ fun StatisticsChart(
     val dataSet by viewModel.dataSet.observeAsStateNonOptional()
     val noData by viewModel.noLegDataAvailable.observeAsStateNonOptional()
 
+    val modifyChart = { chart: Chart ->
+        statisticType.modifyChart(chart)
+        chart.interactionEnabled = interactionEnabled
+    }
+
     if (noData) {
         NoDataWarning("You first have to train to explore your statistics.")
     } else {
         when (statisticType.chartType) {
-            EChartType.LINE_CHART -> LineGraph(dataSet, statisticType::modifyChart, filterByTime)
-            EChartType.BAR_CHART -> BarGraph(dataSet, statisticType::modifyChart)
-            EChartType.PIE_CHART -> PieGraph(dataSet, statisticType::modifyChart)
+            EChartType.LINE_CHART -> LineGraph(dataSet, modifyChart, filterByTime)
+            EChartType.BAR_CHART -> BarGraph(dataSet, modifyChart)
+            EChartType.PIE_CHART -> PieGraph(dataSet, modifyChart)
         }
     }
 }

@@ -37,10 +37,10 @@ abstract class Chart @JvmOverloads constructor(
             if (newData) dataChanged()
         }
 
-    protected var selectable = true
+    var interactionEnabled = true
     protected var selectedIndex = -1
         set(value) {
-            if (!selectable) return
+            if (!interactionEnabled) return
             field = value
             onSelectionUpdate()
         }
@@ -78,7 +78,7 @@ abstract class Chart @JvmOverloads constructor(
         if (event.action != MotionEvent.ACTION_UP)
             return true
 
-        if (!selectable) return true
+        if (!interactionEnabled) return true
 
         val index = getTouchedIndex(event.x, event.y)
         if (index == -1 || index == selectedIndex)
