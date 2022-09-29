@@ -1,7 +1,7 @@
-package com.example.dartapp.chartstuff.graphs.statistics
+package com.example.dartapp.util.graphs.statistics
 
-import com.example.dartapp.chartstuff.graphs.filter.LegFilterBase
-import com.example.dartapp.chartstuff.graphs.partitioner.LegPartitioner
+import com.example.dartapp.util.graphs.filter.LegFilterBase
+import com.example.dartapp.util.graphs.partitioner.LegPartitioner
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.EChartType

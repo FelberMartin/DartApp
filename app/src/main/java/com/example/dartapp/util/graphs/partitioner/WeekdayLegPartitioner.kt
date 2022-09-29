@@ -1,4 +1,4 @@
-package com.example.dartapp.chartstuff.graphs.partitioner
+package com.example.dartapp.util.graphs.partitioner
 
 import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.Leg

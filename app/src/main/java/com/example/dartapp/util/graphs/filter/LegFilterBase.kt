@@ -1,6 +1,6 @@
-package com.example.dartapp.chartstuff.graphs.filter
+package com.example.dartapp.util.graphs.filter
 
-import com.example.dartapp.chartstuff.graphs.partitioner.LegPartitioner
+import com.example.dartapp.util.graphs.partitioner.LegPartitioner
 import com.example.dartapp.data.persistent.database.Leg
 
 abstract class LegFilterBase(

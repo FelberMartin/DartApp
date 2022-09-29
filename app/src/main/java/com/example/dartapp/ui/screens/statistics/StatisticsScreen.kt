@@ -26,8 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
-import com.example.dartapp.chartstuff.graphs.filter.LegFilterBase
-import com.example.dartapp.chartstuff.graphs.statistics.StatisticTypeBase
+import com.example.dartapp.util.graphs.filter.LegFilterBase
+import com.example.dartapp.util.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager

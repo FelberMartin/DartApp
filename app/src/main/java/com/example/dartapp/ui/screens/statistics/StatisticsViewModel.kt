@@ -4,10 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import com.example.dartapp.chartstuff.graphs.filter.GamesLegFilter
-import com.example.dartapp.chartstuff.graphs.filter.LegFilterBase
-import com.example.dartapp.chartstuff.graphs.statistics.PointsPerServeAverage
-import com.example.dartapp.chartstuff.graphs.statistics.StatisticTypeBase
+import com.example.dartapp.util.graphs.filter.GamesLegFilter
+import com.example.dartapp.util.graphs.filter.LegFilterBase
+import com.example.dartapp.util.graphs.statistics.PointsPerServeAverage
+import com.example.dartapp.util.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.data.persistent.database.LegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationManager

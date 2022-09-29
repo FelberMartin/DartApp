@@ -1,6 +1,6 @@
-package com.example.dartapp.chartstuff.graphs.filter
+package com.example.dartapp.util.graphs.filter
 
-import com.example.dartapp.chartstuff.graphs.partitioner.PartitionCountLegPartitioner
+import com.example.dartapp.util.graphs.partitioner.PartitionCountLegPartitioner
 import com.example.dartapp.data.persistent.database.Leg
 
 class GamesLegFilter private constructor(

@@ -1,6 +1,6 @@
-package com.example.dartapp.chartstuff.graphs.statistics
+package com.example.dartapp.util.graphs.statistics
 
-import com.example.dartapp.chartstuff.graphs.filter.LegFilterBase
+import com.example.dartapp.util.graphs.filter.LegFilterBase
 import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.util.GameUtil

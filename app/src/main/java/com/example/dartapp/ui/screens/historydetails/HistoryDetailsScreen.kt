@@ -20,8 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
-import com.example.dartapp.chartstuff.graphs.filter.GamesLegFilter
-import com.example.dartapp.chartstuff.graphs.statistics.ServeDistribution
 import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.data.persistent.database.Leg
@@ -32,6 +30,8 @@ import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
+import com.example.dartapp.util.graphs.filter.GamesLegFilter
+import com.example.dartapp.util.graphs.statistics.ServeDistribution
 import com.example.dartapp.views.chart.LineChart
 import com.example.dartapp.views.chart.PieChart
 import com.example.dartapp.views.chart.data.DataPoint

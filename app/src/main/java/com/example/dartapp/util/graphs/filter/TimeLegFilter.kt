@@ -1,6 +1,6 @@
-package com.example.dartapp.chartstuff.graphs.filter
+package com.example.dartapp.util.graphs.filter
 
-import com.example.dartapp.chartstuff.graphs.partitioner.TimeLegPartitioner
+import com.example.dartapp.util.graphs.partitioner.TimeLegPartitioner
 import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.util.time.TimeUnit
