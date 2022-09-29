@@ -59,7 +59,7 @@ open class TableItem(
                 val item = TableItem(itemName) {
                     it.sumOf { leg ->
                         val serves = Converters.toListOfInts(leg.servesList)
-                        GameUtil.countServesForCategories(serves, categories)[limit]!!}.toString()
+                        GameUtil.partitionSizeForLowerLimits(serves, categories)[limit]!!}.toString()
                 }
                 items.add(item)
             }

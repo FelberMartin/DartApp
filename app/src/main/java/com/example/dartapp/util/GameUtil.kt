@@ -4,32 +4,28 @@ import java.util.*
 
 object GameUtil {
 
-    val DEFAULT_SERVE_CATEGORIES = listOf(0, 60, 100, 140, 180)
-
     // https://datagenetics.com/blog/november22021/index.html
     val INVALID_SERVES = listOf(179, 178, 176, 175, 173, 172, 169, 166, 163)
 
 
-
-
     /**
-     * Counts for each category all the serves between the category bound (inclusive) and the next bigger category
+     * Counts for each limit all the numbers between the limit bound (inclusive) and the next bigger limit
      * bound (exclusive).
      */
-    fun countServesForCategories(serves: List<Int>, categories: List<Int> = DEFAULT_SERVE_CATEGORIES): SortedMap<Int, Int> {
-        val dividedServes = HashMap<Int, Int>()
-        for ((index, limit) in categories.withIndex()) {
+    fun partitionSizeForLowerLimits(numbersToPartition: List<Int>, limits: List<Int>): SortedMap<Int, Int> {
+        val partitionSizeByLimit = HashMap<Int, Int>()
+        for ((index, limit) in limits.withIndex()) {
             var count = 0
-            if (index < categories.size - 1)
-                count = serves.count { s -> limit <= s && s < categories[index + 1] }
+            if (index < limits.size - 1)
+                count = numbersToPartition.count { s -> limit <= s && s < limits[index + 1] }
             else {
-                count = serves.count { s -> limit <= s }
+                count = numbersToPartition.count { s -> limit <= s }
             }
 
-            dividedServes[limit] = count
+            partitionSizeByLimit[limit] = count
         }
 
-        return dividedServes.toSortedMap()
+        return partitionSizeByLimit.toSortedMap()
     }
 
     fun nameServeCategory(categoryLimit: Int): String {

@@ -8,7 +8,7 @@ class GameUtilTest {
     @Test
     fun `two categories`() {
         val inputServes = listOf(56, 69, 180, 39, 2, 121, 111, 34)
-        val result = GameUtil.countServesForCategories(
+        val result = GameUtil.partitionSizeForLowerLimits(
             inputServes,
             listOf(0, 100)
         )
@@ -24,7 +24,7 @@ class GameUtilTest {
     @Test
     fun `default categories`() {
         val inputServes = listOf(56, 69, 180, 39, 2, 121, 111, 34)
-        val result = GameUtil.countServesForCategories(
+        val result = GameUtil.partitionSizeForLowerLimits(
             inputServes,
             listOf(0, 60, 100, 140)
         )

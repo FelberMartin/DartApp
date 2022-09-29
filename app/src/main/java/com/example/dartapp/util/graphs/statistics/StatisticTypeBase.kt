@@ -9,6 +9,7 @@ import com.example.dartapp.util.graphs.statistics.linechart.AverageStatistic
 import com.example.dartapp.util.graphs.statistics.linechart.DartsPerLegStatistic
 import com.example.dartapp.util.graphs.statistics.linechart.FirstNineDartsAverageStatistic
 import com.example.dartapp.util.graphs.statistics.linechart.LineStatistic
+import com.example.dartapp.util.graphs.statistics.piechart.CheckoutDistributionStatistic
 import com.example.dartapp.util.graphs.statistics.piechart.ServeDistributionStatistic
 import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.EChartType
@@ -34,6 +35,7 @@ abstract class StatisticTypeBase (
             ServeDistributionStatistic,
             TrainingCountStatistic,
             TrainingCountByWeekdayStatistic,
+            CheckoutDistributionStatistic
         )
     }
 
