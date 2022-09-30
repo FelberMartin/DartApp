@@ -16,12 +16,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -93,6 +93,8 @@ private fun MainStatisticsCard(
             Box(Modifier.height(400.dp)) {
                 StatisticsChart(viewModel)
             }
+
+            Spacer(Modifier.height(6.dp))
 
             Box(Modifier.padding(horizontal = 16.dp)) {
                 StatisticSection(viewModel)
@@ -257,21 +259,66 @@ fun PieGraph(
 private fun StatisticSection(
     viewModel: StatisticsViewModel
 ) {
-    Column {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         SectionTitle(
             icon = Icons.Default.BarChart,
             title = "Statistic"
         )
 
-        val statisticType by viewModel.statisticType.observeAsStateNonOptional()
-        println(StatisticTypeBase.all)
-        SingleSelectChipGroup(
-            itemLabels = StatisticTypeBase.all.map { x -> x.name },
-            selectedIndex = StatisticTypeBase.all.indexOf(statisticType),
-            onSelectionIndexChanged = {
-                viewModel.setStatisticType(StatisticTypeBase.all[it])
+        val selectedStatistic by viewModel.statisticType.observeAsStateNonOptional()
+        var expanded by remember { mutableStateOf(false) }
+
+        Spacer(modifier = Modifier.width(24.dp))
+
+        Box() {
+            FilterChip(
+                selected = true,
+                onClick = { expanded = !expanded },
+                label = {
+                    Text(
+                        text = selectedStatistic.name,
+                        style = MaterialTheme.typography.labelLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth(0.8f),
+                    )
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown,
+                        contentDescription = null,
+                    )
+                }
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                StatisticTypeBase.all.forEach { statistic ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = statistic.name,
+                                color = if (statistic == selectedStatistic) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.onSurface
+                                }
+                            )
+                        },
+                        onClick = {
+                            viewModel.setStatisticType(statistic)
+                            expanded = false
+                        }
+                    )
+                }
             }
-        )
+        }
     }
 }
 
@@ -369,7 +416,9 @@ private fun SectionTitle(
     icon: ImageVector,
     title: String
 ) {
-    Row() {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Icon(
             imageVector = icon,
             contentDescription = null,

@@ -12,9 +12,6 @@ TODO:
     - With link to stats, or show some different stats in the dialog
  - Organize History (maybe with sections "Today", "Last week", ...)
     - Highlight good averages (?)
- - Days in Stats seem to be shifted by one day (?)          <------------------------- CHECK THIS OUT IN THE MORNING!!!
- - Dropdown for stat selection
  - Felix Feedback:
     - In charts add information to point labels (currently when selecting a value it shows the index)
-    - Visualize checkout (maybe like serve distribution)
     - Trend line for Charts?

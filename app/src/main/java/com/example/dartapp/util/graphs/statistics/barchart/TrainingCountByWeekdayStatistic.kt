@@ -4,7 +4,7 @@ import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.util.graphs.partitioner.WeekdayLegPartitioner
 
 object TrainingCountByWeekdayStatistic : BarStatistic(
-    name = "Training count by weekday",
+    name = "Training Count by Weekday",
     statisticSpecificPartitioner = WeekdayLegPartitioner()
 ) {
 
