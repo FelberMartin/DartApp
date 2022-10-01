@@ -77,6 +77,7 @@ object CheckoutTip {
         92 to "T20,D16",
         91 to "T17,D20",
         91 to "T17,D20",
+        90 to "T18,D18",
         89 to "T19,D16",
         88 to "T16,D20",
         87 to "T17,D18",
