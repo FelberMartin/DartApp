@@ -3,9 +3,7 @@ package com.example.dartapp.util.graphs.statistics.linechart
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.util.graphs.filter.LegFilterBase
 import com.example.dartapp.util.graphs.statistics.StatisticTypeBase
-import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.EChartType
-import com.example.dartapp.views.chart.LineChart
 import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.util.DataSet
 
@@ -34,11 +32,4 @@ abstract class LineStatistic(
         return dataSet
     }
 
-    override fun modifyChart(chart: Chart) {
-        with(chart as LineChart) {
-            verticalAutoPadding = false
-            topAutoPadding = true
-            yStartAtZero = true
-        }
-    }
 }
