@@ -15,7 +15,7 @@ import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.game.GameScreen
-import com.example.dartapp.ui.screens.history.HistoryScreen
+import com.example.dartapp.ui.screens.history.HistoryScreenEntry
 import com.example.dartapp.ui.screens.historydetails.HistoryDetailsScreen
 import com.example.dartapp.ui.screens.historydetails.HistoryDetailsViewModel
 import com.example.dartapp.ui.screens.home.HomeScreen
@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 composable(NavigationDirections.History.destination) {
-                    HistoryScreen(hiltViewModel())
+                    HistoryScreenEntry(hiltViewModel())
                 }
 
                 composable(NavigationDirections.HistoryDetails.route,

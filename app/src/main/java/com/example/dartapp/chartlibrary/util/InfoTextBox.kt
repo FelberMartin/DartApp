@@ -1,8 +1,10 @@
 package com.example.dartapp.views.chart.util
 
-import android.graphics.*
-import android.view.View
-import com.example.dartapp.R
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.PointF
+import android.graphics.RectF
+import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.height
 import kotlin.math.max
 
@@ -10,7 +12,9 @@ import kotlin.math.max
 private const val TEXT_BOX_PADDING = 10f
 private const val TEXT_BOX_ROUNDING = 10f
 
-class InfoTextBox(private val view: View) {
+class InfoTextBox(
+    private val chart: Chart
+) {
 
 
     var title: String = "Title"
@@ -29,18 +33,13 @@ class InfoTextBox(private val view: View) {
         textSize = 36f
         isFakeBoldText = true
         textAlign = Paint.Align.CENTER
-        color = Color.WHITE
     }
     private val descPaint = Paint().apply {
         isAntiAlias = true
         textSize = 30f
         textAlign = Paint.Align.CENTER
-        color = Color.LTGRAY
     }
-    private val textBoxPaint = Paint().apply {
-        color = Color.BLACK
-        alpha = 160
-    }
+    private val textBoxPaint = Paint()
 
 
     fun update() {
@@ -100,8 +99,13 @@ class InfoTextBox(private val view: View) {
     fun draw(canvas: Canvas) {
         val x = textBoxRect.centerX()
 
+        textBoxPaint.color = chart.colorManager.selectionLabelBackground
         canvas.drawRoundRect(textBoxRect, TEXT_BOX_ROUNDING, TEXT_BOX_ROUNDING, textBoxPaint)
+
+        titlePaint.color = chart.colorManager.selectionLabelTitle
         canvas.drawText(title, x, titleBaseLine, titlePaint)
+
+        descPaint.color = chart.colorManager.selectionLabelDescription
         canvas.drawText(description, x, descBaseLine, descPaint)
     }
 

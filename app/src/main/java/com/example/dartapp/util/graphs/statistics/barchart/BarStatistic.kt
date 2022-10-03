@@ -8,7 +8,6 @@ import com.example.dartapp.views.chart.BarChart
 import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.EChartType
 import com.example.dartapp.views.chart.data.DataPoint
-import com.example.dartapp.views.chart.util.ColorManager
 import com.example.dartapp.views.chart.util.DataSet
 
 abstract class BarStatistic(
@@ -42,7 +41,7 @@ abstract class BarStatistic(
     override fun modifyChart(chart: Chart) {
         with(chart as BarChart) {
             xStartAtZero = false
-            colorManager = ColorManager.singleColor
+            colorManager.onlyUseOneGraphColor = true
             showXAxisMarkers = true
             verticalAutoPadding = false
             topAutoPadding = true

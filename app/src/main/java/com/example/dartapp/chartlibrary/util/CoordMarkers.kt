@@ -3,19 +3,12 @@ package com.example.dartapp.views.chart.util
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
-import android.view.View
-import androidx.annotation.AttrRes
-import com.example.dartapp.R
 import com.example.dartapp.views.chart.*
 import com.example.dartapp.views.chart.data.DataPoint
-import com.google.android.material.color.MaterialColors
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.pow
 
-fun View.getAttrColor(@AttrRes id: Int) : Int {
-    return MaterialColors.getColor(this, id)
-}
 
 /**
  * How far the markers protrude from the coordinate system's arrows.
@@ -27,7 +20,10 @@ private const val MARKER_SIZE = 10f
  */
 const val MARKER_INTERN_SPACING = 15f
 
-class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Axis) {
+class CoordMarkers(
+    private val chart: CoordinateBasedChart,
+    private val axis: Axis,
+) {
 
     enum class Axis {
         X, Y
@@ -46,7 +42,6 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
 
     private val markerPaint = Paint().apply {
         isAntiAlias = true
-        color = chart.getAttrColor(R.attr.colorOnBackground)
         textSize = 40f
         typeface = Typeface.DEFAULT_BOLD
         strokeWidth = ARROW_STRENGTH
@@ -140,6 +135,8 @@ class CoordMarkers(private val chart: CoordinateBasedChart, private val axis: Ax
      * Draws the markers with respect to the CoordinateBasedChart given in the constructor.
      */
     fun draw(canvas: Canvas) {
+        markerPaint.color = chart.colorManager.coordinateSystem
+
         // X axis
         if (axis == Axis.X) {
             for (i in 0 until coords.size) {

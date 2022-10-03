@@ -4,12 +4,9 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
-import com.example.dartapp.R
 import com.example.dartapp.util.replaceNaN
 import com.example.dartapp.views.chart.util.CoordMarkers
 import com.example.dartapp.views.chart.util.DataSet
-import com.example.dartapp.views.chart.util.getAttrColor
-import com.google.android.material.color.MaterialColors
 import kotlin.math.max
 
 const val ARROW_STRENGTH = 8f
@@ -75,7 +72,6 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     private var arrowLines: FloatArray = FloatArray(ARROW_LINES_COUNT * 4)
 
     private var arrowPaint: Paint = Paint().apply {
-        color = MaterialColors.getColor(this@CoordinateBasedChart, R.attr.colorOnBackground)
         isAntiAlias = true
         isDither = true
         style = Paint.Style.STROKE // default: FILL
@@ -89,7 +85,6 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     private var horizontalGridLines = FloatArray(0)
     private var verticalGridLines = FloatArray(0)
     private val gridPaint = Paint().apply {
-        color = getAttrColor(R.attr.colorBackgroundFloating)
         isAntiAlias = true
         strokeCap = Paint.Cap.ROUND
         strokeWidth = 2f
@@ -364,6 +359,8 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     }
 
     protected fun drawGrid(canvas: Canvas) {
+        gridPaint.color = colorManager.grid
+
         if (showHorizontalGrid)
             canvas.drawLines(horizontalGridLines, gridPaint)
         if (showVerticalGrid)
@@ -371,11 +368,9 @@ abstract class CoordinateBasedChart @JvmOverloads constructor(
     }
 
     protected fun drawArrows(canvas: Canvas) {
+        arrowPaint.color = colorManager.coordinateSystem
         canvas.drawLines(arrowLines, arrowPaint)
     }
-
-
-
 }
 
 /**

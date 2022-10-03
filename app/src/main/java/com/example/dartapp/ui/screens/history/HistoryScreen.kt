@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.data.persistent.database.Leg
+import com.example.dartapp.data.persistent.database.TestLegData
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.statistics.NoDataWarning
@@ -28,8 +29,16 @@ import com.example.dartapp.util.extensions.observeAsStateNonOptional
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+
+@Composable
+fun HistoryScreenEntry(viewModel: HistoryViewModel) {
+    val legs by viewModel.legs.observeAsStateNonOptional()
+    HistoryScreen(legs = legs, viewModel = viewModel)
+}
+
 @Composable
 fun HistoryScreen(
+    legs: List<Leg>,
     viewModel: HistoryViewModel
 ) {
     Background {
@@ -41,8 +50,6 @@ fun HistoryScreen(
                 navigationViewModel = viewModel
             )
 
-            val legs by viewModel.legs.observeAsStateNonOptional()
-
             if (legs.isEmpty()) {
                 NoDataWarning("You first have to train to explore your history.")
             } else {
@@ -50,10 +57,8 @@ fun HistoryScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp, vertical = 16.dp)
                 ) {
-                    item { Spacer(Modifier.height(32.dp)) }
-
                     for (leg in legs) {
                         item {
                             HistoryItem(
@@ -174,6 +179,8 @@ fun SeeMoreIconButton(
 @Composable
 fun PreviewTableScreen() {
     DartAppTheme() {
-        HistoryScreen(HistoryViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true)))
+        val viewModel = HistoryViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true))
+        val legs = TestLegData.createExampleLegs()
+        HistoryScreen(legs, viewModel)
     }
 }

@@ -38,6 +38,7 @@ import com.example.dartapp.util.graphs.filter.LegFilterBase
 import com.example.dartapp.util.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.views.chart.*
 import com.example.dartapp.views.chart.legend.Legend
+import com.example.dartapp.views.chart.util.ColorManager
 import com.example.dartapp.views.chart.util.DataSet
 
 @Composable
@@ -170,10 +171,12 @@ fun LineGraph(
     xAxisIsTime: Boolean,
     interactionEnabled: Boolean
 ) {
+    val materialThemeBasedColorManager = ColorManager.materialThemeBasedColorManager()
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
             LineChart(context).apply {
+                colorManager = materialThemeBasedColorManager
                 modifyChart(this)
                 data = dataSet
             }
@@ -194,10 +197,12 @@ fun BarGraph(
     modifyChart: (Chart) -> Unit,
     interactionEnabled: Boolean
 ) {
+    val materialThemeBasedColorManager = ColorManager.materialThemeBasedColorManager()
     AndroidView(
         modifier = Modifier.fillMaxSize(),
         factory = { context ->
             BarChart(context).apply {
+                colorManager = materialThemeBasedColorManager
                 data = dataSet
             }
         },
@@ -219,10 +224,12 @@ fun PieGraph(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        val materialThemeBasedColorManager = ColorManager.materialThemeBasedColorManager()
         AndroidView(
             modifier = Modifier.fillMaxSize(0.95f),
             factory = { context ->
                 val chart = PieChart(context).apply {
+                    colorManager = materialThemeBasedColorManager
                     data = dataSet
                 }
                 val legend = Legend(context).apply {

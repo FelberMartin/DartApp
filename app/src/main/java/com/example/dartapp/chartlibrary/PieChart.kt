@@ -2,16 +2,11 @@ package com.example.dartapp.views.chart
 
 import android.animation.ObjectAnimator
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.PointF
-import android.graphics.RectF
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.animation.AccelerateDecelerateInterpolator
-import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.util.InfoTextBox
-import com.google.android.material.color.MaterialColors
 import kotlin.math.*
 
 // How much the selected circle segment should stand out from the center
@@ -47,8 +42,6 @@ class PieChart @JvmOverloads constructor(
     private lateinit var textBoxTranslation: PointF
 
 
-    private val backgroundColor = MaterialColors.getColor(this, R.attr.backgroundColor)
-
     private val paint: Paint = Paint().apply {
         isAntiAlias = true
         strokeCap = Paint.Cap.ROUND
@@ -72,7 +65,9 @@ class PieChart @JvmOverloads constructor(
             selectedIndex = 1
         }
 
-
+        // To get a transparent background instead of a black one the xfer:
+        // https://stackoverflow.com/a/33483280/13366254
+        setLayerType(LAYER_TYPE_HARDWARE, paint)
     }
 
 
@@ -163,7 +158,11 @@ class PieChart @JvmOverloads constructor(
         super.onDraw(canvas)
 
         drawSegments(canvas)
+        paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
         drawSegmentSpacers(canvas)
+        paint.xfermode = null
+
+
         drawSelectionTextBox(canvas)
     }
 
@@ -176,7 +175,7 @@ class PieChart @JvmOverloads constructor(
             val sweepAngle = fractions[index] * 360
             val animatedSweepAngle = max(0f, shownMaxAngle - startAngle)
             val shownSweepAngle = min(sweepAngle, animatedSweepAngle)
-            paint.color = colorManager.get(index)
+            paint.color = colorManager.getGraphColor(index)
 
             // let the selected arc protrude from the center
             if (index == selectedIndex) {
@@ -197,7 +196,7 @@ class PieChart @JvmOverloads constructor(
 
     // Spaces between segments
     private fun drawSegmentSpacers(canvas: Canvas) {
-        paint.color = backgroundColor
+        paint.color = Color.WHITE
         for (point in startPoints) {
             val radius = width / 2f
             val relX = point.x * radius
@@ -273,5 +272,4 @@ class PieChart @JvmOverloads constructor(
 
         return -1
     }
-
 }

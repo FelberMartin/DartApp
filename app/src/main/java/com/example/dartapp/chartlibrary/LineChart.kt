@@ -6,11 +6,8 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.core.graphics.plus
-import com.example.dartapp.R
 import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.util.InfoTextBox
-import com.example.dartapp.views.chart.util.getAttrColor
-import com.google.android.material.color.MaterialColors
 
 private const val TAG = "LineChart"
 
@@ -53,14 +50,12 @@ class LineChart @JvmOverloads constructor(
         strokeWidth = 10f
         strokeCap = Paint.Cap.ROUND
         strokeJoin = Paint.Join.ROUND
-        color = MaterialColors.getColor(this@LineChart, R.attr.colorPrimary)
 //        shader = lineShader
     }
 
     private val selectionPaint = Paint().apply {
         isAntiAlias = true
         strokeWidth = 6f
-        color = getAttrColor(R.attr.colorBackgroundFloating)
     }
 
 
@@ -129,6 +124,7 @@ class LineChart @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
+        linePaint.color = colorManager.getGraphColor(0)
         drawLines(canvas)
         drawPoints(canvas)
         drawSelection(canvas)
@@ -168,6 +164,8 @@ class LineChart @JvmOverloads constructor(
 
     private fun drawSelection(canvas: Canvas) {
         if (selectedIndex == -1) return
+
+        selectionPaint.color = colorManager.selectionHighlighter
 
         val p = inCoordSystem(selectedIndex)
         canvas.drawLine(coordPixelRect.left, p.y, coordPixelRect.right, p.y, selectionPaint)

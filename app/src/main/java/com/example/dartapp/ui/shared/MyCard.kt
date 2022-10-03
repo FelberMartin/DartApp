@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -18,14 +17,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MyCard(
     modifier: Modifier = Modifier,
-    colors: CardColors = CardDefaults.outlinedCardColors(
-        containerColor = Color.White
-    ),
     content: @Composable ColumnScope.() -> Unit
 ) = OutlinedCard(
     modifier = modifier,
-    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 5.dp),
-    colors = colors,
+    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
+    colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
     content = content
 )
 
@@ -35,7 +31,6 @@ fun MyCard(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    colors: CardColors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.background),
     content: @Composable ColumnScope.() -> Unit
 ) = OutlinedCard(
     onClick = onClick,
@@ -44,7 +39,7 @@ fun MyCard(
     interactionSource = interactionSource,
     border = CardDefaults.outlinedCardBorder(enabled),
     elevation = CardDefaults.elevatedCardElevation(),
-    colors = colors,
+    colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
     content = content
 )
 

@@ -6,11 +6,11 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
-import com.example.dartapp.R
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.example.dartapp.views.chart.Chart
-import com.example.dartapp.views.chart.util.DataSet
 import com.example.dartapp.views.chart.PieChart
-import com.google.android.material.color.MaterialColors
+import com.example.dartapp.views.chart.util.DataSet
 import kotlin.math.ceil
 
 
@@ -57,7 +57,7 @@ class Legend @JvmOverloads constructor(
     private var indicatorPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var textPaint = Paint().apply {
         isAntiAlias = true
-        color = MaterialColors.getColor(this@Legend, R.attr.colorOnBackground)
+        color = Color(0xFF000000).toArgb()     // This color is set to match the colorManager of the linked chart.
         textSize = 40f
     }
 
@@ -192,6 +192,8 @@ class Legend @JvmOverloads constructor(
 
         if (linkedChart == null) return
 
+        textPaint.color = linkedChart!!.colorManager.legendText
+
         val columnSpacing: Float = (width / columns).toFloat()
 
         for (row in 0 until rows) {
@@ -202,7 +204,7 @@ class Legend @JvmOverloads constructor(
                     break
 
                 // Indicator
-                indicatorPaint.color = linkedChart!!.colorManager.get(index)
+                indicatorPaint.color = linkedChart!!.colorManager.getGraphColor(index)
                 drawIndicator(canvas)
 
                 // Text Label

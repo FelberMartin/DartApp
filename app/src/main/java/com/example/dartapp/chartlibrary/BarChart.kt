@@ -103,17 +103,17 @@ class BarChart @JvmOverloads constructor(
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
 
-        drawGrid(canvas)
+        super.drawGrid(canvas)
         drawBars(canvas)
-        drawMarkers(canvas)
-        drawArrows(canvas)
+        super.drawMarkers(canvas)
+        super.drawArrows(canvas)
 
         drawSelectionInfo(canvas)
     }
 
     private fun drawBars(canvas: Canvas) {
         for (i in 0 until barRects.size) {
-            barPaint.color = colorManager.get(i)
+            barPaint.color = colorManager.getGraphColor(i)
             val rect = barRects[i]
 
             val height = min(barMaxHeight, rect.height())

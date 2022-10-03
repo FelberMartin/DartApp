@@ -12,6 +12,16 @@ TODO:
     - With link to stats, or show some different stats in the dialog
  - Organize History (maybe with sections "Today", "Last week", ...)
     - Highlight good averages (?)
- - Felix Feedback :
+    - Sort by Date, Average
+    - Show Dartcount already in HistoryScreen (instead of "501")
+ - [Debug] Add try catch to MainActivity, to get StackTraces
+ - Flashing between navigation transitions for DarkTheme
+ - Felix Feedback:
     - In charts add information to point labels (currently when selecting a value it shows the index)
     - Trend line for Charts?
+    - Days for TraningCountByWeekDay are in random order
+    - Rounding in HistoryDetails
+    - Does the double rate update when playing games? (Was seemingly stuck for Felix at 18%)
+    - For the first serve in a game one can not instantly press enter, this should be possible (for entering 0)
+    - Add new stats to HistoryDetails
+    - Average: dont start y at zero

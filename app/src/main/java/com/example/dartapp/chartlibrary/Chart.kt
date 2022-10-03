@@ -95,5 +95,4 @@ abstract class Chart @JvmOverloads constructor(
     override fun onAnimationUpdate(p0: ValueAnimator) {
         invalidate()
     }
-
 }

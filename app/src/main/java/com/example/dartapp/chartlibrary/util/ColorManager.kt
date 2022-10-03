@@ -1,29 +1,76 @@
 package com.example.dartapp.views.chart.util
 
-import android.graphics.Color
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 
-const val PURPLE_HEX = "#FF8446CC"
-const val GREEN_HEX = "#FF64B678"
-const val BLUE_HEX = "#FF478AEA"
-const val YELLOW_HEX = "#FFFDB54E"
-const val ORANGE_HEX = "#FFF97C3C"
+const val PURPLE_HEX = 0xFF8446CC
+const val GREEN_HEX = 0xFF64B678
+const val BLUE_HEX = 0xFF478AEA
+const val YELLOW_HEX = 0xFFFDB54E
+const val ORANGE_HEX = 0xFFF97C3C
 
-class ColorManager private constructor(val colorList: List<Int>){
+data class ColorManager(
+    private val graphColors: List<Int>,
+    val coordinateSystem: Int,
+    val grid: Int,
+    val selectionHighlighter: Int,
+    val selectionLabelTitle: Int,
+    val selectionLabelDescription: Int,
+    val selectionLabelBackground: Int,
+    val legendText: Int,
+    var onlyUseOneGraphColor: Boolean = false
+){
 
-    fun get(index: Int) : Int {
-        return this.colorList[index % this.colorList.size]
+    fun getGraphColor(index: Int) : Int {
+        if (onlyUseOneGraphColor) {
+            return graphColors[0]
+        }
+        return graphColors[index % graphColors.size]
     }
 
     companion object {
-        val default = ColorManager(listOf<Int>(
-            Color.parseColor(PURPLE_HEX),
-            Color.parseColor(GREEN_HEX),
-            Color.parseColor(BLUE_HEX),
-            Color.parseColor(YELLOW_HEX),
-            Color.parseColor(ORANGE_HEX)
-        ))
+        val defaultGraphColors = listOf<Int>(
+            Color(PURPLE_HEX).toArgb(),
+            Color(GREEN_HEX).toArgb(),
+            Color(BLUE_HEX).toArgb(),
+            Color(YELLOW_HEX).toArgb(),
+            Color(ORANGE_HEX).toArgb()
+        )
 
-        val singleColor = ColorManager(listOf(Color.parseColor(PURPLE_HEX)))
+        val default = ColorManager(
+            graphColors = defaultGraphColors,
+            coordinateSystem = Color(0xFF343536).toArgb(),
+            grid = Color(0xFFA8AAB3).toArgb(),
+            selectionHighlighter = Color(0xFFB8BFCE).toArgb(),
+            selectionLabelTitle = Color(0xFFFFFFFF).toArgb(),
+            selectionLabelDescription = Color(0xFF939599).toArgb(),
+            selectionLabelBackground = Color(0x9A000000).toArgb(),
+            legendText = Color(0xFF000000).toArgb(),
+        )
+
+        @Composable
+        fun materialThemeBasedColorManager() : ColorManager {
+            val dark = isDarkTheme()
+            return ColorManager(
+                graphColors = defaultGraphColors,
+                coordinateSystem = MaterialTheme.colorScheme.onSurfaceVariant.toArgb(),
+                grid = MaterialTheme.colorScheme.outline.toArgb(),
+                selectionHighlighter = MaterialTheme.colorScheme.surfaceVariant.toArgb(),
+                selectionLabelTitle = MaterialTheme.colorScheme.inverseOnSurface.toArgb(),
+                selectionLabelDescription = MaterialTheme.colorScheme.surfaceVariant.toArgb(),
+                selectionLabelBackground = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.7f).toArgb(),
+                legendText = MaterialTheme.colorScheme.onBackground.toArgb(),
+            )
+        }
+
+        @Composable
+        private fun isDarkTheme() : Boolean {
+            val background = MaterialTheme.colorScheme.background
+            val brightness = background.red + background.green + background.blue
+            return brightness < 1.5f
+        }
     }
 
 }
