@@ -33,9 +33,13 @@ abstract class BarStatistic(
             )
         }
 
-        val dataSet = DataSet(dataPoints)
+        val dataSet = DataSet(sortDataPoints(dataPoints))
         dataSet.dataPointXType = DataSet.Type.STRING
         return dataSet
+    }
+
+    open fun sortDataPoints(dataPoints: List<DataPoint>) : List<DataPoint> {
+        return dataPoints
     }
 
     override fun modifyChart(chart: Chart) {
