@@ -16,7 +16,7 @@ import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.game.GameScreen
 import com.example.dartapp.ui.screens.history.HistoryScreenEntry
-import com.example.dartapp.ui.screens.historydetails.HistoryDetailsScreen
+import com.example.dartapp.ui.screens.historydetails.HistoryDetailsScreenEntry
 import com.example.dartapp.ui.screens.historydetails.HistoryDetailsViewModel
 import com.example.dartapp.ui.screens.home.HomeScreen
 import com.example.dartapp.ui.screens.settings.SettingsScreen
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                     val legId = backstackEntry.arguments!!.getLong(NavigationDirections.HistoryDetails.keyLegId)
                     val viewModel: HistoryDetailsViewModel = hiltViewModel()
                     viewModel.setLegId(legId)
-                    HistoryDetailsScreen(hiltViewModel())
+                    HistoryDetailsScreenEntry(hiltViewModel())
                 }
 
                 composable(NavigationDirections.Table.destination) {

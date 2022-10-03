@@ -58,9 +58,9 @@ data class ColorManager(
                 coordinateSystem = MaterialTheme.colorScheme.onSurfaceVariant.toArgb(),
                 grid = MaterialTheme.colorScheme.outline.toArgb(),
                 selectionHighlighter = MaterialTheme.colorScheme.surfaceVariant.toArgb(),
-                selectionLabelTitle = MaterialTheme.colorScheme.inverseOnSurface.toArgb(),
-                selectionLabelDescription = MaterialTheme.colorScheme.surfaceVariant.toArgb(),
-                selectionLabelBackground = MaterialTheme.colorScheme.inverseSurface.copy(alpha = 0.7f).toArgb(),
+                selectionLabelTitle = default.selectionLabelTitle,
+                selectionLabelDescription = default.selectionLabelDescription,
+                selectionLabelBackground = default.selectionLabelBackground,
                 legendText = MaterialTheme.colorScheme.onBackground.toArgb(),
             )
         }

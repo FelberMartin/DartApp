@@ -23,6 +23,7 @@ import androidx.core.view.children
 import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.data.persistent.database.Leg
+import com.example.dartapp.data.persistent.database.TestLegData
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.history.DateAndTimeLabels
 import com.example.dartapp.ui.screens.history.WeekDayLabel
@@ -36,11 +37,23 @@ import com.example.dartapp.views.chart.LineChart
 import com.example.dartapp.views.chart.PieChart
 import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.legend.Legend
+import com.example.dartapp.views.chart.util.ColorManager
 import com.example.dartapp.views.chart.util.DataSet
 
 @Composable
-fun HistoryDetailsScreen(
+fun HistoryDetailsScreenEntry(
     viewModel: HistoryDetailsViewModel
+) {
+    HistoryDetailsScreen(
+        viewModel = viewModel,
+        leg = viewModel.leg.observeAsState().value
+    )
+}
+
+@Composable
+fun HistoryDetailsScreen(
+    viewModel: HistoryDetailsViewModel,
+    leg: Leg?
 ) {
     Background {
         Column(
@@ -50,9 +63,6 @@ fun HistoryDetailsScreen(
                 title = "History Details",
                 navigationViewModel = viewModel
             )
-
-            val leg = viewModel.leg.observeAsState().value
-//            val leg = TestLegData.createExampleLegs().first()
 
             if (leg == null) {
                 Box(
@@ -97,9 +107,11 @@ private fun ServeDistributionCard(leg: Leg) {
             contentAlignment = Alignment.Center
         ) {
             val dataSet = ServeDistributionStatistic.buildDataSet(listOf(leg), GamesLegFilter.all)
+            val materialThemeBasedColorManager = ColorManager.materialThemeBasedColorManager()
             AndroidView(
                 factory = { context ->
                     val chart = PieChart(context).apply {
+                        colorManager = materialThemeBasedColorManager
                         data = dataSet
                     }
                     val legend = Legend(context).apply {
@@ -173,7 +185,9 @@ private fun NumbersAndDataCard(leg: Leg) {
             }
             
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                val doubleRate = if (leg.doubleAttempts > 0) "${100.0 / leg.doubleAttempts.toDouble()}%" else "-"
+                val doubleRate = if (leg.doubleAttempts > 0) {
+                    String.format("%.0f%%", 100.0 / leg.doubleAttempts.toDouble())
+                } else "-"
                 val legInfos = listOf(
                     Pair("Darts", leg.dartCount.toString()),
                     Pair("Average", String.format("%.1f", leg.servesAvg)),
@@ -215,6 +229,8 @@ private fun ServeProgressCard(leg: Leg) {
             DataPoint(index, serve)
         })
         dataSet.dataPointXType = DataSet.Type.NUMBER
+        val materialThemeBasedColorManager = ColorManager.materialThemeBasedColorManager()
+
         AndroidView(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
@@ -228,6 +244,7 @@ private fun ServeProgressCard(leg: Leg) {
                     showXAxisMarkers = false
                     showVerticalGrid = false
                     data = dataSet
+                    colorManager = materialThemeBasedColorManager
                 }
             },
             update = { chart -> chart.data = dataSet }
@@ -240,6 +257,10 @@ private fun ServeProgressCard(leg: Leg) {
 @Composable
 fun PreviewHistoryDetailsScreen() {
     DartAppTheme() {
-        HistoryDetailsScreen(HistoryDetailsViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true)))
+        val leg = TestLegData.createExampleLegs().first()
+        HistoryDetailsScreen(
+            viewModel = HistoryDetailsViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true)),
+            leg = leg
+        )
     }
 }
