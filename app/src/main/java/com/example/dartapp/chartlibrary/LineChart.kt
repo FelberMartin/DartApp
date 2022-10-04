@@ -32,7 +32,9 @@ class LineChart @JvmOverloads constructor(
             if (!isInEditMode) start()
     }
 
-    private var info = InfoTextBox(this)
+    var showSelectionInfoTitle = true
+
+    private var selectionInfo = InfoTextBox(this)
 
 
     private val lineShader: Shader = LinearGradient(0f, 0f, 0f, 500f, intArrayOf(
@@ -116,9 +118,9 @@ class LineChart @JvmOverloads constructor(
     override fun onSelectionUpdate() {
         if (selectedIndex == -1) return
 
-        info.title = data.xString(selectedIndex)
-        info.description = data[selectedIndex].yString()
-        info.update()
+        selectionInfo.title = if (showSelectionInfoTitle) data.xString(selectedIndex) else ""
+        selectionInfo.description = data[selectedIndex].yString()
+        selectionInfo.update()
     }
     
     override fun onDraw(canvas: Canvas) {
@@ -173,7 +175,7 @@ class LineChart @JvmOverloads constructor(
 
         canvas.save()
         canvas.translate(p.x, p.y)
-        info.draw(canvas)
+        selectionInfo.draw(canvas)
         canvas.restore()
     }
 

@@ -16,7 +16,6 @@ class InfoTextBox(
     private val chart: Chart
 ) {
 
-
     var title: String = "Title"
     var description: String = "Description"
 
@@ -59,7 +58,14 @@ class InfoTextBox(
         val width = 2 * TEXT_BOX_PADDING +
                 max(titlePaint.measureText(title),
                     descPaint.measureText(description))
-        val height = 2 * TEXT_BOX_PADDING + titleHeight + descHeight + titleFM.leading
+        var height = 2 * TEXT_BOX_PADDING + titleHeight + descHeight + titleFM.leading
+
+        if (title == "") {
+            // Center the description text
+            height -= titleHeight
+            descBaseLine = height / 2 + 10
+
+        }
 
         if (drawFromCenter) {
             textBoxRect = RectF(- width / 2, - height / 2, width / 2, height / 2)

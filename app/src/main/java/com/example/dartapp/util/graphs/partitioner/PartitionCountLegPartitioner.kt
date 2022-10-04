@@ -1,6 +1,7 @@
 package com.example.dartapp.util.graphs.partitioner
 
 import com.example.dartapp.data.persistent.database.Leg
+import kotlin.math.ceil
 
 class PartitionCountLegPartitioner(
     private val partitionCount: Int
@@ -31,10 +32,10 @@ class PartitionCountLegPartitioner(
     }
 
     private fun calculatePartitionSize(legs: List<Leg>): Int {
-        var partitionSize = legs.size / partitionCount
-        if (partitionSize <= 0) {
-            partitionSize = 1
+        var partitionSize = legs.size.toDouble() / partitionCount.toDouble()
+        if (partitionSize <= 0.0) {
+            partitionSize = 1.0
         }
-        return partitionSize
+        return ceil(partitionSize).toInt()
     }
 }

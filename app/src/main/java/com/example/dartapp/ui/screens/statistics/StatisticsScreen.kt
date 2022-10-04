@@ -34,6 +34,7 @@ import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.util.extensions.observeAsStateNonOptional
+import com.example.dartapp.util.graphs.filter.GamesLegFilter
 import com.example.dartapp.util.graphs.filter.LegFilterBase
 import com.example.dartapp.util.graphs.statistics.StatisticTypeBase
 import com.example.dartapp.views.chart.*
@@ -117,7 +118,7 @@ fun StatisticsChart(
 ) {
     val statisticType by viewModel.statisticType.observeAsStateNonOptional()
     val selectedFilterCategory by viewModel.selectedFilterCategory.observeAsStateNonOptional()
-    val filterByTime = selectedFilterCategory == LegFilterBase.Category.ByTime
+    val legFilter by viewModel.legFilter.observeAsStateNonOptional()
 
     val dataSet by viewModel.dataSet.observeAsStateNonOptional()
     val noData by viewModel.noLegDataAvailable.observeAsStateNonOptional()
@@ -126,7 +127,13 @@ fun StatisticsChart(
         NoDataWarning("You first have to train to explore your statistics.")
     } else {
         when (statisticType.chartType) {
-            EChartType.LINE_CHART -> LineGraph(dataSet, statisticType::modifyChart, filterByTime, interactionEnabled)
+            EChartType.LINE_CHART -> {
+                val filterByTime = selectedFilterCategory == LegFilterBase.Category.ByTime
+                val showSelectionInfoTitle = legFilter != GamesLegFilter.last10
+
+                LineGraph(dataSet, statisticType::modifyChart, filterByTime,
+                    interactionEnabled, showSelectionInfoTitle)
+            }
             EChartType.BAR_CHART -> BarGraph(dataSet, statisticType::modifyChart, interactionEnabled)
             EChartType.PIE_CHART -> PieGraph(dataSet, statisticType::modifyChart, interactionEnabled)
         }
@@ -169,7 +176,8 @@ fun LineGraph(
     dataSet: DataSet,
     modifyChart: (Chart) -> Unit,
     xAxisIsTime: Boolean,
-    interactionEnabled: Boolean
+    interactionEnabled: Boolean,
+    showSelectionInfoTitle: Boolean
 ) {
     val materialThemeBasedColorManager = ColorManager.materialThemeBasedColorManager()
     AndroidView(
@@ -187,6 +195,7 @@ fun LineGraph(
             chart.showXAxisMarkers = xAxisIsTime
             chart.showVerticalGrid = xAxisIsTime
             chart.data = dataSet
+            chart.showSelectionInfoTitle = showSelectionInfoTitle
         }
     )
 }
