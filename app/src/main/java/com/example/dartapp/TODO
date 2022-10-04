@@ -13,10 +13,8 @@ TODO:
     - Highlight good averages (?)
     - Sort by Date, Average
     - Show Dartcount already in HistoryScreen (instead of "501")
- - [Debug] Add try catch to MainActivity, to get StackTraces
- - Flashing between navigation transitions for DarkTheme
+ - Add Launching screen
  - Felix Feedback:
     - In charts add information to point labels (currently when selecting a value it shows the index)
     - Trend line for Charts?
-    - For the first serve in a game one can not instantly press enter, this should be possible (for entering 0)
     - Add new stats to HistoryDetails
