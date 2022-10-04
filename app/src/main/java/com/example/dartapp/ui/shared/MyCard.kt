@@ -18,9 +18,9 @@ import androidx.compose.ui.unit.dp
 fun MyCard(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit
-) = OutlinedCard(
+) = ElevatedCard(
     modifier = modifier,
-    elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
+    elevation = CardDefaults.elevatedCardElevation(),
     colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
     content = content
 )
@@ -32,12 +32,11 @@ fun MyCard(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable ColumnScope.() -> Unit
-) = OutlinedCard(
+) = ElevatedCard(
     onClick = onClick,
     modifier = modifier,
     enabled = enabled,
     interactionSource = interactionSource,
-    border = CardDefaults.outlinedCardBorder(enabled),
     elevation = CardDefaults.elevatedCardElevation(),
     colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
     content = content

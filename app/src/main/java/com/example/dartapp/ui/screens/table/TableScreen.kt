@@ -40,7 +40,7 @@ fun TableScreen(
             val distributionItems by viewModel.distributionItems.observeAsStateNonOptional()
 
             LazyColumn(contentPadding = innerPadding) {
-                item { Spacer(Modifier.height(16.dp)) }
+                item { Spacer(Modifier.height(18.dp)) }
 
                 item { Table(
                         header = "Totals",
