@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -126,16 +127,15 @@ private fun StatisticsPreview(
 @Composable
 private fun AppIconAndName() {
     Row(
-        modifier = Modifier.height(62.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        ElevatedCard(elevation = CardDefaults.elevatedCardElevation(defaultElevation = 5.dp)) {
-            Image(
-                painter = painterResource(id = R.drawable.dartappicon),
-                contentDescription = "App Icon",
-                contentScale = ContentScale.FillHeight
-            )
-        }
+        Image(
+            painter = painterResource(id = R.drawable.ic_app_playstore),
+            contentDescription = "App Icon",
+            contentScale = ContentScale.FillHeight,
+            modifier = Modifier.size(64.dp)
+                .clip(MaterialTheme.shapes.medium)
+        )
 
         Text(
             text = "Dart Stats",

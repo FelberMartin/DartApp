@@ -5,12 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 
-const val PURPLE_HEX = 0xFF8446CC
-const val GREEN_HEX = 0xFF64B678
-const val BLUE_HEX = 0xFF478AEA
-const val YELLOW_HEX = 0xFFFDB54E
-const val ORANGE_HEX = 0xFFF97C3C
-
 data class ColorManager(
     private val graphColors: List<Int>,
     val coordinateSystem: Int,
@@ -32,11 +26,19 @@ data class ColorManager(
 
     companion object {
         val defaultGraphColors = listOf<Int>(
-            Color(PURPLE_HEX).toArgb(),
-            Color(GREEN_HEX).toArgb(),
-            Color(BLUE_HEX).toArgb(),
-            Color(YELLOW_HEX).toArgb(),
-            Color(ORANGE_HEX).toArgb()
+            Color(0xFF8446CC).toArgb(),
+            Color(0xFF64B678).toArgb(),
+            Color(0xFF478AEA).toArgb(),
+            Color(0xFFFDB54E).toArgb(),
+            Color(0xFFF97C3C).toArgb()
+        )
+
+        val lightGraphColors = listOf<Int>(
+            Color(0xFF515DEB).toArgb(),
+            Color(0xFF64B678).toArgb(),
+            Color(0xFFFDB54E).toArgb(),
+            Color(0xFFF97C3C).toArgb(),
+            Color(0xFF9B3AB1).toArgb(),
         )
 
         val default = ColorManager(
@@ -45,7 +47,7 @@ data class ColorManager(
             grid = Color(0xFFA8AAB3).toArgb(),
             selectionHighlighter = Color(0xFFB8BFCE).toArgb(),
             selectionLabelTitle = Color(0xFFFFFFFF).toArgb(),
-            selectionLabelDescription = Color(0xFF939599).toArgb(),
+            selectionLabelDescription = Color(0xFFB7C0CC).toArgb(),
             selectionLabelBackground = Color(0x9A000000).toArgb(),
             legendText = Color(0xFF000000).toArgb(),
         )
@@ -54,7 +56,7 @@ data class ColorManager(
         fun materialThemeBasedColorManager() : ColorManager {
             val dark = isDarkTheme()
             return ColorManager(
-                graphColors = defaultGraphColors,
+                graphColors = lightGraphColors,
                 coordinateSystem = MaterialTheme.colorScheme.onSurfaceVariant.toArgb(),
                 grid = MaterialTheme.colorScheme.outline.toArgb(),
                 selectionHighlighter = MaterialTheme.colorScheme.surfaceVariant.toArgb(),
