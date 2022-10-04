@@ -20,6 +20,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,9 +30,8 @@ import androidx.core.view.children
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
-import com.example.dartapp.ui.shared.Background
+import com.example.dartapp.ui.shared.BackTopAppBar
 import com.example.dartapp.ui.shared.MyCard
-import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.util.extensions.observeAsStateNonOptional
 import com.example.dartapp.util.graphs.filter.GamesLegFilter
@@ -46,35 +46,32 @@ import com.example.dartapp.views.chart.util.DataSet
 fun StatisticsScreen(
     viewModel: StatisticsViewModel
 ) {
-    Background {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            RoundedTopAppBar(
-                title = "Statistics",
-                navigationViewModel = viewModel
-            )
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { BackTopAppBar(
+            title = "Statistics",
+            navigationViewModel = viewModel,
+            scrollBehavior = scrollBehavior
+        )},
+        content = { innerPadding ->
             LazyColumn(
+                contentPadding = innerPadding,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
+                modifier = Modifier.padding(16.dp)
             ) {
                 item {
-                    Spacer(modifier = Modifier.height(16.dp))
                     MainStatisticsCard(viewModel)
                 }
 
                 item {
                     Spacer(Modifier.height(24.dp))
                     OtherStatistics(viewModel)
-                    Spacer(Modifier.height(40.dp))
+                    Spacer(Modifier.height(24.dp))
                 }
             }
-
-        }
-    }
+        })
 }
 
 
@@ -102,7 +99,7 @@ private fun MainStatisticsCard(
                 StatisticSection(viewModel)
             }
 
-            Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
+            Divider(color = MaterialTheme.colorScheme.outlineVariant, modifier = Modifier.padding(vertical = 4.dp))
 
             Box(Modifier.padding(horizontal = 16.dp)) {
                 FilterOptionSection(viewModel)

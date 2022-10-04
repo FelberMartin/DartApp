@@ -6,7 +6,6 @@
 TODO:
  - Styling
     - Reconsider outlined cards (just use elevation instead?)
-    - Modify DarkTheme
  - Design advanced Game finished Dialog
     - With link to stats, or show some different stats in the dialog
  - Organize History (maybe with sections "Today", "Last week", ...)

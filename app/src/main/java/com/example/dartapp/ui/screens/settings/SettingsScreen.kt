@@ -3,6 +3,7 @@
 package com.example.dartapp.ui.screens.settings
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -10,15 +11,15 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dartapp.data.AppearanceOption
 import com.example.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.ui.navigation.NavigationManager
-import com.example.dartapp.ui.shared.Background
+import com.example.dartapp.ui.shared.BackTopAppBar
 import com.example.dartapp.ui.shared.MyCard
-import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.ui.values.Padding
 
@@ -30,32 +31,35 @@ fun SettingsScreen(
     val askForDouble = viewModel.askForDouble.observeAsState(true)
     val askForCheckout = viewModel.askForCheckout.observeAsState(true)
 
-    Background {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            RoundedTopAppBar(
-                title = "Settings",
-                navigationViewModel = viewModel
-            )
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
-            Section(title = "Appearance") {
-                AppearanceSection(
-                    appearanceOption = appearanceOption,
-                    onAppearanceOptionChange = viewModel::changeAppearanceOption
-                )
-            }
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { BackTopAppBar(
+            title = "Settings",
+            navigationViewModel = viewModel,
+            scrollBehavior = scrollBehavior
+        )},
+        content = { innerPadding ->
+            LazyColumn(contentPadding = innerPadding) {
+                item { Section(title = "Appearance") {
+                    AppearanceSection(
+                        appearanceOption = appearanceOption,
+                        onAppearanceOptionChange = viewModel::changeAppearanceOption
+                    )
+                }}
 
-            Section(title = "Training") {
-                TrainingSection(
-                    askForDouble = askForDouble,
-                    onAskForDoubleChange = viewModel::changeAskForDouble,
-                    askForCheckout = askForCheckout,
-                    onAskForCheckoutChange = viewModel::changeAskForCheckout
-                )
+                item { Section(title = "Training") {
+                    TrainingSection(
+                        askForDouble = askForDouble,
+                        onAskForDoubleChange = viewModel::changeAskForDouble,
+                        askForCheckout = askForCheckout,
+                        onAskForCheckoutChange = viewModel::changeAskForCheckout
+                    )
+                }}
             }
         }
-    }
+    )
 }
 
 @Composable

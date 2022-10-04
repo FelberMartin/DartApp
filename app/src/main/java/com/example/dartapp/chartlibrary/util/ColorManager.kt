@@ -4,6 +4,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import com.example.dartapp.ui.theme.isDarkTheme
 
 data class ColorManager(
     private val graphColors: List<Int>,
@@ -41,6 +42,14 @@ data class ColorManager(
             Color(0xFF9B3AB1).toArgb(),
         )
 
+        val darkGraphColors = listOf<Int>(
+            Color(0xFF7078d2).toArgb(),
+            Color(0xFF81C784).toArgb(),
+            Color(0xFFFFF176).toArgb(),
+            Color(0xFFFF8A65).toArgb(),
+            Color(0xFFBA68C8).toArgb(),
+        )
+
         val default = ColorManager(
             graphColors = defaultGraphColors,
             coordinateSystem = Color(0xFF343536).toArgb(),
@@ -54,9 +63,8 @@ data class ColorManager(
 
         @Composable
         fun materialThemeBasedColorManager() : ColorManager {
-            val dark = isDarkTheme()
             return ColorManager(
-                graphColors = lightGraphColors,
+                graphColors = if (MaterialTheme.isDarkTheme()) darkGraphColors else lightGraphColors,
                 coordinateSystem = MaterialTheme.colorScheme.onSurfaceVariant.toArgb(),
                 grid = MaterialTheme.colorScheme.outline.toArgb(),
                 selectionHighlighter = MaterialTheme.colorScheme.surfaceVariant.toArgb(),
@@ -65,13 +73,6 @@ data class ColorManager(
                 selectionLabelBackground = default.selectionLabelBackground,
                 legendText = MaterialTheme.colorScheme.onBackground.toArgb(),
             )
-        }
-
-        @Composable
-        private fun isDarkTheme() : Boolean {
-            val background = MaterialTheme.colorScheme.background
-            val brightness = background.red + background.green + background.blue
-            return brightness < 1.5f
         }
     }
 

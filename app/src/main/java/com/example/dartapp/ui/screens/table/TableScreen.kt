@@ -5,20 +5,18 @@ package com.example.dartapp.ui.screens.table
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationManager
-import com.example.dartapp.ui.shared.Background
+import com.example.dartapp.ui.shared.BackTopAppBar
 import com.example.dartapp.ui.shared.MyCard
-import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.util.extensions.observeAsStateNonOptional
 
@@ -26,20 +24,22 @@ import com.example.dartapp.util.extensions.observeAsStateNonOptional
 fun TableScreen(
     viewModel: TableViewModel
 ) {
-    Background {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            RoundedTopAppBar(
-                title = "Table",
-                navigationViewModel = viewModel
-            )
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { BackTopAppBar(
+            title = "Table",
+            navigationViewModel = viewModel,
+            scrollBehavior = scrollBehavior
+        )},
+        content = { innerPadding ->
 
             val totalItems by viewModel.totalItems.observeAsStateNonOptional()
             val averageItems by viewModel.averageItems.observeAsStateNonOptional()
             val distributionItems by viewModel.distributionItems.observeAsStateNonOptional()
 
-            LazyColumn {
+            LazyColumn(contentPadding = innerPadding) {
                 item { Spacer(Modifier.height(16.dp)) }
 
                 item { Table(
@@ -62,7 +62,7 @@ fun TableScreen(
             }
 
         }
-    }
+    )
 }
 
 @Composable

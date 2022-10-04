@@ -49,7 +49,7 @@ fun HomeScreen(
             SettingsRow(onSettingsClicked = { homeViewModel.navigate(NavigationDirections.Settings) })
             StatisticsCard(homeViewModel, statisticsViewModel)
             AppIconAndName()
-            PlayButtonAndModeSelection(onPlayClicked = { homeViewModel.navigate(NavigationDirections.Game) })
+            PlayButtonAndModeSelection(onTrainClicked = { homeViewModel.navigate(NavigationDirections.Game) })
         }
     }
 }
@@ -69,7 +69,7 @@ private fun SettingsRow(
             Icon(
                 imageVector = Icons.Outlined.Settings,
                 contentDescription = "Settings",
-                tint = MaterialTheme.colorScheme.secondary
+                tint = MaterialTheme.colorScheme.onBackground
             )
         }
     }
@@ -147,20 +147,20 @@ private fun AppIconAndName() {
 
 @Composable
 private fun PlayButtonAndModeSelection(
-    onPlayClicked: () -> Unit
+    onTrainClicked: () -> Unit
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Button(
-            onClick = onPlayClicked,
+            onClick = onTrainClicked,
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(44.dp),
-            elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 5.dp)
+//            elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 5.dp)
         ) {
             Text(
-                text = "Play",
+                text = "Train",
                 style = MaterialTheme.typography.titleLarge
             )
         }

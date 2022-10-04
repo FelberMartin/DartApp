@@ -83,3 +83,10 @@ fun DartAppTheme(
     content = content
   )
 }
+
+@Composable
+fun MaterialTheme.isDarkTheme() : Boolean {
+    val background = colorScheme.background
+    val brightness = background.red + background.green + background.blue
+    return brightness < 1.5f
+}

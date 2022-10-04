@@ -68,13 +68,13 @@ fun GameScreen(
 private fun TopRow(
     onCloseClicked: () -> Unit
 ) {
-    Row(Modifier.fillMaxWidth()) {
+    Row(Modifier.fillMaxWidth().padding(top = 16.dp, end = 16.dp)) {
         Spacer(Modifier.weight(1f))
 
         IconButton(onClick = onCloseClicked) {
             Icon(
                 imageVector = Icons.Default.Close,
-                contentDescription = "Close"
+                contentDescription = "Close",
             )
         }
     }

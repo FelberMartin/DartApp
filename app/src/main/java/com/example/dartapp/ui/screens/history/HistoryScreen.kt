@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -21,9 +22,8 @@ import com.example.dartapp.data.persistent.database.TestLegData
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.statistics.NoDataWarning
-import com.example.dartapp.ui.shared.Background
+import com.example.dartapp.ui.shared.BackTopAppBar
 import com.example.dartapp.ui.shared.MyCard
-import com.example.dartapp.ui.shared.RoundedTopAppBar
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.util.extensions.observeAsStateNonOptional
 import java.time.LocalDateTime
@@ -41,19 +41,21 @@ fun HistoryScreen(
     legs: List<Leg>,
     viewModel: HistoryViewModel
 ) {
-    Background {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            RoundedTopAppBar(
-                title = "History",
-                navigationViewModel = viewModel
-            )
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
+    Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = { BackTopAppBar(
+            title = "History",
+            navigationViewModel = viewModel,
+            scrollBehavior = scrollBehavior
+        )},
+        content = { innerPadding ->
             if (legs.isEmpty()) {
                 NoDataWarning("You first have to train to explore your history.")
             } else {
                 LazyColumn(
+                    contentPadding = innerPadding,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -72,7 +74,7 @@ fun HistoryScreen(
                 }
             }
         }
-    }
+    )
 }
 
 @Composable
