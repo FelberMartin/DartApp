@@ -228,7 +228,7 @@ private fun LegInfoTableRow(legInfo: Pair<String, String>) {
 private fun ServeProgressCard(leg: Leg) {
     DetailElementCard(title = "Serve Progress") {
         val dataSet: DataSet = DataSet(Converters.toListOfInts(leg.servesList).mapIndexed { index, serve ->
-            DataPoint(index, serve)
+            DataPoint(index + 1, serve)
         })
         dataSet.dataPointXType = DataSet.Type.NUMBER
         val materialThemeBasedColorManager = ColorManager.materialThemeBasedColorManager()

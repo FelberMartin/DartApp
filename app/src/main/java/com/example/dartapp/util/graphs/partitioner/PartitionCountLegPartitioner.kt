@@ -4,7 +4,8 @@ import com.example.dartapp.data.persistent.database.Leg
 import kotlin.math.ceil
 
 class PartitionCountLegPartitioner(
-    private val partitionCount: Int
+    private val partitionCount: Int,
+    val startCountingAtOne: Boolean = true
 ) : LegPartitioner {
 
     override fun partitionLegs(sortedLegs: List<Leg>): Map<String, List<Leg>> {
@@ -24,11 +25,14 @@ class PartitionCountLegPartitioner(
     }
 
     private fun getPartitionName(fromIndex: Int, toIndex: Int): String {
+        val from = if (startCountingAtOne) fromIndex + 1 else fromIndex
+        val to = if (startCountingAtOne) toIndex + 1 else toIndex
+
         if (fromIndex == toIndex) {
-            return "$fromIndex"
+            return "$from"
         }
 
-        return "$fromIndex-$toIndex"
+        return "$from-$to"
     }
 
     private fun calculatePartitionSize(legs: List<Leg>): Int {
