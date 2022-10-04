@@ -185,13 +185,15 @@ private fun NumbersAndDataCard(leg: Leg) {
             }
             
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                val doubleRate = if (leg.doubleAttempts > 0) {
+                val doubleRateString = if (leg.doubleAttempts > 0) {
                     String.format("%.0f%%", 100.0 / leg.doubleAttempts.toDouble())
                 } else "-"
+                val avg9Darts = Converters.toListOfInts(leg.servesList).subList(0, 3).average()
                 val legInfos = listOf(
                     Pair("Darts", leg.dartCount.toString()),
                     Pair("Average", String.format("%.1f", leg.servesAvg)),
-                    Pair("Double Rate", doubleRate),
+                    Pair("Avg (9 Darts)", String.format("%.1f", avg9Darts)),
+                    Pair("Double Rate", doubleRateString),
                     Pair("Checkout", Converters.toListOfInts(leg.servesList).last().toString())
                 )
                 for (legInfo in legInfos) {
