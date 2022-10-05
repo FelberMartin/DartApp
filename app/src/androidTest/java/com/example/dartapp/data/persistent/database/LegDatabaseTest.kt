@@ -35,7 +35,7 @@ class LegDatabaseDaoTest {
 
     @Test
     @Throws(Exception::class)
-    fun insertAndGetLeg() {
+    suspend fun insertAndGetLeg() {
         val leg = Leg()
         legDao.insert(leg)
         val returnedLeg = legDao.getLatestLeg()

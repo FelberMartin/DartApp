@@ -45,7 +45,7 @@ object TestLegData {
         return Leg(
             id = random.nextLong(),
             endTime = Converters.fromLocalDateTime(now.minusDays(daysBack.toLong())),
-            duration = Converters.fromDuration(Duration.ofSeconds(random.nextLong(20) * 60)),
+            durationSeconds = Converters.fromDuration(Duration.ofSeconds(random.nextLong(20) * 60)),
             dartCount = serves.size * 3,
             servesAvg = serves.average(),
             doubleAttempts = doubleAttempts.size,

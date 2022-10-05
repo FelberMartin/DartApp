@@ -1,10 +1,16 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package com.example.dartapp.ui.screens.history
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDownward
+import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.NavigateNext
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -54,31 +60,88 @@ fun HistoryScreen(
             if (legs.isEmpty()) {
                 NoDataWarning("You first have to train to explore your history.")
             } else {
-                LazyColumn(
-                    contentPadding = innerPadding,
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    for (leg in legs) {
-                        item {
-                            HistoryItem(
-                                leg = leg,
-                                onSeeMorePressed = {
-                                    viewModel.navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
-                                }
-                            )
-                        }
-                    }
-                }
+                HistoryScreenContent(innerPadding, legs, viewModel)
             }
         }
     )
 }
 
 @Composable
-private fun HistoryItem(
+private fun HistoryScreenContent(
+    innerPadding: PaddingValues,
+    legs: List<Leg>,
+    viewModel: HistoryViewModel
+) {
+    // TODO: Animate the reorder transition. For some reason this does not work, see TestApplication project.
+    LazyColumn(
+        contentPadding = innerPadding,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        item {
+            SortChipGroup(viewModel = viewModel)
+        }
+
+        item { Spacer(Modifier.height(12.dp)) }
+
+        items(legs, key = { it.id }) { leg ->
+            HistoryItem(
+                leg = leg,
+                onSeeMorePressed = {
+                    viewModel.navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
+                }
+            )
+        }
+
+        item { Spacer(Modifier.height(8.dp)) }
+    }
+}
+
+@Composable
+private fun SortChipGroup(
+    viewModel: HistoryViewModel
+) {
+    val selectedSortType by viewModel.selectedSortType.observeAsStateNonOptional()
+    val sortDescending by viewModel.sortDescending.observeAsStateNonOptional()
+
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+
+        SortType.all.forEachIndexed { index, sortType ->
+            val selected = sortType == selectedSortType
+            val descending = if (selected) sortDescending else sortType.byDefaultDescending
+            item {
+                FilterChip(
+                    selected = selected,
+                    onClick = {
+                        if (selected) {
+                            viewModel.setSortDescending(!sortDescending)
+                        } else {
+                            viewModel.setSelectedSortType(sortType)
+                        }
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = if (descending) Icons.Default.ArrowDownward else Icons.Default.ArrowUpward,
+                            contentDescription = null,
+                            modifier = Modifier.size(FilterChipDefaults.IconSize)
+                        )
+                    },
+                    label = {
+                        Text(text = sortType.name)
+                    },
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
+private fun LazyItemScope.HistoryItem(
     leg: Leg,
     onSeeMorePressed: (Leg) -> Unit
 ) {
@@ -91,12 +154,19 @@ private fun HistoryItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(10.dp)
-                .padding(start = 8.dp)
+                .padding(start = 24.dp)
+                .animateItemPlacement()
         ) {
             val date = Converters.toLocalDateTime(leg.endTime)
-            WeekDayLabel(date)
-            DateAndTimeLabels(date)
-            LegShortInfo(leg)
+            DartsCounter(leg.dartCount)
+
+            Column(
+                modifier = Modifier.width(130.dp)
+            ) {
+                DateAndTimeLabels(date)
+                LegShortInfo(leg)
+            }
+
             SeeMoreIconButton {
                 onSeeMorePressed(leg)
             }
@@ -105,36 +175,44 @@ private fun HistoryItem(
 }
 
 @Composable
-fun WeekDayLabel(
-    date: LocalDateTime
+fun DartsCounter(
+    dartCount: Int
 ) {
-    val weekdayFormatter = DateTimeFormatter.ofPattern("EEE")
+    Column() {
+        Text(
+            text = "$dartCount",
+            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold
+        )
 
-    Text(
-        text = weekdayFormatter.format(date),
-        color = MaterialTheme.colorScheme.primary,
-        style = MaterialTheme.typography.titleLarge,
-        fontWeight = FontWeight.SemiBold
-    )
+        Text(
+            text = "Darts",
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.secondary
+        )
+    }
+
 }
 
 @Composable
-fun DateAndTimeLabels(
+private fun DateAndTimeLabels(
     date: LocalDateTime
 ) {
     val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
     val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
 
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = dateFormatter.format(date),
+            text = timeFormatter.format(date),
             style = MaterialTheme.typography.labelMedium
         )
 
         Text(
-            text = timeFormatter.format(date),
+            text = dateFormatter.format(date),
             style = MaterialTheme.typography.labelMedium
         )
     }
@@ -144,18 +222,20 @@ fun DateAndTimeLabels(
 private fun LegShortInfo(
     leg: Leg
 ) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        val average = leg.servesAvg
         Text(
-            text = "Avg: ${String.format("%.2f", average)}",
+            text = "Avg (9 Darts):",
             color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.labelMedium
         )
 
+        Spacer(Modifier.width(6.dp))
+
         Text(
-            text = "501",
+            text = String.format("%.1f", leg.nineDartsAverage()),
             color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.labelMedium
         )

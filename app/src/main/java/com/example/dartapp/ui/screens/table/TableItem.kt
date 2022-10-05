@@ -21,13 +21,16 @@ open class TableItem(
             TableItem("#Games") { it.size.toString() },
             TableItem("#Darts") { (it.sumOf { leg -> leg.dartCount }).toString() },
             TableItem("Time spent training") {
-                Converters.toDuration(it.sumOf { leg -> leg.duration }).toPrettyString()
+                Converters.toDuration(it.sumOf { leg -> leg.durationSeconds }).toPrettyString()
             },
         )
 
         val averages = listOf(
-            TableItem("Avg. Points/Serve") {
+            TableItem("Average") {
                 String.format("%.1f", it.map { leg -> leg.servesAvg }.average())
+            },
+            TableItem("Avg (9 Darts)") {
+                String.format("%.1f", it.map { leg -> leg.nineDartsAverage() }.average())
             },
             TableItem("Double Rate") {
                 val doubleAttemptsAvg = it.map { leg -> leg.doubleAttempts }.average()
@@ -40,7 +43,7 @@ open class TableItem(
                 String.format("%.1f", it.map { leg -> leg.checkout }.average())
             },
             TableItem("Avg. Duration") {
-                Converters.toDuration(it.map { leg -> leg.duration }.average().toLong()).toPrettyString()
+                Converters.toDuration(it.map { leg -> leg.durationSeconds }.average().toLong()).toPrettyString()
             },
             TableItem("Avg. Darts/Game") {
                 String.format("%.1f", it.map { leg -> leg.dartCount }.average())

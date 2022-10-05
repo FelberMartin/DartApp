@@ -13,6 +13,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,11 +24,10 @@ import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.data.persistent.database.TestLegData
 import com.example.dartapp.ui.navigation.NavigationManager
-import com.example.dartapp.ui.screens.history.DateAndTimeLabels
-import com.example.dartapp.ui.screens.history.WeekDayLabel
 import com.example.dartapp.ui.shared.BackTopAppBar
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.theme.DartAppTheme
+import com.example.dartapp.util.extensions.toPrettyString
 import com.example.dartapp.util.graphs.filter.GamesLegFilter
 import com.example.dartapp.util.graphs.statistics.piechart.ServeDistributionStatistic
 import com.example.dartapp.views.chart.LineChart
@@ -36,6 +36,8 @@ import com.example.dartapp.views.chart.data.DataPoint
 import com.example.dartapp.views.chart.legend.Legend
 import com.example.dartapp.views.chart.util.ColorManager
 import com.example.dartapp.views.chart.util.DataSet
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun HistoryDetailsScreenEntry(
@@ -177,23 +179,27 @@ private fun NumbersAndDataCard(leg: Leg) {
                 .fillMaxWidth(0.85f)
                 .padding(top = 16.dp, bottom = 12.dp)
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
                 val date = Converters.toLocalDateTime(leg.endTime)
-                WeekDayLabel(date = date)
+                WeekdayLabel(date = date)
                 DateAndTimeLabels(date = date)
             }
+
+            Spacer(Modifier.width(32.dp))
             
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 val doubleRateString = if (leg.doubleAttempts > 0) {
                     String.format("%.0f%%", 100.0 / leg.doubleAttempts.toDouble())
                 } else "-"
-                val avg9Darts = Converters.toListOfInts(leg.servesList).subList(0, 3).average()
                 val legInfos = listOf(
                     Pair("Darts", leg.dartCount.toString()),
                     Pair("Average", String.format("%.1f", leg.servesAvg)),
-                    Pair("Avg (9 Darts)", String.format("%.1f", avg9Darts)),
+                    Pair("Avg (9 Darts)", String.format("%.1f", leg.nineDartsAverage())),
                     Pair("Double Rate", doubleRateString),
-                    Pair("Checkout", Converters.toListOfInts(leg.servesList).last().toString())
+                    Pair("Checkout", Converters.toListOfInts(leg.servesList).last().toString()),
+                    Pair("Duration", Converters.toDuration(leg.durationSeconds).toPrettyString())
                 )
                 for (legInfo in legInfos) {
                     LegInfoTableRow(legInfo)
@@ -204,8 +210,44 @@ private fun NumbersAndDataCard(leg: Leg) {
 }
 
 @Composable
+fun WeekdayLabel(
+    date: LocalDateTime
+) {
+    val weekdayFormatter = DateTimeFormatter.ofPattern("EEE")
+
+    Text(
+        text = weekdayFormatter.format(date),
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.SemiBold
+    )
+}
+
+@Composable
+private fun DateAndTimeLabels(
+    date: LocalDateTime,
+) {
+    val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+    val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        Text(
+            text = dateFormatter.format(date),
+            style = MaterialTheme.typography.labelMedium
+        )
+
+        Text(
+            text = timeFormatter.format(date),
+            style = MaterialTheme.typography.labelMedium
+        )
+    }
+}
+
+@Composable
 private fun LegInfoTableRow(legInfo: Pair<String, String>) {
-    Row(Modifier.width(150.dp)) {
+    Row(Modifier.fillMaxWidth()) {
         Text(
             text = legInfo.first,
             color = MaterialTheme.colorScheme.secondary,

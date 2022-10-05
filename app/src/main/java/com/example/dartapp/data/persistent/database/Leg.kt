@@ -14,7 +14,7 @@ data class Leg(
     var endTime: String = "",
 
     @ColumnInfo(name = "duration_seconds")
-    var duration: Long = 20 * 60L,
+    var durationSeconds: Long = 20 * 60L,
 
     @ColumnInfo(name = "dart_count")
     var dartCount: Int = 0,
@@ -32,10 +32,14 @@ data class Leg(
     var servesList: String = "",
 
     @ColumnInfo(name = "double_attempts_list")
-    var doubleAttemptsList: String = "",
+    var doubleAttemptsList: String = ""
+) {
 
-
-    )
+    fun nineDartsAverage() : Double {
+        val serves = Converters.toListOfInts(servesList)
+        return serves.subList(0, 3).average()
+    }
+}
 
 
 

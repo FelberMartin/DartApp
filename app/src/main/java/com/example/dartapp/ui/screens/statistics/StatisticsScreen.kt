@@ -59,8 +59,10 @@ fun StatisticsScreen(
             LazyColumn(
                 contentPadding = innerPadding,
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(top = 8.dp, bottom = 16.dp, start = 16.dp, end = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
+                item { Spacer(Modifier.height(8.dp)) }
+
                 item {
                     MainStatisticsCard(viewModel)
                 }
@@ -70,6 +72,8 @@ fun StatisticsScreen(
                     OtherStatistics(viewModel)
                     Spacer(Modifier.height(24.dp))
                 }
+
+                item { Spacer(Modifier.height(16.dp)) }
             }
         })
 }

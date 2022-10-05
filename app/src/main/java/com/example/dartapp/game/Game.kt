@@ -122,7 +122,7 @@ class Game() {
         val serves = getServes()
         return Leg(
             endTime = Converters.fromLocalDateTime(now),
-            duration = Converters.fromDuration(Duration.between(startDateTime, now)),
+            durationSeconds = Converters.fromDuration(Duration.between(startDateTime, now)),
             dartCount = dartCount,
             servesAvg = getAverage()!!,
             doubleAttempts = doubleAttempts,
