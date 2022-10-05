@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -58,9 +59,9 @@ fun HomeScreen(
 private fun SettingsRow(
     onSettingsClicked: () -> Unit
 ) {
-    Column(
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.End
+        horizontalArrangement = Arrangement.End
     ) {
         IconButton(
             onClick = onSettingsClicked,
@@ -130,11 +131,13 @@ private fun AppIconAndName() {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_app_playstore),
+            painter = painterResource(id = R.drawable.ic_icon_foreground_white),
             contentDescription = "App Icon",
             contentScale = ContentScale.FillHeight,
-            modifier = Modifier.size(64.dp)
-                .clip(MaterialTheme.shapes.medium)
+            modifier = Modifier
+                .size(64.dp)
+                .clip(MaterialTheme.shapes.medium),
+            colorFilter = ColorFilter.tint(color = MaterialTheme.colorScheme.onBackground),
         )
 
         Text(
