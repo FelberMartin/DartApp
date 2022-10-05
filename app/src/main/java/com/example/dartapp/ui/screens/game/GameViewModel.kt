@@ -170,7 +170,7 @@ class GameViewModel @Inject constructor(
         if (!settingsRepository.askForDoubleFlow.first()) {
             return false
         }
-        if (game.pointsLeft > 50) {
+        if (game.pointsLeft > 50 && lastServe > 0) {
             return false
         }
         val pointsBeforeServe = game.pointsLeft + lastServe

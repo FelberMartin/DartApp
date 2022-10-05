@@ -95,6 +95,14 @@ class GameViewModelTest {
     }
 
     @Test
+    fun `in finish range and enter zero, show double attempts dialog`() = runTest {
+        enterServes(listOf(180, 180))                                       // 141 left
+        enterServe(0)
+        val showDialog = viewModel.dialogUiState.getOrAwaitValueTest().doubleAttemptsDialogOpen
+        assertThat(showDialog).isTrue()
+    }
+
+    @Test
     fun `enter dart within finish range, show simple double attempts dialog`() = runTest {
         enterServes(listOf(180, 180))                                       // 141 left
         enterDart(PerDartNumPadEnter(20, triple = true))        // 81
