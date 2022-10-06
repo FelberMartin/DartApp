@@ -178,7 +178,7 @@ private fun LazyItemScope.HistoryItem(
 fun DartsCounter(
     dartCount: Int
 ) {
-    Column() {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = "$dartCount",
             color = MaterialTheme.colorScheme.primary,

@@ -50,7 +50,8 @@ class Game() {
         if (perDart) {
             return dartsEntered.average()
         }
-        return getServes().average()
+
+        return getServes().sum().toDouble() / (dartCount.toDouble() / 3.0)
     }
 
     fun getLast(perDart: Boolean = false) : Int? {
