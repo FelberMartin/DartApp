@@ -212,7 +212,15 @@ class GameViewModelTest {
             val showDialog = viewModel.legFinished.getOrAwaitValueTest()
             assertThat(showDialog).isTrue()
         }
+    }
 
+    // -------------- Enter button enablement -----------------
+    @Test
+    fun `want to enter zero in finish range, enter button is enabled`() {
+        enterServe(180)
+        enterServe(180)
+        val disabled = viewModel.enterDisabled.getOrAwaitValueTest()
+        assertThat(disabled).isFalse()
     }
 
 

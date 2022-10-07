@@ -122,8 +122,8 @@ class GameViewModel @Inject constructor(
     fun onEnterClicked() {
         viewModelScope.launch {
             val number = numberPad.value!!.number.value
-            enterNumberToGame(number)
             numberPad.value!!.clear()
+            enterNumberToGame(number)
         }
     }
 
