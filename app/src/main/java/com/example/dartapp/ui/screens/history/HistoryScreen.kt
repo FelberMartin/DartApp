@@ -31,6 +31,7 @@ import com.example.dartapp.ui.screens.statistics.NoDataWarning
 import com.example.dartapp.ui.shared.BackTopAppBar
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.theme.DartAppTheme
+import com.example.dartapp.util.categorized_sort.DateCategorizedSortType
 import com.example.dartapp.util.extensions.observeAsStateNonOptional
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -38,13 +39,13 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun HistoryScreenEntry(viewModel: HistoryViewModel) {
-    val legs by viewModel.legs.observeAsStateNonOptional()
-    HistoryScreen(legs = legs, viewModel = viewModel)
+    val result by viewModel.categorizedLegsResult.observeAsStateNonOptional()
+    HistoryScreen(categorizedLegsResult = result, viewModel = viewModel)
 }
 
 @Composable
 fun HistoryScreen(
-    legs: List<Leg>,
+    categorizedLegsResult: CategorizedSortTypeBase.Result,
     viewModel: HistoryViewModel
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
@@ -57,10 +58,10 @@ fun HistoryScreen(
             scrollBehavior = scrollBehavior
         )},
         content = { innerPadding ->
-            if (legs.isEmpty()) {
+            if (categorizedLegsResult.isEmpty()) {
                 NoDataWarning("You first have to train to explore your history.")
             } else {
-                HistoryScreenContent(innerPadding, legs, viewModel)
+                HistoryScreenContent(innerPadding, categorizedLegsResult, viewModel)
             }
         }
     )
@@ -69,7 +70,7 @@ fun HistoryScreen(
 @Composable
 private fun HistoryScreenContent(
     innerPadding: PaddingValues,
-    legs: List<Leg>,
+    categorizedLegsResult: CategorizedSortTypeBase.Result,
     viewModel: HistoryViewModel
 ) {
     // TODO: Animate the reorder transition. For some reason this does not work, see TestApplication project.
@@ -86,13 +87,20 @@ private fun HistoryScreenContent(
 
         item { Spacer(Modifier.height(12.dp)) }
 
-        items(legs, key = { it.id }) { leg ->
-            HistoryItem(
-                leg = leg,
-                onSeeMorePressed = {
-                    viewModel.navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
-                }
-            )
+        for (category in categorizedLegsResult.getOrderedCategories()) {
+            item {
+                CategoryTitle(category = category)
+            }
+
+            val legs = categorizedLegsResult[category]
+            items(legs, key = { it.id }) { leg ->
+                HistoryItem(
+                    leg = leg,
+                    onSeeMorePressed = {
+                        viewModel.navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
+                    }
+                )
+            }
         }
 
         item { Spacer(Modifier.height(8.dp)) }
@@ -103,14 +111,14 @@ private fun HistoryScreenContent(
 private fun SortChipGroup(
     viewModel: HistoryViewModel
 ) {
-    val selectedSortType by viewModel.selectedSortType.observeAsStateNonOptional()
+    val selectedSortType by viewModel.selectedCategorizedSortType.observeAsStateNonOptional()
     val sortDescending by viewModel.sortDescending.observeAsStateNonOptional()
 
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
 
-        SortType.all.forEachIndexed { index, sortType ->
+        CategorizedSortTypeBase.all.forEachIndexed { index, sortType ->
             val selected = sortType == selectedSortType
             val descending = if (selected) sortDescending else sortType.byDefaultDescending
             item {
@@ -137,6 +145,15 @@ private fun SortChipGroup(
             }
         }
     }
+}
+
+@Composable
+private fun LazyItemScope.CategoryTitle(category: CategorizedSortTypeBase.Category) {
+    Text(
+        text = category.name.uppercase(),
+        style = MaterialTheme.typography.titleMedium,
+        modifier = Modifier.padding(top = 8.dp)
+    )
 }
 
 
@@ -263,6 +280,7 @@ fun PreviewTableScreen() {
     DartAppTheme() {
         val viewModel = HistoryViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true))
         val legs = TestLegData.createExampleLegs()
-        HistoryScreen(legs, viewModel)
+        val categorizedLegs = DateCategorizedSortType.sortLegsCategorized(legs, true)
+        HistoryScreen(categorizedLegs, viewModel)
     }
 }

@@ -8,6 +8,7 @@ import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.data.persistent.database.LegDatabaseDao
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.shared.NavigationViewModel
+import com.example.dartapp.util.categorized_sort.DateCategorizedSortType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,22 +19,23 @@ class HistoryViewModel @Inject constructor(
     private val legDatabaseDao: LegDatabaseDao
 ) : NavigationViewModel(navigationManager){
 
-    private val _legs = MutableLiveData<List<Leg>>(listOf())
-    val legs: LiveData<List<Leg>> = _legs
+    private val _categorizedLegsResult = MutableLiveData(CategorizedSortTypeBase.Result())
+    val categorizedLegsResult: LiveData<CategorizedSortTypeBase.Result> = _categorizedLegsResult
 
-    private val _selectedSortType = MutableLiveData<SortType>(SortType.PlaceHolderSortType)
-    val selectedSortType: LiveData<SortType> = _selectedSortType
+    private val _selectedCategorizedSortType = MutableLiveData<CategorizedSortTypeBase>(CategorizedSortTypeBase.PlaceHolder)
+    val selectedCategorizedSortType: LiveData<CategorizedSortTypeBase> = _selectedCategorizedSortType
 
-    private val _sortDescending = MutableLiveData<Boolean>(SortType.PlaceHolderSortType.byDefaultDescending)
+    private val _sortDescending = MutableLiveData<Boolean>(CategorizedSortTypeBase.PlaceHolder.byDefaultDescending)
     val sortDescending: LiveData<Boolean> = _sortDescending
 
+    private var legs: List<Leg> = listOf()
 
     init {
-        setSelectedSortType(SortType.DateSortType)
+        setSelectedSortType(DateCategorizedSortType)
 
         viewModelScope.launch {
             legDatabaseDao.getAllLegs().asFlow().collect {
-                _legs.value = it
+                legs = it
                 sortLegs()
             }
         }
@@ -44,13 +46,14 @@ class HistoryViewModel @Inject constructor(
         sortLegs()
     }
 
-    fun setSelectedSortType(sortType: SortType) {
-        _selectedSortType.value = sortType
-        setSortDescending(sortType.byDefaultDescending)
+    fun setSelectedSortType(categorizedSortType: CategorizedSortTypeBase) {
+        _selectedCategorizedSortType.value = categorizedSortType
+        setSortDescending(categorizedSortType.byDefaultDescending)
     }
 
     private fun sortLegs() {
-        _legs.value = _selectedSortType.value!!.sortLegs(legs.value!!, sortDescending.value!!)
+        val result = _selectedCategorizedSortType.value!!.sortLegsCategorized(legs, sortDescending.value!!)
+        _categorizedLegsResult.value = result
     }
 
 
