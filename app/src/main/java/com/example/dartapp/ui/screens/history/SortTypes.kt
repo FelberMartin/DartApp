@@ -32,9 +32,9 @@ abstract class SortType(
         }
     }
 
-    object AverageNineDartsSortType : SortType(name = "Avg (9 Darts)", byDefaultDescending = true) {
+    object CheckoutSortType : SortType(name = "Checkout", byDefaultDescending = true) {
         override fun valueForLeg(leg: Leg): Double {
-            return leg.nineDartsAverage()
+            return leg.checkout.toDouble()
         }
     }
 
@@ -45,6 +45,6 @@ abstract class SortType(
     }
 
     companion object {
-        val all = listOf(DateSortType, DartCountSortType, AverageNineDartsSortType)
+        val all = listOf(DateSortType, DartCountSortType, CheckoutSortType)
     }
 }

@@ -227,7 +227,7 @@ private fun LegShortInfo(
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
-            text = "Avg (9 Darts):",
+            text = "Average:",
             color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.labelMedium
         )
@@ -235,7 +235,7 @@ private fun LegShortInfo(
         Spacer(Modifier.width(6.dp))
 
         Text(
-            text = String.format("%.1f", leg.nineDartsAverage()),
+            text = String.format("%.1f", leg.average),
             color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.labelMedium
         )

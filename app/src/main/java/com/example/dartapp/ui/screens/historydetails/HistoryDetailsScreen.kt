@@ -195,7 +195,7 @@ private fun NumbersAndDataCard(leg: Leg) {
                 } else "-"
                 val legInfos = listOf(
                     Pair("Darts", leg.dartCount.toString()),
-                    Pair("Average", String.format("%.1f", leg.servesAvg)),
+                    Pair("Average", String.format("%.1f", leg.average)),
                     Pair("Avg (9 Darts)", String.format("%.1f", leg.nineDartsAverage())),
                     Pair("Double Rate", doubleRateString),
                     Pair("Checkout", Converters.toListOfInts(leg.servesList).last().toString()),

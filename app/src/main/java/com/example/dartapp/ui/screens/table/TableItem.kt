@@ -27,7 +27,7 @@ open class TableItem(
 
         val averages = listOf(
             TableItem("Average") {
-                String.format("%.1f", it.map { leg -> leg.servesAvg }.average())
+                String.format("%.1f", it.map { leg -> leg.average }.average())
             },
             TableItem("Avg (9 Darts)") {
                 String.format("%.1f", it.map { leg -> leg.nineDartsAverage() }.average())

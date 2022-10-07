@@ -125,7 +125,7 @@ class Game() {
             endTime = Converters.fromLocalDateTime(now),
             durationSeconds = Converters.fromDuration(Duration.between(startDateTime, now)),
             dartCount = dartCount,
-            servesAvg = getAverage()!!,
+            average = getAverage()!!,
             doubleAttempts = doubleAttempts,
             servesList = Converters.fromListOfInts(serves),
             doubleAttemptsList = Converters.fromListOfInts(doubleAttemptsList),

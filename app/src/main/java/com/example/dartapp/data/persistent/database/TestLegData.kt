@@ -47,7 +47,7 @@ object TestLegData {
             endTime = Converters.fromLocalDateTime(now.minusDays(daysBack.toLong())),
             durationSeconds = Converters.fromDuration(Duration.ofSeconds(random.nextLong(20) * 60)),
             dartCount = serves.size * 3,
-            servesAvg = serves.average(),
+            average = serves.average(),
             doubleAttempts = doubleAttempts.size,
             checkout = serves.last(),
             servesList = Converters.fromListOfInts(serves),

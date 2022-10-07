@@ -5,6 +5,6 @@ import com.example.dartapp.data.persistent.database.Leg
 object AverageStatistic: LineStatistic("Average") {
 
     override fun reduceLegsToNumber(legs: List<Leg>): Number {
-        return legs.map { leg -> leg.servesAvg }.average()
+        return legs.map { leg -> leg.average }.average()
     }
 }
