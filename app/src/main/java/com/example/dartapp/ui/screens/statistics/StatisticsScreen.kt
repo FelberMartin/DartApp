@@ -8,7 +8,6 @@ import android.widget.LinearLayout
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.keyframes
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -492,16 +491,14 @@ private fun BigIconButton(
     icon: ImageVector,
     onClick: () -> Unit
 ) {
-    MyCard(
-        modifier = Modifier
-            .size(96.dp)
-            .clickable { onClick.invoke() }
+    ElevatedButton(
+        onClick = onClick,
+        modifier = Modifier.size(96.dp),
+        shape = MaterialTheme.shapes.medium
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxSize()
+            modifier = Modifier.fillMaxSize()
         ) {
             Icon(
                 imageVector = icon,
