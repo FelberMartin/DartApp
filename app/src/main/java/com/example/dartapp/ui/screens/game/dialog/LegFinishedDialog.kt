@@ -101,7 +101,7 @@ private fun StatisticsSection(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(30.dp),
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier.padding(16.dp)
         ) {
             ServeDistribution(leg = leg)
 
@@ -132,9 +132,8 @@ private fun ServeDistribution(leg: Leg) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .scale(1.0f)
-            .height(170.dp)
-            .scale(0.9f),
+            .scale(0.93f)
+            .height(170.dp),
         contentAlignment = Alignment.Center
     ) {
         ServeDistributionChart(leg = leg)

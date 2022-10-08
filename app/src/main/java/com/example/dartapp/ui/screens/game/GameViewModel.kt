@@ -261,7 +261,6 @@ class GameViewModel @Inject constructor(
         if (legFinished.value == true) {
             return
         }
-        _legFinished.value = true   // Shows Leg Finished Dialog
         viewModelScope.launch {
             val setDefaultDoubleAttempt = !settingsRepository
                 .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
@@ -271,8 +270,9 @@ class GameViewModel @Inject constructor(
 
             Log.d("GameViewModel", "Saving game to legDatabase...")
             val leg = game.toLeg()
-            lastFinishedLeg = leg
             legDatabaseDao.insert(leg = leg)
+            lastFinishedLeg = legDatabaseDao.getLatestLeg()
+            _legFinished.value = true   // Shows Leg Finished Dialog
         }
     }
 

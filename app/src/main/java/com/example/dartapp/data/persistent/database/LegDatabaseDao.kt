@@ -25,6 +25,6 @@ interface LegDatabaseDao {
     fun getAllLegs(): LiveData<List<Leg>>
 
     @Query("SELECT * FROM legs_table ORDER BY end_time DESC LIMIT 1")
-    fun getLatestLeg(): Leg?
+    suspend fun getLatestLeg(): Leg?
 
 }
