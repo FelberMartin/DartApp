@@ -158,7 +158,12 @@ private fun AverageProgression(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        BigStatsCard(valueString = String.format("%.1f", last10GamesAverage), description = "Last 10 Games")
+        val last10GamesAverageString = if (last10GamesAverage.isNaN()) {
+            "--"
+        } else {
+            String.format("%.1f", last10GamesAverage)
+        }
+        BigStatsCard(valueString = last10GamesAverageString, description = "Last 10 Games")
 
         var rotationDegrees = 0.0
         if (!last10GamesAverage.isNaN()) {
