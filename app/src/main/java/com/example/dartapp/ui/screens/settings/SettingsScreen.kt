@@ -204,6 +204,7 @@ private fun BooleanOption(
                     modifier = Modifier.scale(0.8f)
                 )
             }
+            Spacer(Modifier.height(4.dp))
             Text(
                 text = info,
                 style = MaterialTheme.typography.labelMedium,
