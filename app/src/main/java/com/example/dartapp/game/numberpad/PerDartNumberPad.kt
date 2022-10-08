@@ -5,13 +5,16 @@ import kotlinx.coroutines.flow.asStateFlow
 
 class PerDartNumberPad : NumberPadBase() {
 
+    enum class Modifier(val multiplier: Int) {
+        None(1),
+        Double(2),
+        Triple(3)
+    }
+
     private var baseNumber: Int = 0
 
-    private val _doubleModifierEnabled = MutableStateFlow(false)
-    val doubleModifierEnabled = _doubleModifierEnabled.asStateFlow()
-
-    private val _tripleModifierEnabled = MutableStateFlow(false)
-    val tripleModifierEnabled = _tripleModifierEnabled.asStateFlow()
+    private val _modifier = MutableStateFlow(Modifier.None)
+    val modifier = _modifier.asStateFlow()
 
     override suspend fun numberTyped(typed: Int) {
         baseNumber = typed
@@ -19,37 +22,22 @@ class PerDartNumberPad : NumberPadBase() {
     }
 
     private suspend fun recomputeNumber() {
-        var modifier = 1
-        if (doubleModifierEnabled.value) {
-            modifier = 2
-        }
-        if (tripleModifierEnabled.value) {
-            modifier = 3
-        }
-        _number.emit(modifier * baseNumber)
+        _number.emit(modifier.value.multiplier * baseNumber)
     }
 
     override suspend fun clear() {
         super.clear()
-        _doubleModifierEnabled.emit(false)
-        _tripleModifierEnabled.emit(false)
+        _modifier.value = Modifier.None
+        baseNumber = 0
     }
 
-    suspend fun toggleDoubleModifier() {
-        val currentlyEnabled = doubleModifierEnabled.value
-        if (!currentlyEnabled && tripleModifierEnabled.value) {
-            _tripleModifierEnabled.emit(false)
+    suspend fun toggleModifier(toggledModifier: Modifier) {
+        if (toggledModifier == modifier.value) {
+            _modifier.value = Modifier.None
+        } else {
+            _modifier.value = toggledModifier
         }
-        _doubleModifierEnabled.emit(!currentlyEnabled)
         recomputeNumber()
     }
 
-    suspend fun toggleTripleModifier() {
-        val currentlyEnabled = tripleModifierEnabled.value
-        if (!currentlyEnabled && doubleModifierEnabled.value) {
-            _doubleModifierEnabled.emit(false)
-        }
-        _tripleModifierEnabled.emit(!currentlyEnabled)
-        recomputeNumber()
-    }
 }

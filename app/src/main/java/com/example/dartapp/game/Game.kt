@@ -73,15 +73,19 @@ class Game() {
         applyAction(FillServeGameAction(3 - started))
     }
 
-    fun isNumberValid(number: Int, singleDart: Boolean) : Boolean {
+    fun isNumberValid(number: Int, singleDart: Boolean, doubleModifierEnabled: Boolean = false) : Boolean {
         val pointsAfter = pointsLeft - number
         if (pointsAfter < 0 || pointsAfter == 1) {
             return false
         }
-        if (!singleDart) {
+        if (singleDart) {
+            if (pointsAfter == 0) {
+                return doubleModifierEnabled
+            }
+            return true
+        } else {
             return isServeValid(number)
         }
-        return true
     }
 
     fun pointsLeftBeforeLastServe(): Int {

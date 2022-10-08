@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,7 +64,10 @@ fun GameScreen(
 private fun TopRow(
     onCloseClicked: () -> Unit
 ) {
-    Row(Modifier.fillMaxWidth().padding(top = 16.dp, end = 16.dp)) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp, end = 16.dp)) {
         Spacer(Modifier.weight(1f))
 
         IconButton(onClick = onCloseClicked) {
@@ -184,17 +188,15 @@ private fun PickNumberPadVersion(
             .height(380.dp)) {
         if (viewModel.usePerDartNumberPad && numberPad is PerDartNumberPad) {
             val perDartNumberPad = numberPad as PerDartNumberPad
-            val doubleEnabled by perDartNumberPad.doubleModifierEnabled.collectAsState()
-            val tripleEnabled by perDartNumberPad.tripleModifierEnabled.collectAsState()
+            val modifier by perDartNumberPad.modifier.collectAsState()
 
             PerDartNumPad(
                 onNumberClicked = viewModel::onNumberTyped,
-                doubleModifierEnabled = doubleEnabled,
-                onDoubleModifierClicked = viewModel::onDoubleModifierToggled,
-                tripleModifierEnabled = tripleEnabled,
-                onTripleModifierClicked = viewModel::onTripleModifierToggled,
-                onEnterClicked = viewModel::onEnterClicked,
-                enterDisabled = enterDisabled
+                doubleModifierEnabled = modifier == PerDartNumberPad.Modifier.Double,
+                onDoubleModifierClicked = { viewModel.onModifierToggled(PerDartNumberPad.Modifier.Double) },
+                tripleModifierEnabled = modifier == PerDartNumberPad.Modifier.Triple,
+                onTripleModifierClicked = { viewModel.onModifierToggled(PerDartNumberPad.Modifier.Triple) },
+                disabledNumbers = viewModel.getDisabledNumbers(modifier)
             )
         } else {
             PerServeNumPad(
@@ -247,14 +249,10 @@ private fun NumPadInfoAndActionsRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        FilledTonalIconButton(
-            onClick = onUndoClicked,
-        ) {
-            Icon(
-                imageVector = Icons.Default.Undo,
-                contentDescription = "Undo"
-            )
-        }
+        SmallIconButton(
+            icon = Icons.Default.Undo,
+            onClick = onUndoClicked
+        )
 
         Text(
             text = "$number",
@@ -262,14 +260,28 @@ private fun NumPadInfoAndActionsRow(
             color = MaterialTheme.colorScheme.secondary
         )
 
-        FilledTonalIconButton(
-            onClick = onSwapNumberPadClicked,
-        ) {
-            Icon(
-                imageVector = Icons.Default.AppRegistration,
-                contentDescription = "Change NumPad Layout"
-            )
-        }
+        SmallIconButton(
+            icon = Icons.Default.AppRegistration,
+            onClick = onSwapNumberPadClicked
+        )
+    }
+}
+
+@Composable
+private fun SmallIconButton(
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    ElevatedButton(
+        onClick = onClick,
+        contentPadding = PaddingValues(vertical = 4.dp),
+        elevation = ButtonDefaults.elevatedButtonElevation(pressedElevation = 0.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = "Change NumPad Layout",
+            tint = MaterialTheme.colorScheme.onSurface
+        )
     }
 }
 

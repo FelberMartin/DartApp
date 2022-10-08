@@ -107,6 +107,9 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch {
             numberPad.value!!.numberTyped(number)
             updateEnterButton()
+            if (usePerDartNumberPad) {
+                onEnterClicked()
+            }
         }
     }
 
@@ -114,6 +117,25 @@ class GameViewModel @Inject constructor(
         val number = numberPad.value!!.number.value
         val valid = game.isNumberValid(number, usePerDartNumberPad)
         _enterDisabled.value = !valid
+    }
+
+    /** Returns disabled numbers for the PerDartNumberPad. */
+    fun getDisabledNumbers(modifier: PerDartNumberPad.Modifier) : List<Int> {
+        val disabledNumbers = mutableListOf<Int>()
+        val numbersToCheck = (1..20).toMutableList()
+        numbersToCheck.add(25)
+        for (i in numbersToCheck) {
+            val dart = i * modifier.multiplier
+            val doubleModifierEnabled =  modifier == PerDartNumberPad.Modifier.Double
+            val valid = game.isNumberValid(dart, true, doubleModifierEnabled)
+            if (!valid) {
+                disabledNumbers.add(i)
+            }
+        }
+        if (modifier == PerDartNumberPad.Modifier.Triple) {
+            disabledNumbers.add(25)
+        }
+        return disabledNumbers
     }
 
     fun clearNumberPad() {
@@ -282,17 +304,10 @@ class GameViewModel @Inject constructor(
         updateUi()
     }
 
-    fun onDoubleModifierToggled() {
+    fun onModifierToggled(modifier: PerDartNumberPad.Modifier) {
         viewModelScope.launch {
             val perDartNumberPad = numberPad.value as PerDartNumberPad
-            perDartNumberPad.toggleDoubleModifier()
-        }
-    }
-
-    fun onTripleModifierToggled() {
-        viewModelScope.launch {
-            val perDartNumberPad = numberPad.value as PerDartNumberPad
-            perDartNumberPad.toggleTripleModifier()
+            perDartNumberPad.toggleModifier(modifier)
         }
     }
 
