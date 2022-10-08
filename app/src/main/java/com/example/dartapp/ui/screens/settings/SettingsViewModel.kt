@@ -18,8 +18,10 @@ class SettingsViewModel @Inject constructor(
 ): NavigationViewModel(navigationManager) {
 
     val appearanceOption: LiveData<AppearanceOption> = settingsRepository.appearanceOptionFlow.asLiveData()
-    val askForDouble: LiveData<Boolean> = settingsRepository.askForDoubleFlow.asLiveData()
-    val askForCheckout: LiveData<Boolean> = settingsRepository.askForCheckoutFlow.asLiveData()
+    val askForDouble: LiveData<Boolean> =
+        settingsRepository.getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).asLiveData()
+    val askForCheckout: LiveData<Boolean> =
+        settingsRepository.getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForCheckout).asLiveData()
 
 
     fun changeAppearanceOption(newAppearanceOption: AppearanceOption) {
@@ -30,13 +32,13 @@ class SettingsViewModel @Inject constructor(
 
     fun changeAskForDouble(checked: Boolean) {
         viewModelScope.launch {
-            settingsRepository.setAskForDouble(checked)
+            settingsRepository.setBooleanSetting(SettingsRepository.BooleanSetting.AskForDouble, checked)
         }
     }
 
     fun changeAskForCheckout(checked: Boolean) {
         viewModelScope.launch {
-            settingsRepository.setAskForCheckout(checked)
+            settingsRepository.setBooleanSetting(SettingsRepository.BooleanSetting.AskForCheckout, checked)
         }
     }
 

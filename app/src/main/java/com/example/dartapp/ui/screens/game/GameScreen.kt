@@ -291,6 +291,7 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
 
     if (legFinished) {
         LegFinishedDialog(
+            viewModel = viewModel.createLegFinishedDialogViewModel(),
             onPlayAgainClicked = viewModel::onPlayAgainClicked,
             onMenuClicked = { viewModel.navigate(NavigationCommand.NAVIGATE_UP) }
         )

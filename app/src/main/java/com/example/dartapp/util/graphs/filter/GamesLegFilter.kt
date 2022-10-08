@@ -1,9 +1,9 @@
 package com.example.dartapp.util.graphs.filter
 
-import com.example.dartapp.util.graphs.partitioner.PartitionCountLegPartitioner
 import com.example.dartapp.data.persistent.database.Leg
+import com.example.dartapp.util.graphs.partitioner.PartitionCountLegPartitioner
 
-class GamesLegFilter private constructor(
+class GamesLegFilter constructor(
     name: String,
     val legCount: Int
 ) : LegFilterBase(

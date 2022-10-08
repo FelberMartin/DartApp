@@ -107,45 +107,50 @@ private fun ServeDistributionCard(leg: Leg) {
                 .height(200.dp),
             contentAlignment = Alignment.Center
         ) {
-            val dataSet = ServeDistributionStatistic.buildDataSet(listOf(leg), GamesLegFilter.all)
-            val materialThemeBasedColorManager = ColorManager.materialThemeBasedColorManager()
-            AndroidView(
-                factory = { context ->
-                    val chart = PieChart(context).apply {
-                        colorManager = materialThemeBasedColorManager
-                        data = dataSet
-                    }
-                    val legend = Legend(context).apply {
-                        linkedChart = chart
-                    }
-                    LinearLayout(context).apply {
-                        orientation = LinearLayout.HORIZONTAL
-                        addView(chart)
-                        addView(legend)
-                        gravity = Gravity.CENTER_VERTICAL
-
-                    }
-                },
-                update = { layout ->
-                    val chart = layout.children.first { view -> view is PieChart } as PieChart
-                    chart.apply {
-                        data = dataSet
-                        val params = layoutParams as ViewGroup.MarginLayoutParams
-                        params.width = 500
-                        params.rightMargin = 30
-                        layoutParams = params
-                    }
-                    val legend = layout.children.first { view -> view is Legend } as Legend
-                    legend.apply {
-                        val params = layoutParams as ViewGroup.MarginLayoutParams
-                        params.width = 200
-                        params.topMargin = 10
-                        layoutParams = params
-                    }
-                }
-            )
+            ServeDistributionChart(leg = leg)
         }
     }
+}
+
+@Composable
+fun ServeDistributionChart(leg: Leg) {
+    val dataSet = ServeDistributionStatistic.buildDataSet(listOf(leg), GamesLegFilter.all)
+    val materialThemeBasedColorManager = ColorManager.materialThemeBasedColorManager()
+    AndroidView(
+        factory = { context ->
+            val chart = PieChart(context).apply {
+                colorManager = materialThemeBasedColorManager
+                data = dataSet
+            }
+            val legend = Legend(context).apply {
+                linkedChart = chart
+            }
+            LinearLayout(context).apply {
+                orientation = LinearLayout.HORIZONTAL
+                addView(chart)
+                addView(legend)
+                gravity = Gravity.CENTER_VERTICAL
+
+            }
+        },
+        update = { layout ->
+            val chart = layout.children.first { view -> view is PieChart } as PieChart
+            chart.apply {
+                data = dataSet
+                val params = layoutParams as ViewGroup.MarginLayoutParams
+                params.width = 500
+                params.rightMargin = 30
+                layoutParams = params
+            }
+            val legend = layout.children.first { view -> view is Legend } as Legend
+            legend.apply {
+                val params = layoutParams as ViewGroup.MarginLayoutParams
+                params.width = 200
+                params.topMargin = 10
+                layoutParams = params
+            }
+        }
+    )
 }
 
 @Composable

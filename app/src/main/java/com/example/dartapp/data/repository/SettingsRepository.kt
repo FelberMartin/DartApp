@@ -10,9 +10,19 @@ class SettingsRepository @Inject constructor(
     private val keyValueStorage: IKeyValueStorage
 ) {
 
+    enum class BooleanSetting(val defaultValue: Boolean = true) {
+        AskForDouble, AskForCheckout,
+        ShowStatsAfterLegFinished,
+        ShowServeDistribution,
+        ShowAverage,
+        ShowDartCount,
+        ShowDoubleRate,
+        ShowCheckout,
+        ShowDetailsLinkButton
+    }
+
     private val APPEARANCE_KEY = "appearance"
-    private val ASK_FOR_DOUBLE_KEY = "ask_for_double"
-    private val ASK_FOR_CHECKOUT_KEY = "ask_for_checkout"
+
 
     val appearanceOptionFlow: Flow<AppearanceOption> = keyValueStorage.getFlow(APPEARANCE_KEY).map { value: String? ->
         if (value == null) {
@@ -22,22 +32,17 @@ class SettingsRepository @Inject constructor(
         return@map AppearanceOption.fromOrdinal(ordinal)
     }
 
-    val askForDoubleFlow: Flow<Boolean> = keyValueStorage.getFlow(ASK_FOR_DOUBLE_KEY).map { value: String? ->
-        value?.toBoolean() ?: true
-    }
-    val askForCheckoutFlow: Flow<Boolean> = keyValueStorage.getFlow(ASK_FOR_CHECKOUT_KEY).map { value: String? ->
-        value?.toBoolean() ?: true
-    }
-
     suspend fun setAppearanceOption(value: AppearanceOption) {
         keyValueStorage.put(APPEARANCE_KEY, value.ordinal.toString())
     }
 
-    suspend fun setAskForDouble(value: Boolean) {
-        keyValueStorage.put(ASK_FOR_DOUBLE_KEY, value.toString())
+    fun getBooleanSettingFlow(setting: BooleanSetting) : Flow<Boolean> {
+        return keyValueStorage.getFlow(setting.name).map { value: String? ->
+            value?.toBoolean() ?: setting.defaultValue
+        }
     }
 
-    suspend fun setAskForCheckout(value: Boolean) {
-        keyValueStorage.put(ASK_FOR_CHECKOUT_KEY, value.toString())
+    suspend fun setBooleanSetting(setting: BooleanSetting, value: Boolean) {
+        keyValueStorage.put(setting.name, value.toString())
     }
 }

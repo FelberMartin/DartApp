@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.data.persistent.database.LegDatabaseDao
 import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.game.Game
@@ -16,6 +17,7 @@ import com.example.dartapp.game.numberpad.PerServeNumberPad
 import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.game.dialog.DialogUiState
 import com.example.dartapp.ui.screens.game.dialog.DoubleAttemptsAndCheckoutDialogResult
+import com.example.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
 import com.example.dartapp.ui.shared.NavigationViewModel
 import com.example.dartapp.util.CheckoutTip
 import com.example.dartapp.util.GameUtil
@@ -67,6 +69,8 @@ class GameViewModel @Inject constructor(
 
     var game = Game()
         private set
+
+    private var lastFinishedLeg: Leg? = null
 
     init {
         updateUi()
@@ -150,7 +154,9 @@ class GameViewModel @Inject constructor(
         if (!usePerDartNumberPad) {
             return false
         }
-        if (!settingsRepository.askForDoubleFlow.first()) {
+        val askForDouble = settingsRepository
+            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
+        if (!askForDouble) {
             return false
         }
         if (game.pointsLeft == 0) {
@@ -167,7 +173,9 @@ class GameViewModel @Inject constructor(
         if (usePerDartNumberPad) {
             return false
         }
-        if (!settingsRepository.askForDoubleFlow.first()) {
+        val askForDouble = settingsRepository
+            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
+        if (!askForDouble) {
             return false
         }
         if (game.pointsLeft > 50 && lastServe > 0) {
@@ -204,7 +212,9 @@ class GameViewModel @Inject constructor(
         if (usePerDartNumberPad) {
             return false
         }
-        if (!settingsRepository.askForCheckoutFlow.first()) {
+        val askForCheckout = settingsRepository
+            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForCheckout).first()
+        if (!askForCheckout) {
             return false
         }
         return game.pointsLeft == 0
@@ -253,13 +263,16 @@ class GameViewModel @Inject constructor(
         }
         _legFinished.value = true   // Shows Leg Finished Dialog
         viewModelScope.launch {
-            val setDefaultDoubleAttempt = !settingsRepository.askForDoubleFlow.first()
+            val setDefaultDoubleAttempt = !settingsRepository
+                .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
             if (setDefaultDoubleAttempt) {
                 enterDoubleAttempts(1)
             }
 
             Log.d("GameViewModel", "Saving game to legDatabase...")
-            legDatabaseDao.insert(leg = game.toLeg())
+            val leg = game.toLeg()
+            lastFinishedLeg = leg
+            legDatabaseDao.insert(leg = leg)
         }
     }
 
@@ -281,6 +294,10 @@ class GameViewModel @Inject constructor(
             val perDartNumberPad = numberPad.value as PerDartNumberPad
             perDartNumberPad.toggleTripleModifier()
         }
+    }
+
+    fun createLegFinishedDialogViewModel() : LegFinishedDialogViewModel {
+        return LegFinishedDialogViewModel(navigationManager, lastFinishedLeg!!, legDatabaseDao, settingsRepository)
     }
 
 }

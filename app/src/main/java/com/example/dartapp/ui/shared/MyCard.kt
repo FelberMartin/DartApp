@@ -27,18 +27,20 @@ fun MyCard(
 
 @Composable
 fun MyCard(
-    onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    elevation: CardElevation = CardDefaults.elevatedCardElevation(),
+    colors: CardColors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
     content: @Composable ColumnScope.() -> Unit
 ) = ElevatedCard(
     onClick = onClick,
     modifier = modifier,
     enabled = enabled,
     interactionSource = interactionSource,
-    elevation = CardDefaults.elevatedCardElevation(),
-    colors = CardDefaults.outlinedCardColors(containerColor = MaterialTheme.colorScheme.background),
+    elevation = elevation,
+    colors = colors,
     content = content
 )
 
