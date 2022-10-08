@@ -54,8 +54,7 @@ private fun LegFinishedDialog(
     onPlayAgainClicked: () -> Unit
 ) {
     AlertDialog(
-        modifier = Modifier
-            .padding(28.dp),
+        modifier = Modifier.fillMaxWidth(0.85f),
         properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = { },
         title = {
@@ -75,7 +74,7 @@ private fun LegFinishedDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                OutlinedButton(onClick = onMenuClicked) {
+                FilledTonalButton(onClick = onMenuClicked) {
                     Text("Back to Menu")
                 }
 
@@ -272,7 +271,7 @@ private fun RowScope.SmallStatsCard(
 
 @Composable
 private fun MoreDetailsButton(onClick: (() -> Unit)) {
-    OutlinedButton(
+    FilledTonalButton(
         onClick = onClick
     ) {
         Icon(

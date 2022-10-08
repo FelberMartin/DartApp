@@ -91,7 +91,7 @@ private fun StatisticsCard(
         ) {
             StatisticsPreview(statisticsViewModel)
 
-            OutlinedButton(
+            FilledTonalButton(
                 onClick = { homeViewModel.navigate(NavigationDirections.Statistics) }
             ) {
                 Icon(
