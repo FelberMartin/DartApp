@@ -71,7 +71,7 @@ private fun LegFinishedDialog(
         },
         confirmButton = {
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.End,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 FilledTonalButton(onClick = onMenuClicked) {

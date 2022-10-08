@@ -1,18 +1,13 @@
 package com.example.dartapp.ui.screens.game
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AppRegistration
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -252,10 +247,8 @@ private fun NumPadInfoAndActionsRow(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(
+        FilledTonalIconButton(
             onClick = onUndoClicked,
-            modifier = Modifier
-                .border(1.dp, MaterialTheme.colorScheme.onBackground, shape = CircleShape)
         ) {
             Icon(
                 imageVector = Icons.Default.Undo,
@@ -269,10 +262,8 @@ private fun NumPadInfoAndActionsRow(
             color = MaterialTheme.colorScheme.secondary
         )
 
-        IconButton(
+        FilledTonalIconButton(
             onClick = onSwapNumberPadClicked,
-            modifier = Modifier
-                .border(1.dp, MaterialTheme.colorScheme.onBackground, shape = CircleShape)
         ) {
             Icon(
                 imageVector = Icons.Default.AppRegistration,

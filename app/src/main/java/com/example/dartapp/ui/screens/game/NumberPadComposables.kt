@@ -1,12 +1,15 @@
 package com.example.dartapp.ui.screens.game
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.dartapp.ui.theme.DartAppTheme
@@ -95,14 +98,15 @@ private fun RowScope.NumberButton(
     number: Int,
     enabled: Boolean = true
 ) {
-    OutlinedButton(
+    NumberPadButton(
         onClick = { onNumberClicked(number) },
         shape = MaterialTheme.shapes.medium,
         contentPadding = PaddingValues(6.dp),
         enabled = enabled,
         modifier = Modifier
             .fillMaxHeight()
-            .weight(1f).alpha(if (enabled) 1f else 0.4f)
+            .weight(1f)
+            .alpha(if (enabled) 1f else 0.4f)
     ) {
         Text(
             text = "$number",
@@ -116,10 +120,10 @@ private fun RowScope.NumberButton(
 private fun RowScope.ClearButton(
     onClearClicked: () -> Unit
 ) {
-    OutlinedButton(
+    NumberPadButton(
         onClick = onClearClicked,
         shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+        colors = ButtonDefaults.elevatedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier
             .fillMaxHeight()
             .weight(1f)
@@ -137,10 +141,10 @@ private fun RowScope.EnterButton(
     onEnterClicked: () -> Unit,
     disabled: Boolean = false
 ) {
-    OutlinedButton(
+    NumberPadButton(
         onClick = onEnterClicked,
         shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.outlinedButtonColors(
+        colors = ButtonDefaults.elevatedButtonColors(
             containerColor = MaterialTheme.colorScheme.primary,
             disabledContainerColor = MaterialTheme.colorScheme.secondary
         ),
@@ -178,10 +182,10 @@ private fun RowScope.ModifierButton(
     val containerColor = if (enabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.background
     val textColor = if (enabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.primary
 
-    OutlinedButton(
+    NumberPadButton(
         onClick = onClicked,
         shape = MaterialTheme.shapes.medium,
-        colors = ButtonDefaults.outlinedButtonColors(containerColor = containerColor),
+        colors = ButtonDefaults.elevatedButtonColors(containerColor = containerColor),
         contentPadding = PaddingValues(6.dp),
         modifier = Modifier
             .fillMaxHeight()
@@ -194,6 +198,28 @@ private fun RowScope.ModifierButton(
         )
     }
 }
+
+@Composable
+fun NumberPadButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    shape: Shape = ButtonDefaults.outlinedShape,
+    colors: ButtonColors = ButtonDefaults.elevatedButtonColors(),
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    content: @Composable RowScope.() -> Unit
+) = ElevatedButton(
+    onClick = onClick,
+    modifier = modifier,
+    enabled = enabled,
+    shape = shape,
+    elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 2.dp),
+    colors = colors,
+    contentPadding = contentPadding,
+    interactionSource = interactionSource,
+    content = content
+)
 
 
 @Preview(showBackground = true, widthDp = 300, heightDp = 340)
