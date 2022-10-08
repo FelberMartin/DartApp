@@ -37,7 +37,7 @@ object TestLegData {
         return legs
     }
 
-    private fun createRandomLeg(random: Random, daysBack: Int): Leg {
+    fun createRandomLeg(random: Random = Random, daysBack: Int = 0): Leg {
         val now = LocalDateTime.now()
         val serves = createRandomServes(random)
         val doubleAttempts = createRandomDoubleAttempts(random)

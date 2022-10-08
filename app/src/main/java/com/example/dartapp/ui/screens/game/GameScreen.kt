@@ -290,7 +290,7 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
     // The upper dialogs are hidden behind the dialogs listed later
 
     if (legFinished) {
-        LegFinishedDialog(
+        LegFinishedDialogEntryPoint(
             viewModel = viewModel.createLegFinishedDialogViewModel(),
             onPlayAgainClicked = viewModel::onPlayAgainClicked,
             onMenuClicked = { viewModel.navigate(NavigationCommand.NAVIGATE_UP) }

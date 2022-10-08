@@ -30,6 +30,7 @@ fun SettingsScreen(
     val appearanceOption = viewModel.appearanceOption.observeAsState(AppearanceOption.SYSTEM)
     val askForDouble = viewModel.askForDouble.observeAsState(true)
     val askForCheckout = viewModel.askForCheckout.observeAsState(true)
+    val showStatsAfterLeg = viewModel.showStatsAfterLeg.observeAsState(initial = true)
 
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -54,7 +55,9 @@ fun SettingsScreen(
                         askForDouble = askForDouble,
                         onAskForDoubleChange = viewModel::changeAskForDouble,
                         askForCheckout = askForCheckout,
-                        onAskForCheckoutChange = viewModel::changeAskForCheckout
+                        onAskForCheckoutChange = viewModel::changeAskForCheckout,
+                        showStatsAfterLeg = showStatsAfterLeg,
+                        onShowStatsAfterLegChange = viewModel::changeShowStatsAfterLeg
                     )
                 }}
             }
@@ -141,7 +144,9 @@ private fun TrainingSection(
     askForDouble: State<Boolean>,
     onAskForDoubleChange: (Boolean) -> Unit,
     askForCheckout: State<Boolean>,
-    onAskForCheckoutChange: (Boolean) -> Unit
+    onAskForCheckoutChange: (Boolean) -> Unit,
+    showStatsAfterLeg: State<Boolean>,
+    onShowStatsAfterLegChange: (Boolean) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -157,6 +162,15 @@ private fun TrainingSection(
             info = "When disabled, defaults to three darts thrown in the last serve.",
             enabled = askForCheckout.value,
             onEnabledChange = onAskForCheckoutChange
+        )
+
+        Divider(Modifier.padding(4.dp))
+
+        BooleanOption(
+            text = "Show statistics after Leg",
+            info = "Whether to show some statistics after finishing a leg.",
+            enabled = showStatsAfterLeg.value,
+            onEnabledChange = onShowStatsAfterLegChange
         )
     }
 }

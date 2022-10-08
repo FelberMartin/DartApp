@@ -22,7 +22,8 @@ class SettingsViewModel @Inject constructor(
         settingsRepository.getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).asLiveData()
     val askForCheckout: LiveData<Boolean> =
         settingsRepository.getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForCheckout).asLiveData()
-
+    val showStatsAfterLeg: LiveData<Boolean> = settingsRepository
+        .getBooleanSettingFlow(SettingsRepository.BooleanSetting.ShowStatsAfterLegFinished).asLiveData()
 
     fun changeAppearanceOption(newAppearanceOption: AppearanceOption) {
         viewModelScope.launch {
@@ -39,6 +40,12 @@ class SettingsViewModel @Inject constructor(
     fun changeAskForCheckout(checked: Boolean) {
         viewModelScope.launch {
             settingsRepository.setBooleanSetting(SettingsRepository.BooleanSetting.AskForCheckout, checked)
+        }
+    }
+
+    fun changeShowStatsAfterLeg(checked: Boolean) {
+        viewModelScope.launch {
+            settingsRepository.setBooleanSetting(SettingsRepository.BooleanSetting.ShowStatsAfterLegFinished, checked)
         }
     }
 

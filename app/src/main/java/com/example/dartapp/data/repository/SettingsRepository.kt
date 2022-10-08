@@ -11,14 +11,9 @@ class SettingsRepository @Inject constructor(
 ) {
 
     enum class BooleanSetting(val defaultValue: Boolean = true) {
-        AskForDouble, AskForCheckout,
+        AskForDouble,
+        AskForCheckout,
         ShowStatsAfterLegFinished,
-        ShowServeDistribution,
-        ShowAverage,
-        ShowDartCount,
-        ShowDoubleRate,
-        ShowCheckout,
-        ShowDetailsLinkButton
     }
 
     private val APPEARANCE_KEY = "appearance"

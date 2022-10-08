@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalComposeUiApi::class)
+
 package com.example.dartapp.ui.screens.game.dialog
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -7,7 +10,9 @@ import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
@@ -17,12 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
+import androidx.compose.ui.window.DialogProperties
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.data.persistent.database.TestLegData
-import com.example.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
-import com.example.dartapp.data.repository.SettingsRepository
-import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.screens.historydetails.ServeDistributionChart
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.theme.DartAppTheme
@@ -30,21 +32,42 @@ import com.example.dartapp.util.extensions.observeAsStateNonOptional
 
 
 @Composable
-fun LegFinishedDialog(
+fun LegFinishedDialogEntryPoint(
     viewModel: LegFinishedDialogViewModel,
     onPlayAgainClicked: () -> Unit,
     onMenuClicked: () -> Unit
 ) {
+    val showStats by viewModel.showStats.observeAsState()
+    val leg = viewModel.leg
+    val last10GamesAverage by viewModel.last10GamesAverage.observeAsStateNonOptional()
+    LegFinishedDialog(showStats ?: false, leg, last10GamesAverage,
+        viewModel::onMoreDetailsClicked, onMenuClicked, onPlayAgainClicked)
+}
+
+@Composable
+private fun LegFinishedDialog(
+    showStats: Boolean,
+    leg: Leg,
+    last10GamesAverage: Double,
+    onMoreDetailsClicked: () -> Unit,
+    onMenuClicked: () -> Unit,
+    onPlayAgainClicked: () -> Unit
+) {
     AlertDialog(
+        modifier = Modifier
+            .padding(28.dp),
+        properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = { },
         title = {
             Text("Leg finished!")
         },
         text = {
-            if (viewModel.showStats.observeAsStateNonOptional().value) {
-                StatisticsSection(viewModel = viewModel)
-            } else {
-                Text("Would you like to play again?")
+            Box(Modifier.animateContentSize()) {
+                if (showStats) {
+                    StatisticsSection(leg, last10GamesAverage, onMoreDetailsClicked)
+                } else {
+                    Text("Would you like to play again?")
+                }
             }
         },
         confirmButton = {
@@ -68,42 +91,36 @@ fun LegFinishedDialog(
 }
 
 @Composable
-private fun StatisticsSection(viewModel: LegFinishedDialogViewModel) {
-    val leg = viewModel.leg
-    MyCard(elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)) {
+private fun StatisticsSection(
+    leg: Leg,
+    last10GamesAverage: Double,
+    onMoreDetailsClicked: () -> Unit
+) {
+    MyCard(modifier = Modifier.padding(4.dp),
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(30.dp),
             modifier = Modifier.padding(12.dp)
         ) {
-            if (viewModel.showServeDistribution) {
-                ServeDistribution(leg = leg)
-            }
-            if (viewModel.showAverage) {
-                val last10GamesAverage by viewModel.last10GamesAverage.observeAsStateNonOptional()
-                AverageProgression(average = leg.average, last10GamesAverage = last10GamesAverage)
-            }
+            ServeDistribution(leg = leg)
+
+            AverageProgression(average = leg.average, last10GamesAverage = last10GamesAverage)
 
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
-                if (viewModel.showDartCount) {
-                    SmallStatsCard(valueString = leg.dartCount.toString(), description = "Darts")
-                }
-                if (viewModel.showDoubleRate) {
-                    SmallStatsCard(
-                        valueString = String.format("%.0f%%", 100.0 / leg.doubleAttempts),
-                        description = "Double rate"
-                    )
-                }
-                if (viewModel.showCheckout) {
-                    SmallStatsCard(valueString = leg.checkout.toString(), description = "Checkout")
-                }
+                SmallStatsCard(valueString = leg.dartCount.toString(), description = "Darts")
+
+                SmallStatsCard(
+                    valueString = String.format("%.0f%%", 100.0 / leg.doubleAttempts),
+                    description = "Double rate"
+                )
+
+                SmallStatsCard(valueString = leg.checkout.toString(), description = "Checkout")
             }
 
-            if (viewModel.showDetailsLinkButton) {
-                MoreDetailsButton(onClick = viewModel::onMoreDetailsClicked)
-            }
+            MoreDetailsButton(onClick = onMoreDetailsClicked)
         }
     }
 }
@@ -270,20 +287,15 @@ private fun MoreDetailsButton(onClick: (() -> Unit)) {
     }
 }
 
-
 @Preview
 @Composable
 private fun LegFinishedDialogPreview() {
-    val viewModel = LegFinishedDialogViewModel(
-        navigationManager = NavigationManager(),
-        leg =  TestLegData.createExampleLegs().first(),
-        databaseDao = FakeLegDatabaseDao(),
-        settingsRepository = SettingsRepository(InMemoryKeyValueStorage())
-    )
-
     LegFinishedDialog(
+        showStats = true,
+        leg = TestLegData.createRandomLeg(),
+        last10GamesAverage = 42.0,
+        onMoreDetailsClicked = {},
         onMenuClicked = {},
-        onPlayAgainClicked = {},
-        viewModel = viewModel
+        onPlayAgainClicked = {}
     )
 }
