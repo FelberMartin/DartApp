@@ -187,7 +187,7 @@ private fun PickNumberPadVersion(
         Modifier
             .fillMaxWidth()
             .height(380.dp)) {
-        if (viewModel.usePerDartNumberPad) {
+        if (viewModel.usePerDartNumberPad && numberPad is PerDartNumberPad) {
             val perDartNumberPad = numberPad as PerDartNumberPad
             val doubleEnabled by perDartNumberPad.doubleModifierEnabled.collectAsState()
             val tripleEnabled by perDartNumberPad.tripleModifierEnabled.collectAsState()
