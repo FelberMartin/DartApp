@@ -3,14 +3,19 @@
 package com.example.dartapp.ui.screens.game.dialog
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.StackedLineChart
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -29,6 +34,7 @@ import com.example.dartapp.ui.screens.historydetails.ServeDistributionChart
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.util.extensions.observeAsStateNonOptional
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -95,6 +101,18 @@ private fun StatisticsSection(
     last10GamesAverage: Double,
     onMoreDetailsClicked: () -> Unit
 ) {
+    val animatedAverage = remember { Animatable(0f) }
+    LaunchedEffect(key1 = true) {
+        delay(600)
+        animatedAverage.animateTo(
+            targetValue = leg.average.toFloat(),
+            animationSpec = tween(
+                durationMillis = 3000,
+                easing = LinearOutSlowInEasing
+            )
+        )
+    }
+
     MyCard(modifier = Modifier.padding(4.dp),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)) {
         Column(
@@ -104,7 +122,7 @@ private fun StatisticsSection(
         ) {
             ServeDistribution(leg = leg)
 
-            AverageProgression(average = leg.average, last10GamesAverage = last10GamesAverage)
+            AverageProgression(average = animatedAverage.value.toDouble(), last10GamesAverage = last10GamesAverage)
 
             Row(
                 modifier = Modifier.fillMaxWidth()
