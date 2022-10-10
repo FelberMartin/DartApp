@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.dp
 import com.example.dartapp.views.chart.Chart
 import com.example.dartapp.views.chart.PieChart
 import com.example.dartapp.views.chart.util.DataSet
@@ -54,18 +55,20 @@ class Legend @JvmOverloads constructor(
 
     private var entryTexts = ArrayList<String>()
 
-    private var indicatorPaint = Paint(Paint.ANTI_ALIAS_FLAG)
-    private var textPaint = Paint().apply {
-        isAntiAlias = true
-        color = Color(0xFF000000).toArgb()     // This color is set to match the colorManager of the linked chart.
-        textSize = 40f
-    }
-
-    var textSize = 40f
+    var textSize = 40.dp.value
         set(value) {
             field = value
             textSizeChanged()
         }
+
+    private var indicatorPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private var textPaint = Paint().apply {
+        isAntiAlias = true
+        color = Color(0xFF000000).toArgb()     // This color is set to match the colorManager of the linked chart.
+        textSize = this@Legend.textSize
+    }
+
+
 
     private var indicatorSize: Float = 20f
     private var indicatorTopMargin = 5f

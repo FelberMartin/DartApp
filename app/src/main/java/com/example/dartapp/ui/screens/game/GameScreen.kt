@@ -94,15 +94,16 @@ private fun PlayerStats(
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceAround,
             modifier = Modifier
                 .fillMaxWidth()
+                .fillMaxHeight(0.25f)
                 .padding(12.dp)
         ) {
             Text(
                 text = pointsLeft.toString(),
                 style = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.Medium),
                 color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(vertical = 20.dp)
             )
 
             Row(
