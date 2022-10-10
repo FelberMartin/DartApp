@@ -122,8 +122,7 @@ private fun StatisticsPreview(
     Box(
         modifier = Modifier
             .scale(0.8f)
-            .fillMaxHeight(0.4f)
-            .aspectRatio(1f),
+            .size(240.dp),
         contentAlignment = Alignment.Center
     ) {
         StatisticsChart(statisticsViewModel, interactionEnabled = false)

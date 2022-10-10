@@ -54,7 +54,7 @@ private fun LegFinishedDialog(
     onPlayAgainClicked: () -> Unit
 ) {
     AlertDialog(
-        modifier = Modifier.fillMaxWidth(0.9f),
+        modifier = Modifier.fillMaxWidth(0.85f),
         properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = { },
         title = {
@@ -75,10 +75,7 @@ private fun LegFinishedDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 FilledTonalButton(onClick = onMenuClicked) {
-                    Text(
-                        "Back to Menu",
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                    Text("Back to Menu")
                 }
 
                 Spacer(Modifier.width(12.dp))
@@ -99,7 +96,7 @@ private fun StatisticsSection(
     onMoreDetailsClicked: () -> Unit
 ) {
     MyCard(modifier = Modifier.padding(4.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 3.dp)) {
+        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(30.dp),
