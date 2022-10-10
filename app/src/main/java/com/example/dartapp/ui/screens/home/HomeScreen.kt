@@ -40,21 +40,17 @@ fun HomeScreen(
 ) {
     Background {
         Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(horizontal = 24.dp)
                 .padding(top = 24.dp, bottom = 12.dp)
                 .fillMaxSize(),
         ) {
             SettingsRow(onSettingsClicked = { homeViewModel.navigate(NavigationDirections.Settings) })
-            Column(
-                verticalArrangement = Arrangement.SpaceAround,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-                StatisticsCard(homeViewModel, statisticsViewModel)
-//            AppIconAndName()
-                PlayButtonAndModeSelection(onTrainClicked = { homeViewModel.navigate(NavigationDirections.Game) })
-            }
+            StatisticsCard(homeViewModel, statisticsViewModel)
+            AppIconAndName()
+            PlayButtonAndModeSelection(onTrainClicked = { homeViewModel.navigate(NavigationDirections.Game) })
         }
     }
 }
@@ -122,7 +118,8 @@ private fun StatisticsPreview(
     Box(
         modifier = Modifier
             .scale(0.8f)
-            .size(240.dp),
+            .fillMaxHeight(0.35f)
+            .aspectRatio(1f),
         contentAlignment = Alignment.Center
     ) {
         StatisticsChart(statisticsViewModel, interactionEnabled = false)
@@ -159,7 +156,6 @@ private fun PlayButtonAndModeSelection(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(Modifier.height(20.dp))
         Button(
             onClick = onTrainClicked,
             modifier = Modifier
