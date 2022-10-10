@@ -124,7 +124,16 @@ class MainActivity : ComponentActivity() {
                 SettingsScreen(hiltViewModel())
             }
 
-            composable(NavigationDirections.Game.destination) {
+            composable(NavigationDirections.Game.destination,
+                exitTransition = {
+                     if (initialState.destination.route == NavigationDirections.Home.destination) {
+                         return@composable null
+                     } else {
+                         fadeOut(animationSpec = tween(duration))
+                     }
+                },
+                popEnterTransition = { fadeIn(animationSpec = tween(duration)) }
+            ) {
                 GameScreen(hiltViewModel())
             }
 

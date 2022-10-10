@@ -7,6 +7,7 @@ import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.data.repository.SettingsRepository.BooleanSetting
 import com.example.dartapp.ui.navigation.NavigationDirections
 import com.example.dartapp.ui.navigation.NavigationManager
+import com.example.dartapp.ui.screens.game.GameViewModel
 import com.example.dartapp.ui.shared.NavigationViewModel
 import com.example.dartapp.util.graphs.filter.GamesLegFilter
 import kotlinx.coroutines.launch
@@ -15,7 +16,8 @@ class LegFinishedDialogViewModel(
     private val navigationManager: NavigationManager,
     val leg: Leg,
     private val databaseDao: LegDatabaseDao,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val callingViewModel: GameViewModel
 ) : NavigationViewModel(
     navigationManager
 ){
@@ -39,6 +41,7 @@ class LegFinishedDialogViewModel(
 
 
     fun onMoreDetailsClicked() {
+        callingViewModel.dismissLegFinishedDialog(temporary = true)
         navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
     }
 }

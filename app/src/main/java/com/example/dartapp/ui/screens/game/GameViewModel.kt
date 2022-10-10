@@ -22,6 +22,7 @@ import com.example.dartapp.ui.shared.NavigationViewModel
 import com.example.dartapp.util.CheckoutTip
 import com.example.dartapp.util.GameUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -223,6 +224,16 @@ class GameViewModel @Inject constructor(
         _dialogUiState.update { state -> state.copy(exitDialogOpen = false) }
     }
 
+    fun dismissLegFinishedDialog(temporary: Boolean = false) {
+        _legFinished.value = false
+        if (temporary) {
+            viewModelScope.launch {
+                delay(1000)
+                _legFinished.value = true
+            }
+        }
+    }
+
     fun simpleDoubleAttemptsEntered(attempt: Boolean) {
         if (attempt) {
             game.doubleAttemptsList.add(1)
@@ -312,7 +323,8 @@ class GameViewModel @Inject constructor(
     }
 
     fun createLegFinishedDialogViewModel() : LegFinishedDialogViewModel {
-        return LegFinishedDialogViewModel(navigationManager, lastFinishedLeg!!, legDatabaseDao, settingsRepository)
+        return LegFinishedDialogViewModel(navigationManager, lastFinishedLeg!!, legDatabaseDao, settingsRepository,
+            this)
     }
 
 }

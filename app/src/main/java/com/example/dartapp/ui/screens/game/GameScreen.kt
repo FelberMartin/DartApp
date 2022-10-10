@@ -297,7 +297,10 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
         LegFinishedDialogEntryPoint(
             viewModel = viewModel.createLegFinishedDialogViewModel(),
             onPlayAgainClicked = viewModel::onPlayAgainClicked,
-            onMenuClicked = { viewModel.navigate(NavigationCommand.NAVIGATE_UP) }
+            onMenuClicked = {
+                viewModel.dismissLegFinishedDialog()
+                viewModel.navigate(NavigationCommand.NAVIGATE_UP)
+            }
         )
     }
 
