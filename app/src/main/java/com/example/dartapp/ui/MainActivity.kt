@@ -4,13 +4,14 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.*
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.navigation.NavHostController
 import com.example.dartapp.data.AppearanceOption
 import com.example.dartapp.data.repository.SettingsRepository
 import com.example.dartapp.ui.navigation.NavigationDirections
@@ -24,9 +25,13 @@ import com.example.dartapp.ui.screens.settings.SettingsScreen
 import com.example.dartapp.ui.screens.statistics.StatisticsScreen
 import com.example.dartapp.ui.screens.table.TableScreen
 import com.example.dartapp.ui.theme.DartAppTheme
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+@OptIn(ExperimentalAnimationApi::class)
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
@@ -46,58 +51,103 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun DartApp() {
         val appearanceOption = settingsRepository.appearanceOptionFlow.collectAsState(AppearanceOption.Default)
-        val navController = rememberNavController()
-        navigationManager.commands.collectAsState().value.also { oneTimeCommand ->
-            oneTimeCommand.use { command -> command.navigateWith(navController) }
-        }
+        val navController = rememberAnimatedNavController()
 
         DartAppTheme(
             useDarkTheme = appearanceOption.value.useDarkTheme(isSystemInDarkTheme())
         ) {
-            // From API level 31 on, there is a default Splashscreen.
-            val startDestination = if (Build.VERSION.SDK_INT >= 31) {
-                NavigationDirections.Home.destination
-            } else {
-                NavigationDirections.Splash.destination
+            SetupNavHost(navController)
+        }
+
+        navigationManager.commands.collectAsState().value.also { oneTimeCommand ->
+            oneTimeCommand.use { command -> command.navigateWith(navController) }
+        }
+    }
+
+    @Composable
+    private fun SetupNavHost(navController: NavHostController) {
+        // From API level 31 on, there is a default Splashscreen.
+        val startDestination = if (Build.VERSION.SDK_INT >= 31) {
+            NavigationDirections.Home.destination
+        } else {
+            NavigationDirections.Splash.destination
+        }
+        val width = 300
+        val duration = 500
+        AnimatedNavHost(
+            navController = navController,
+            startDestination = startDestination,
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { width },
+                    animationSpec = tween(
+                        durationMillis = duration,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + fadeIn(animationSpec = tween(duration))
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -width },
+                    animationSpec = tween(
+                        durationMillis = duration,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + fadeOut(animationSpec = tween(duration))
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -width },
+                    animationSpec = tween(
+                        durationMillis = duration,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + fadeIn(animationSpec = tween(duration))
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { width },
+                    animationSpec = tween(
+                        durationMillis = duration,
+                        easing = FastOutSlowInEasing
+                    )
+                ) + fadeOut(animationSpec = tween(duration))
+            },
+        ) {
+            composable(NavigationDirections.Splash.destination) {
+                AnimatedSplashScreen(navController)
             }
-            NavHost(
-                navController = navController,
-                startDestination = startDestination
-            ) {
-                composable(NavigationDirections.Splash.destination) {
-                    AnimatedSplashScreen(navController)
-                }
-                composable(NavigationDirections.Home.destination) {
-                    HomeScreen(hiltViewModel(), hiltViewModel())
-                }
-                composable(NavigationDirections.Settings.destination) {
-                    SettingsScreen(hiltViewModel())
-                }
+            composable(NavigationDirections.Home.destination) {
+                HomeScreen(hiltViewModel(), hiltViewModel())
+            }
+            composable(NavigationDirections.Settings.destination) {
+                SettingsScreen(hiltViewModel())
+            }
 
-                composable(NavigationDirections.Game.destination) {
-                    GameScreen(hiltViewModel())
-                }
+            composable(NavigationDirections.Game.destination) {
+                GameScreen(hiltViewModel())
+            }
 
-                composable(NavigationDirections.Statistics.destination) {
-                    StatisticsScreen(hiltViewModel())
-                }
+            composable(NavigationDirections.Statistics.destination) {
+                StatisticsScreen(hiltViewModel())
+            }
 
-                composable(NavigationDirections.History.destination) {
-                    HistoryScreenEntry(hiltViewModel())
-                }
+            composable(NavigationDirections.History.destination) {
+                HistoryScreenEntry(hiltViewModel())
+            }
 
-                composable(NavigationDirections.HistoryDetails.route,
-                    arguments = NavigationDirections.HistoryDetails.arguments
-                ) { backstackEntry ->
-                    val legId = backstackEntry.arguments!!.getLong(NavigationDirections.HistoryDetails.keyLegId)
-                    val viewModel: HistoryDetailsViewModel = hiltViewModel()
-                    viewModel.setLegId(legId)
-                    HistoryDetailsScreenEntry(hiltViewModel())
-                }
+            composable(
+                NavigationDirections.HistoryDetails.route,
+                arguments = NavigationDirections.HistoryDetails.arguments
+            ) { backstackEntry ->
+                val legId = backstackEntry.arguments!!.getLong(NavigationDirections.HistoryDetails.keyLegId)
+                val viewModel: HistoryDetailsViewModel = hiltViewModel()
+                viewModel.setLegId(legId)
+                HistoryDetailsScreenEntry(hiltViewModel())
+            }
 
-                composable(NavigationDirections.Table.destination) {
-                    TableScreen(hiltViewModel())
-                }
+            composable(NavigationDirections.Table.destination) {
+                TableScreen(hiltViewModel())
             }
         }
     }

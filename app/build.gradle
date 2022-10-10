@@ -155,4 +155,6 @@ dependencies {
     // InstantTaskExecutorRule
     testImplementation "androidx.arch.core:core-testing:2.1.0"
 
+    // Navigation Animations
+    implementation "com.google.accompanist:accompanist-navigation-animation:0.25.0"
 }
