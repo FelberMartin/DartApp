@@ -44,13 +44,17 @@ fun HomeScreen(
                 .padding(horizontal = 24.dp)
                 .padding(top = 24.dp, bottom = 12.dp)
                 .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
         ) {
             SettingsRow(onSettingsClicked = { homeViewModel.navigate(NavigationDirections.Settings) })
-            StatisticsCard(homeViewModel, statisticsViewModel)
-            AppIconAndName()
-            PlayButtonAndModeSelection(onTrainClicked = { homeViewModel.navigate(NavigationDirections.Game) })
+            Column(
+                verticalArrangement = Arrangement.SpaceAround,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize()
+            ) {
+                StatisticsCard(homeViewModel, statisticsViewModel)
+//            AppIconAndName()
+                PlayButtonAndModeSelection(onTrainClicked = { homeViewModel.navigate(NavigationDirections.Game) })
+            }
         }
     }
 }
@@ -156,6 +160,7 @@ private fun PlayButtonAndModeSelection(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Spacer(Modifier.height(20.dp))
         Button(
             onClick = onTrainClicked,
             modifier = Modifier

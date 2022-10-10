@@ -6,6 +6,10 @@ import com.example.dartapp.ui.navigation.command.NavigationDirectionCommand
 
 object NavigationDirections {
 
+    val Splash = NavigationDirectionCommand(
+        destination = "splash"
+    )
+
     val Home = NavigationDirectionCommand(
         destination = "home"
     )

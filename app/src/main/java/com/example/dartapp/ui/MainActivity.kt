@@ -1,5 +1,6 @@
 package com.example.dartapp.ui
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -53,10 +54,19 @@ class MainActivity : ComponentActivity() {
         DartAppTheme(
             useDarkTheme = appearanceOption.value.useDarkTheme(isSystemInDarkTheme())
         ) {
+            // From API level 31 on, there is a default Splashscreen.
+            val startDestination = if (Build.VERSION.SDK_INT >= 31) {
+                NavigationDirections.Home.destination
+            } else {
+                NavigationDirections.Splash.destination
+            }
             NavHost(
                 navController = navController,
-                startDestination = NavigationDirections.Home.destination
+                startDestination = startDestination
             ) {
+                composable(NavigationDirections.Splash.destination) {
+                    AnimatedSplashScreen(navController)
+                }
                 composable(NavigationDirections.Home.destination) {
                     HomeScreen(hiltViewModel(), hiltViewModel())
                 }
