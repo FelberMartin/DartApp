@@ -20,4 +20,14 @@ class GameTest {
         val expected = 501.0 / (dartCount / 3.0)
         assertThat(game.getAverage()).isEqualTo(expected)
     }
+
+    @Test
+    fun `try to finish outside of finish range (without double), invalid serve`() {
+        val game = Game()
+        game.applyAction(AddServeGameAction(180))
+        game.applyAction(AddServeGameAction(141))
+        val valid = game.isNumberValid(180, singleDart = false)
+        assertThat(valid).isFalse()
+    }
+
 }

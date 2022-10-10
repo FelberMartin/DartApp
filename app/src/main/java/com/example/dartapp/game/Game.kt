@@ -4,6 +4,7 @@ import com.example.dartapp.data.persistent.database.Converters
 import com.example.dartapp.data.persistent.database.Leg
 import com.example.dartapp.game.gameaction.FillServeGameAction
 import com.example.dartapp.game.gameaction.GameActionBase
+import com.example.dartapp.util.CheckoutTip
 import com.example.dartapp.util.GameUtil
 import java.time.Duration
 import java.time.LocalDateTime
@@ -102,6 +103,10 @@ class Game() {
         }
         if (GameUtil.INVALID_SERVES.contains(serve)) {
             return false
+        }
+        val pointsAfter = pointsLeft - serve
+        if (pointsAfter == 0) {
+            return CheckoutTip.checkoutTips.contains(serve)
         }
         return true
     }
