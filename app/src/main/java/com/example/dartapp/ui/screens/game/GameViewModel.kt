@@ -23,9 +23,7 @@ import com.example.dartapp.util.CheckoutTip
 import com.example.dartapp.util.GameUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -67,6 +65,9 @@ class GameViewModel @Inject constructor(
 
     private val _dialogUiState = MutableStateFlow(DialogUiState())
     val dialogUiState: LiveData<DialogUiState> = _dialogUiState.asLiveData()
+
+    private val _dartOrServeEnteredFlow = MutableSharedFlow<Int>(replay = 0)
+    val dartOrServeEnteredFlow: SharedFlow<Int> = _dartOrServeEnteredFlow
 
     var game = Game()
         private set
@@ -149,6 +150,7 @@ class GameViewModel @Inject constructor(
     fun onEnterClicked() {
         viewModelScope.launch {
             val number = numberPad.value!!.number.value
+            _dartOrServeEnteredFlow.emit(number)
             numberPad.value!!.clear()
             enterNumberToGame(number)
         }

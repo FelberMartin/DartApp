@@ -3,7 +3,7 @@
 package com.example.dartapp.ui.screens.game
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.*
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -18,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -249,16 +250,15 @@ private fun NumPadInfoAndActionsRow(
     onSwapNumberPadClicked: () -> Unit,
     viewModel: GameViewModel
 ) {
-    val number by numberState
-
+    // Shake animation
     var wasEnterDisabledPreviously = remember { false }
     val isEnterDisabled by viewModel.enterDisabled.observeAsStateNonOptional()
-    var targetXOffset by remember { mutableStateOf(0) }
+    var targetXOffset by remember { mutableStateOf(0.0) }
 
     val animatedXOffset: Dp by animateDpAsState(targetValue = targetXOffset.dp)
 
     LaunchedEffect(key1 = wasEnterDisabledPreviously == isEnterDisabled) {
-        targetXOffset = 0
+        targetXOffset = 0.0
         wasEnterDisabledPreviously = isEnterDisabled
         if (!isEnterDisabled) {
             return@LaunchedEffect
@@ -267,27 +267,56 @@ private fun NumPadInfoAndActionsRow(
         val durations = listOf(50, 110, 120, 130, 140)
         val offsets = listOf(10, -25, 25, -20, 10)
         for (i in durations.indices) {
-            targetXOffset = offsets[i]
+            targetXOffset = offsets[i] * 0.4
             delay(durations[i].toLong())
         }
-        targetXOffset = 0
+        targetXOffset = 0.0
+    }
+
+    // Enter animation
+    class IndexedNumberHolder(var number: Int, val index: Int) {
+        fun next() : IndexedNumberHolder {
+            return IndexedNumberHolder(0, this.index + 1)
+        }
+    }
+    val number by numberState
+    var indexedNumberHolder by remember { mutableStateOf(IndexedNumberHolder(number, 0)) }
+    indexedNumberHolder.number = number
+
+    LaunchedEffect(key1 = true) {
+        viewModel.dartOrServeEnteredFlow.collect {
+            indexedNumberHolder = indexedNumberHolder.next()
+        }
     }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+//        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         SmallIconButton(
             icon = Icons.Default.Undo,
             onClick = onUndoClicked
         )
 
-        Text(
-            text = "$number",
-            style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.offset(x = animatedXOffset)
-        )
+        AnimatedContent(
+            targetState = indexedNumberHolder,
+            transitionSpec = {
+                (fadeIn() with
+                        slideOutVertically() + fadeOut())
+                    .using(
+                        SizeTransform(clip = false)
+                    )
+            },
+            modifier = Modifier.weight(1f)
+        ) { targetIndexedNumberHolder ->
+            Text(
+                text = "${targetIndexedNumberHolder.number}",
+                style = MaterialTheme.typography.displaySmall,
+                color = MaterialTheme.colorScheme.secondary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.offset(x = animatedXOffset)
+            )
+        }
 
         SmallIconButton(
             icon = Icons.Default.AppRegistration,
