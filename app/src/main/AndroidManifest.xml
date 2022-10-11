@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.dartapp">
+    package="com.development_felber.dartapp">
 
     <application
-        android:name=".util.App"
+        android:name="com.development_felber.dartapp.util.App"
         android:icon="@mipmap/ic_app"
         android:label="@string/app_name"
         android:theme="@style/Theme.DartApp">
         <activity
-            android:name=".ui.MainActivity"
+            android:name="com.development_felber.dartapp.ui.MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.DartApp.NoActionBar">

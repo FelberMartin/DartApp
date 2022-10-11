@@ -11,14 +11,16 @@ apply plugin: 'androidx.navigation.safeargs.kotlin'
 android {
     compileSdkVersion 33
 
+    namespace "com.development_felber.dartapp"
+
     defaultConfig {
-        applicationId "com.example.dartapp"
+        applicationId "com.development_felber.dartapp"
         minSdkVersion 28
         targetSdkVersion 33
         versionCode 1
         versionName "1.0"
 
-        testInstrumentationRunner "com.example.dartapp.HiltTestRunner"
+        testInstrumentationRunner "com.development_felber.dartapp.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary true
         }
