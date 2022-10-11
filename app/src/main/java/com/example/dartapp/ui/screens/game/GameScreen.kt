@@ -287,6 +287,7 @@ private fun NumPadInfoAndActionsRow(
 
     LaunchedEffect(key1 = true) {
         viewModel.dartOrServeEnteredFlow.collect {
+            indexedNumberHolder.number = it
             indexedNumberHolder = indexedNumberHolder.next()
         }
     }
