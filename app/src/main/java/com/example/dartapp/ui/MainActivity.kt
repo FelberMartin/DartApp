@@ -114,10 +114,14 @@ class MainActivity : ComponentActivity() {
                 ) + fadeOut(animationSpec = tween(duration))
             },
         ) {
-            composable(NavigationDirections.Splash.destination) {
+            composable(NavigationDirections.Splash.destination,
+                exitTransition = { fadeOut(tween(1000)) }
+            ) {
                 AnimatedSplashScreen(navController)
             }
-            composable(NavigationDirections.Home.destination) {
+            composable(NavigationDirections.Home.destination,
+                enterTransition = { fadeIn(tween(1000)) }
+            ) {
                 HomeScreen(hiltViewModel(), hiltViewModel())
             }
             composable(NavigationDirections.Settings.destination) {
