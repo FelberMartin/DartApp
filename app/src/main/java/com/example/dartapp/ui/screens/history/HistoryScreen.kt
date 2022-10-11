@@ -73,7 +73,6 @@ private fun HistoryScreenContent(
     categorizedLegsResult: CategorizedSortTypeBase.Result,
     viewModel: HistoryViewModel
 ) {
-    // TODO: Animate the reorder transition. For some reason this does not work, see TestApplication project.
     LazyColumn(
         contentPadding = innerPadding,
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -88,7 +87,7 @@ private fun HistoryScreenContent(
         item { Spacer(Modifier.height(12.dp)) }
 
         for (category in categorizedLegsResult.getOrderedCategories()) {
-            item {
+            item(key = category.name) {
                 CategoryTitle(category = category)
             }
 
@@ -152,7 +151,9 @@ private fun LazyItemScope.CategoryTitle(category: CategorizedSortTypeBase.Catego
     Text(
         text = category.name.uppercase(),
         style = MaterialTheme.typography.titleMedium,
-        modifier = Modifier.padding(top = 8.dp)
+        modifier = Modifier
+            .padding(top = 8.dp)
+            .animateItemPlacement()
     )
 }
 
@@ -163,7 +164,8 @@ private fun LazyItemScope.HistoryItem(
     onSeeMorePressed: (Leg) -> Unit
 ) {
     MyCard(
-        onClick = { onSeeMorePressed(leg) }
+        onClick = { onSeeMorePressed(leg) },
+        modifier = Modifier.animateItemPlacement()
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -172,7 +174,6 @@ private fun LazyItemScope.HistoryItem(
                 .fillMaxWidth()
                 .padding(10.dp)
                 .padding(start = 24.dp)
-                .animateItemPlacement()
         ) {
             val date = Converters.toLocalDateTime(leg.endTime)
             DartsCounter(leg.dartCount)
