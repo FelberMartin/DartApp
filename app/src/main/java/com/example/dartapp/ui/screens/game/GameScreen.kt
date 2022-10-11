@@ -1,6 +1,10 @@
+@file:OptIn(ExperimentalAnimationApi::class)
+
 package com.example.dartapp.ui.screens.game
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AppRegistration
@@ -8,16 +12,14 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.dartapp.data.persistent.database.FakeLegDatabaseDao
 import com.example.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
@@ -32,6 +34,8 @@ import com.example.dartapp.ui.shared.Background
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.ui.values.Padding
+import com.example.dartapp.util.extensions.observeAsStateNonOptional
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -167,7 +171,8 @@ private fun BottomElements(
             NumPadInfoAndActionsRow(
                 onUndoClicked = viewModel::onUndoClicked,
                 numberState = numberPad.number.collectAsState(),
-                onSwapNumberPadClicked = viewModel::onSwapNumberPadClicked
+                onSwapNumberPadClicked = viewModel::onSwapNumberPadClicked,
+                viewModel
             )
 
             PickNumberPadVersion(viewModel, numberPad)
@@ -241,9 +246,32 @@ private fun CheckoutInfo(
 private fun NumPadInfoAndActionsRow(
     onUndoClicked: () -> Unit,
     numberState: State<Int>,
-    onSwapNumberPadClicked: () -> Unit
+    onSwapNumberPadClicked: () -> Unit,
+    viewModel: GameViewModel
 ) {
     val number by numberState
+
+    var wasEnterDisabledPreviously = remember { false }
+    val isEnterDisabled by viewModel.enterDisabled.observeAsStateNonOptional()
+    var targetXOffset by remember { mutableStateOf(0) }
+
+    val animatedXOffset: Dp by animateDpAsState(targetValue = targetXOffset.dp)
+
+    LaunchedEffect(key1 = wasEnterDisabledPreviously == isEnterDisabled) {
+        targetXOffset = 0
+        wasEnterDisabledPreviously = isEnterDisabled
+        if (!isEnterDisabled) {
+            return@LaunchedEffect
+        }
+        delay(100)
+        val durations = listOf(50, 110, 120, 130, 140)
+        val offsets = listOf(10, -25, 25, -20, 10)
+        for (i in durations.indices) {
+            targetXOffset = offsets[i]
+            delay(durations[i].toLong())
+        }
+        targetXOffset = 0
+    }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -257,7 +285,8 @@ private fun NumPadInfoAndActionsRow(
         Text(
             text = "$number",
             style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.secondary
+            color = MaterialTheme.colorScheme.secondary,
+            modifier = Modifier.offset(x = animatedXOffset)
         )
 
         SmallIconButton(
