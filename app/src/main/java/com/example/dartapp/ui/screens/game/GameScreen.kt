@@ -32,6 +32,7 @@ import com.example.dartapp.ui.navigation.NavigationManager
 import com.example.dartapp.ui.navigation.command.NavigationCommand
 import com.example.dartapp.ui.screens.game.dialog.*
 import com.example.dartapp.ui.shared.Background
+import com.example.dartapp.ui.shared.KeepScreenOn
 import com.example.dartapp.ui.shared.MyCard
 import com.example.dartapp.ui.theme.DartAppTheme
 import com.example.dartapp.ui.values.Padding
@@ -43,6 +44,7 @@ import kotlinx.coroutines.delay
 fun GameScreen(
     viewModel: GameViewModel
 ) {
+    KeepScreenOn()
     BackHandler() {
         viewModel.closeClicked()
     }
