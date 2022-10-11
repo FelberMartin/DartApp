@@ -142,7 +142,7 @@ private fun AppIconAndName() {
         )
 
         Text(
-            text = "Dart Stats",
+            text = "My Dart Stats",
             style = MaterialTheme.typography.titleLarge.withDropShadow(),
             modifier = Modifier.padding(start = 12.dp)
         )

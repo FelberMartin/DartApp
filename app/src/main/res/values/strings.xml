@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DartApp</string>
+    <string name="app_name">My Dart Stats</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="next">Next</string>
