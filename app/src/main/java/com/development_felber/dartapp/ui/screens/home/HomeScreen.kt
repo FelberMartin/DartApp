@@ -5,6 +5,7 @@ package com.development_felber.dartapp.ui.screens.home
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.StackedLineChart
@@ -38,6 +39,7 @@ fun HomeScreen(
     homeViewModel: HomeViewModel,
     statisticsViewModel: StatisticsViewModel
 ) {
+    var easterEggActivated by remember { mutableStateOf(false) }
     Background {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -49,8 +51,13 @@ fun HomeScreen(
         ) {
             SettingsRow(onSettingsClicked = { homeViewModel.navigate(NavigationDirections.Settings) })
             StatisticsCard(homeViewModel, statisticsViewModel)
-            AppIconAndName()
-            PlayButtonAndModeSelection(onTrainClicked = { homeViewModel.navigate(NavigationDirections.Game) })
+            AppIconAndName(
+                onToggleEasterEgg = { easterEggActivated = !easterEggActivated }
+            )
+            PlayButtonAndModeSelection(
+                onTrainClicked = { homeViewModel.navigate(NavigationDirections.Game) },
+                easterEggActivated = easterEggActivated
+            )
         }
     }
 }
@@ -127,9 +134,25 @@ private fun StatisticsPreview(
 }
 
 @Composable
-private fun AppIconAndName() {
+private fun AppIconAndName(
+    onToggleEasterEgg: () -> Unit = {}
+) {
+    val lastClicks by remember { mutableStateOf(mutableListOf<Long>()) }
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clickable(
+            interactionSource = interactionSource,
+            indication = null
+        ) {
+            lastClicks.add(System.currentTimeMillis())
+            val last5Clicks = lastClicks.takeLast(5)
+            val deltaMillis = last5Clicks.last() - last5Clicks.first()
+            if (last5Clicks.size == 5 && deltaMillis < 1000) {
+                onToggleEasterEgg()
+                lastClicks.clear()
+            }
+        }
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_icon_foreground_white),
@@ -151,8 +174,10 @@ private fun AppIconAndName() {
 
 @Composable
 private fun PlayButtonAndModeSelection(
-    onTrainClicked: () -> Unit
+    onTrainClicked: () -> Unit,
+    easterEggActivated: Boolean
 ) {
+    val trainEmojis = listOf("🚆", "🚅", "🚄", "🚂", "🚉")
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -164,7 +189,7 @@ private fun PlayButtonAndModeSelection(
 //            elevation = ButtonDefaults.elevatedButtonElevation(defaultElevation = 5.dp)
         ) {
             Text(
-                text = "Train",
+                text = "${if (easterEggActivated) trainEmojis.random() else ""}Train",
                 style = MaterialTheme.typography.titleLarge
             )
         }
