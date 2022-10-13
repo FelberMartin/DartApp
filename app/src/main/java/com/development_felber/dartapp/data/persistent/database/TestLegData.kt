@@ -59,7 +59,11 @@ object TestLegData {
         var pointsLeft = 501
         val serves = ArrayList<Int>()
         while (pointsLeft > 0) {
-            var serve = random.nextInt(180 + 1)
+            var serve = if (random.nextDouble() < 0.7) {
+                random.nextInt(60 + 1)
+            } else {
+                random.nextInt(180 + 1)
+            }
             if (pointsLeft - serve < 0) {
                 serve = pointsLeft
             }
