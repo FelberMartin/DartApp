@@ -1,7 +1,7 @@
 # 🎯 My Dart Stats
-## Tracking your daily dart training progress.
+### Tracking your daily dart training progress.
 
-### ℹ About the app
+## ℹ About the app
 
 My Dart Stats is the perfect app for training the classic 501 mode. It offers a scoreboard with two input options (score or each dart) and a lot of statistics and diagrams to track your progress. 
 
@@ -24,7 +24,7 @@ For the time being the app solely focuses on 501 training in single player mode,
 
 The app is available for **Android** in the Google Play Store. [Check it out](https://play.google.com/apps/internaltest/4699383055213103194)
 
-### 📩 Feedback
+## 📩 Feedback
 
 You have a feature request, discovered a bug or any other kind of feedback? 
 
