@@ -30,8 +30,8 @@ object AppModule {
         @ApplicationContext context: Context
     ) = buildRoomDatabase(
         context = context,
-        inMemory = true,
-        exampleData = true
+        inMemory = false,
+        exampleData = false
     )
 
     private fun buildRoomDatabase(context: Context, inMemory: Boolean, exampleData: Boolean): LegDatabase {
