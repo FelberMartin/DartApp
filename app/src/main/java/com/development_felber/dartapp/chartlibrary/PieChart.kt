@@ -160,6 +160,9 @@ class PieChart @JvmOverloads constructor(
         drawSegments(canvas)
         paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
         drawSegmentSpacers(canvas)
+
+//        canvas.drawCircle(width / 2f, height / 2f, height * 0.3f, paint)
+
         paint.xfermode = null
 
 
