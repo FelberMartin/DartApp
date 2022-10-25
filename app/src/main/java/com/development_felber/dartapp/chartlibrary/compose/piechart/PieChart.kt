@@ -1,6 +1,7 @@
 package com.development_felber.dartapp.chartlibrary.compose
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -11,12 +12,16 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.development_felber.dartapp.chartlibrary.compose.piechart.PieChartInternals
 import com.development_felber.dartapp.ui.theme.DartAppTheme
-import kotlin.math.cos
-import kotlin.math.sin
+import com.development_felber.dartapp.util.extensions.translated
+import kotlin.math.PI
+import kotlin.math.atan
 
 
 @Composable
@@ -27,58 +32,51 @@ fun PieChart(
     selectionInfoBoxConfig: SelectionInfoBoxConfig = ChartDefaults.selectionInfoConfig(),
     selectionGrowthModifier: Float = 1.15f,
     colorSequence: ColorSequence = ChartDefaults.colorSequence(),
-    segmentDividerWidth: Dp = 8.dp,
+    segmentDividerWidth: Dp = 6.dp,
 ) {
     if (dataSet.isEmpty()) {
         return
     }
+
+    var pieChartInternals: PieChartInternals? = null
+
     Canvas(modifier = Modifier
         .aspectRatio(1f)
         .fillMaxSize()
+        .graphicsLayer(alpha = 0.99f)
+        .pointerInput(Unit) {
+            detectTapGestures(
+                onTap = { tapOffset ->
+                    println(pieChartInternals!!.getTouchedIndex(tapOffset))
+                }
+            )
+        }
     ) {
-        val radius = (size.minDimension / 2) / selectionGrowthModifier
-        val startAngles = calculateStartAngles(dataSet)
+        pieChartInternals = PieChartInternals(
+            dataSet = dataSet,
+            canvasSize = size,
+            radiusToMaxRadiusRatio = 1 / selectionGrowthModifier
+        )
 
         drawPieSegments(
-            radius = radius,
-            startAngles = startAngles,
+            pieChartInternals = pieChartInternals!!,
             colorSequence = colorSequence
         )
 
         drawSegmentDividers(
-            startAngles = startAngles,
+            startPoints = pieChartInternals!!.startPoints,
             segmentDividerWidth = segmentDividerWidth.toPx()
         )
     }
 }
 
-private fun calculateStartAngles(
-    dataSet: DataSet,
-    startAngle: Float = -90f
-) : List<Float> {
-    val angles = mutableListOf<Float>()
-    val totalSum = dataSet.sumOf { it.y }
-    var accumulatedAngles = startAngle
-    for (dataPoint in dataSet) {
-        angles.add(accumulatedAngles)
-        val fraction = dataPoint.y / totalSum
-        val angle = 360f * fraction.toFloat()
-        accumulatedAngles += angle
-    }
-    return angles
-}
 
 private fun DrawScope.drawPieSegments(
-    radius: Float,
-    startAngles: List<Float>,
+    pieChartInternals: PieChartInternals,
     colorSequence: ColorSequence
 ) {
-    for ((index, startAngle) in startAngles.withIndex()) {
-        val nextStartAngle = startAngles[(index + 1) % startAngles.size]
-        var sweepAngle = (nextStartAngle - startAngle) % 360f
-        if (sweepAngle < 0f) {
-            sweepAngle += 360f
-        }
+    for ((index, startAngle) in pieChartInternals.startAngles.withIndex()) {
+        val sweepAngle = pieChartInternals.fractions[index] * 360f
 //        val animatedSweepAngle = max(0f, shownMaxAngle - startAngle)
 //        val shownSweepAngle = min(sweepAngle, animatedSweepAngle)
 
@@ -90,11 +88,10 @@ private fun DrawScope.drawPieSegments(
 //            canvas.translate(dx, dy)
 //        }
 
-        val offset = size.minDimension / 2 - radius
         drawArc(
-            topLeft = Offset(offset, offset),
+            topLeft = pieChartInternals.topLeftOffset,
             useCenter = true,
-            size = Size(2 * radius, 2 * radius),
+            size = pieChartInternals.circleSize,
             startAngle = startAngle,
             sweepAngle = sweepAngle,
             color = colorSequence.getColor(index)
@@ -107,16 +104,13 @@ private fun DrawScope.drawPieSegments(
 }
 
 private fun DrawScope.drawSegmentDividers(
-    startAngles: List<Float>,
+    startPoints: List<Offset>,
     segmentDividerWidth: Float
 ) {
-    val maxRadius = size.minDimension / 2
-    for (startAngle in startAngles) {
-        val angleInRad = (startAngle / 360f * 2 * Math.PI).toFloat()
-        val offsetFromCenter = Offset(cos(angleInRad) * maxRadius, sin(angleInRad) * maxRadius)
+    for (startPoint in startPoints) {
         drawLine(
-            start = center,
-            end = center.plus(offsetFromCenter),
+            start = startPoint,
+            end = center,
             blendMode = BlendMode.DstOut,
             strokeWidth = segmentDividerWidth,
             color = Color.Red,
@@ -133,3 +127,5 @@ private fun PieChartPreview() {
         PieChart(dataSet = DataSet.pieChartTest())
     }
 }
+
+
