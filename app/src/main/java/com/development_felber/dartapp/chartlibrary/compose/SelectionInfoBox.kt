@@ -27,13 +27,14 @@ data class SelectionInfoBoxConfig(
 
 @Composable
 fun SelectionInfoBox(
+    modifier: Modifier,
     title: String,
     subtitle: String,
     selectionInfoBoxConfig: SelectionInfoBoxConfig = ChartDefaults.selectionInfoConfig()
 ) {
     Card(
         colors = CardDefaults.cardColors(containerColor = selectionInfoBoxConfig.backgroundColor),
-        modifier = Modifier.padding(selectionInfoBoxConfig.padding)
+        modifier = Modifier.padding(selectionInfoBoxConfig.padding).then(modifier)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
