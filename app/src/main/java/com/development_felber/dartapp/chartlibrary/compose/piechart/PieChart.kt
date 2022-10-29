@@ -1,30 +1,28 @@
 package com.development_felber.dartapp.chartlibrary.compose
 
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 import com.development_felber.dartapp.util.extensions.translated
 import kotlin.math.PI
@@ -50,7 +48,7 @@ fun PieChart(
     val selectedIndex by selectedIndexState
 
     val touchDetectors = mutableListOf<TouchDetector>()
-    var center: Offset = Offset(0f, 0f)
+    var center by remember { mutableStateOf(Offset(0f, 0f)) }
 
     Box(
         Modifier
@@ -86,6 +84,14 @@ fun PieChart(
                 segmentDividerWidth = segmentDividerWidth,
                 colorSequence = colorSequence,
                 touchDetectors = touchDetectors
+            )
+
+            AnimatedSelectionInfoBox(
+                selected = selectedIndex == index,
+                dataPoint = dataPoint,
+                selectionInfoBoxConfig = selectionInfoBoxConfig,
+                angle = startAngle + fraction * 360f / 2f,
+                center = center
             )
 
             accumulatedFraction += fraction
@@ -174,6 +180,35 @@ private fun DrawScope.drawSegmentDivider(
         strokeWidth = segmentDividerWidth,
         color = Color.Red,
         cap = StrokeCap.Round
+    )
+}
+
+
+@Composable
+private fun AnimatedSelectionInfoBox(
+    selected: Boolean,
+    dataPoint: DataPoint,
+    selectionInfoBoxConfig: SelectionInfoBoxConfig,
+    angle: Float,
+    center: Offset
+) {
+    val alpha by animateFloatAsState(
+        targetValue = if (selected) 1f else 0f,
+        animationSpec = if (selected) tween(1000) else tween(300)
+    )
+
+    val radius = Math.min(center.x, center.y) * 0.6f
+    val translated = center.translated(distance = radius, angleDegrees = angle)
+    val offset = IntOffset(translated.x.toInt(), translated.y.toInt())
+
+    SelectionInfoBox(
+        title = dataPoint.x,
+        subtitle = dataPoint.y.toString(),
+        selectionInfoBoxConfig = selectionInfoBoxConfig,
+        middleOffset = offset,
+        modifier = Modifier
+            .zIndex(1f)
+            .alpha(alpha)
     )
 }
 
