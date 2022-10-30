@@ -4,8 +4,11 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -27,6 +30,8 @@ import com.development_felber.dartapp.ui.theme.DartAppTheme
 import com.development_felber.dartapp.util.extensions.translated
 import kotlin.math.PI
 import kotlin.math.atan
+import kotlin.math.max
+import kotlin.math.min
 
 typealias TouchDetector = (Float, Float) -> Boolean
 
@@ -45,7 +50,22 @@ fun PieChart(
     }
 
     val selectedIndexState = remember { mutableStateOf(-1) }
-    val selectedIndex by selectedIndexState
+    var selectedIndex by selectedIndexState
+
+    val maxSweepAngle = remember {
+        Animatable(if (animateDataSetChange) -90f else 270f)
+    }
+
+    LaunchedEffect(key1 = dataSet) {
+        selectedIndex = -1
+        if (animateDataSetChange) {
+            maxSweepAngle.snapTo(-90f)
+        }
+        maxSweepAngle.animateTo(
+            targetValue = 270f,
+            animationSpec = tween(1000)
+        )
+    }
 
     val touchDetectors = mutableListOf<TouchDetector>()
     var center by remember { mutableStateOf(Offset(0f, 0f)) }
@@ -75,10 +95,15 @@ fun PieChart(
         for ((index, dataPoint) in dataSet.withIndex()) {
             val fraction = (dataPoint.y / dataSetSum).toFloat()
             val startAngle = firstStartAngle + accumulatedFraction * 360f
+            var sweepAngle = fraction * 360f
+            if (startAngle + sweepAngle > maxSweepAngle.value) {
+                sweepAngle = (maxSweepAngle.value - startAngle).coerceAtLeast(0f)
+            }
             PieSegment(
                 index = index,
                 startAngle = startAngle,
-                sweepAngle = fraction * 360f,
+                sweepAngle = sweepAngle,
+                fullSweepAngle = fraction * 360f,
                 selected = selectedIndex == index,
                 normalToSelectedRadiusRatio = 0.95f,
                 segmentDividerWidth = segmentDividerWidth,
@@ -128,6 +153,7 @@ private fun PieSegment(
     index: Int,
     startAngle: Float,
     sweepAngle: Float,
+    fullSweepAngle: Float,
     selected: Boolean,
     normalToSelectedRadiusRatio: Float,
     segmentDividerWidth: Dp,
@@ -163,7 +189,7 @@ private fun PieSegment(
         drawSegmentDivider(startAngle + sweepAngle, animatedSegmentDividerWidth.toPx())
 
         touchDetectors.add { touchAngle, distance ->
-            touchAngle >= startAngle && touchAngle <= startAngle + sweepAngle &&
+            touchAngle >= startAngle && touchAngle <= startAngle + fullSweepAngle &&
                     distance <= radius
         }
     }
@@ -197,7 +223,7 @@ private fun AnimatedSelectionInfoBox(
         animationSpec = if (selected) tween(1000) else tween(300)
     )
 
-    val radius = Math.min(center.x, center.y) * 0.6f
+    val radius = min(center.x, center.y) * 0.6f
     val translated = center.translated(distance = radius, angleDegrees = angle)
     val offset = IntOffset(translated.x.toInt(), translated.y.toInt())
 
@@ -217,8 +243,27 @@ private fun AnimatedSelectionInfoBox(
 @Composable
 private fun PieChartPreview() {
     DartAppTheme() {
-        PieChart(dataSet = DataSet.pieChartTest())
+        PieChart(
+            dataSet = DataSet.pieChartTest(),
+            animateDataSetChange = false
+        )
     }
 }
 
+
+@Preview(showBackground = true, widthDp = 300)
+@Composable
+private fun AnimatedPieChartPreview() {
+    DartAppTheme() {
+        var dataSet by remember { mutableStateOf(DataSet.pieChartTest())}
+        Column() {
+            PieChart(dataSet)
+            Button(onClick = {
+                dataSet = DataSet.pieChartTest()
+            }) {
+                Text("Update")
+            }
+        }
+    }
+}
 

@@ -1,5 +1,7 @@
 package com.development_felber.dartapp.chartlibrary.compose
 
+import kotlin.random.Random
+
 
 data class DataPoint(
     val x: String,
@@ -19,11 +21,11 @@ class DataSet(collection: Collection<DataPoint>) : ArrayList<DataPoint>(collecti
     companion object {
         fun pieChartTest() : DataSet {
             return DataSet(listOf(
-                DataPoint("Blue", 20.0),
-                DataPoint("Wale", 10.0),
-                DataPoint("Small", 5.0),
-                DataPoint("Biig", 55.0),
-                DataPoint("Pi :D", 3.1415926535897932383270),
+                DataPoint("Blue", Random.nextDouble()),
+                DataPoint("Wale", Random.nextDouble()),
+                DataPoint("Small", Random.nextDouble()),
+                DataPoint("Biig", Random.nextDouble()),
+                DataPoint("Pi :D", Random.nextDouble()),
             ))
         }
     }
