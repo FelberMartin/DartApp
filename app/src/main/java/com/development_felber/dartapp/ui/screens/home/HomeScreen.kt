@@ -33,7 +33,6 @@ import com.development_felber.dartapp.ui.shared.Background
 import com.development_felber.dartapp.ui.shared.MyCard
 import com.development_felber.dartapp.ui.shared.extensions.withDropShadow
 import com.development_felber.dartapp.ui.theme.DartAppTheme
-import com.example.dartapp.R
 import com.google.android.material.button.MaterialButtonToggleGroup
 
 @Composable
