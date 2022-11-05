@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.key.Key.Companion.Two
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,6 +32,7 @@ import com.development_felber.dartapp.ui.screens.statistics.StatisticsChart
 import com.development_felber.dartapp.ui.screens.statistics.StatisticsViewModel
 import com.development_felber.dartapp.ui.shared.Background
 import com.development_felber.dartapp.ui.shared.MyCard
+import com.development_felber.dartapp.ui.shared.TowSegmentSingleSelectButton
 import com.development_felber.dartapp.ui.shared.extensions.withDropShadow
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 import com.google.android.material.button.MaterialButtonToggleGroup
@@ -46,8 +48,8 @@ fun HomeScreen(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .padding(top = 24.dp, bottom = 12.dp)
+                .padding(24.dp)
+//                .padding(top = 24.dp, bottom = 12.dp)
                 .fillMaxSize(),
         ) {
             SettingsRow(onSettingsClicked = { homeViewModel.navigate(NavigationDirections.Settings) })
@@ -195,18 +197,28 @@ private fun PlayButtonAndModeSelection(
             )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
-        SoloModeInformation()
+        var isSolo by remember { mutableStateOf(true) }
+        SoloMultiplayerSelection(
+            isSolo = isSolo, onChange = { isSolo = it }
+        )
+//        SoloModeInformation()
     }
 }
 
 @Composable
-private fun SoloMultiplayerSelection(
+fun SoloMultiplayerSelection(
     isSolo: Boolean,
     onChange: (Boolean) -> Unit,
 ) {
-
+    TowSegmentSingleSelectButton(
+        text1 = "Solo",
+        text2 = "Multi",
+        selectedIndex = if (isSolo) 0 else 1,
+        onSelectedIndexChange =  { onChange(it == 0) },
+        modifier = Modifier.scale(0.8f)
+    )
 }
 
 @Composable
@@ -253,7 +265,9 @@ private fun SoloModeInformation() {
                 onDismissRequest = { showInfo = false; lastDismissTime = System.currentTimeMillis() },
             ) {
                 Box(Modifier
-                    .clickable { showInfo = false; lastDismissTime = System.currentTimeMillis() }
+                    .clickable {
+                        showInfo = false; lastDismissTime = System.currentTimeMillis()
+                    }
                     .background(
                         color = MaterialTheme.colorScheme.inverseSurface,
                         shape = MaterialTheme.shapes.medium

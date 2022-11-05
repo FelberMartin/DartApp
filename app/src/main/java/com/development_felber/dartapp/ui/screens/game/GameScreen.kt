@@ -117,17 +117,17 @@ private fun PlayerStats(
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 PlayerGameStatistic(
-                    name = "Darts: ",
+                    name = "Darts:",
                     valueString = dartCount.toString()
                 )
 
                 PlayerGameStatistic(
-                    name = "Last: ",
+                    name = "Last:",
                     valueString = last
                 )
 
                 PlayerGameStatistic(
-                    name = "Ø ",
+                    name = "Ø",
                     valueString = average
                 )
             }
@@ -136,7 +136,7 @@ private fun PlayerStats(
 }
 
 @Composable
-private fun PlayerGameStatistic(
+fun PlayerGameStatistic(
     name: String,
     valueString: String
 ) {
@@ -144,7 +144,7 @@ private fun PlayerGameStatistic(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = name,
+            text = "$name ",
             color = MaterialTheme.colorScheme.secondary,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
         )

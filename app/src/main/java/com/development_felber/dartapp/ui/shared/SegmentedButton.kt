@@ -31,11 +31,12 @@ fun TowSegmentSingleSelectButton(
     text1: String,
     text2: String,
     selectedIndex: Int,
-    onSelectedIndexChange: (Int) -> Unit
+    onSelectedIndexChange: (Int) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val borderStroke = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
     Row(
-        modifier = Modifier
+        modifier = modifier
             .padding(vertical = 4.dp)
             .height(40.dp)
             .clip(CircleShape)
