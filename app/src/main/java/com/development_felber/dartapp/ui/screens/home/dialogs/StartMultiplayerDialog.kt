@@ -1,10 +1,13 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.development_felber.dartapp.ui.screens.home.dialogs
 
+import android.widget.Space
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.SwapHoriz
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,33 +39,64 @@ fun StartMultiplayerDialog(
     val legCount = remember { mutableStateOf(3) }
     val setCount = remember { mutableStateOf(1) }
 
-    AlertDialog(
-        onDismissRequest = { },
-        text = {
-            Column() {
-                LegAndSetSelection(
-                    legCount = legCount,
-                    setCount = setCount,
-                )
-            }
-        },
-        confirmButton = {
-            CancelConfirmButtonRow(
-                onCancel = onCancel,
-                onConfirm = {
-                    onStart(
-                        StartMultiplayerDialogResult(
-                            // TODO: Get player1 and player2
-                            player1 = lastPlayer1 ?: allPlayers.first(),
-                            player2 = lastPlayer2 ?: allPlayers.first(),
-                            legCount = legCount.value,
-                            setCount = setCount.value,
-                        )
-                    )
-                },
+    var player1 by remember { mutableStateOf(lastPlayer1) }
+    var player2 by remember { mutableStateOf(lastPlayer2) }
+
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.padding(32.dp),
+    ) {
+        DialogTitle()
+        Column {
+            PlayersSelection(
+                allPlayers = allPlayers,
+                player1 = player1,
+                player2 = player2,
+                onPlayer1Changed = { player1 = it },
+                onPlayer2Changed = { player2 = it },
+                onNewPlayerCreated = onNewPlayerCreated,
+            )
+            Spacer(modifier = Modifier.height(48.dp))
+            LegAndSetSelection(
+                legCount = legCount,
+                setCount = setCount,
             )
         }
-    )
+
+        CancelConfirmButtonRow(
+            onCancel = onCancel,
+            onConfirm = {
+                onStart(
+                    StartMultiplayerDialogResult(
+                        player1 = player1!!,
+                        player2 = player2!!,
+                        legCount = legCount.value,
+                        setCount = setCount.value,
+                    )
+                )
+            },
+        )
+    }
+}
+
+@Composable
+private fun DialogTitle() {
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Group,
+            contentDescription = null,
+            modifier = Modifier.size(64.dp),
+        )
+        Spacer(modifier = Modifier.width(24.dp))
+        Text(
+            text = "Multiplayer",
+            style = MaterialTheme.typography.headlineLarge
+        )
+    }
 }
 
 @Composable
@@ -70,12 +104,15 @@ private fun CancelConfirmButtonRow(
     onCancel: () -> Unit,
     onConfirm: () -> Unit
 ) {
-    Row() {
-        FilledTonalButton(onClick = onCancel) {
+    Row(
+        horizontalArrangement = Arrangement.End,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        TextButton(onClick = onCancel) {
             Text("Cancel")
         }
 
-        Spacer(Modifier.width(8.dp))
+        Spacer(Modifier.width(32.dp))
 
         Button(onClick = onConfirm) {
             Text("Let's go!")
@@ -94,60 +131,82 @@ private fun ColumnScope.PlayersSelection(
 ) {
     HeaderText(text = "Players")
 
-    PlayerSelectionInfoRow()
-
     Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(32.dp),
+        modifier = Modifier
+            .height(144.dp)
+            .fillMaxWidth()
     ) {
-        PlayerSelection(
-            allPlayers = allPlayers,
-            lastPlayer = lastPlayer1,
-            onNewPlayerCreated = onNewPlayerCreated,
-        )
+        PlayerSelectionInfoColumn()
 
-        PlayerSwap {
-            onPlayer1Changed(player2)
-            onPlayer2Changed(player1)
+        // TODO: How to determine where new player should be inserted?
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f),
+        ) {
+            PlayerSelection(
+                allPlayers = allPlayers,
+                selectedPlayer = player1,
+                onNewPlayerCreated = onNewPlayerCreated,
+                onSelectedPlayerChanged = onPlayer1Changed,
+                invalidPlayer = player2,
+            )
+
+            PlayerSwap {
+                onPlayer1Changed(player2)
+                onPlayer2Changed(player1)
+            }
+
+            PlayerSelection(
+                allPlayers = allPlayers,
+                selectedPlayer = player2,
+                onNewPlayerCreated = onNewPlayerCreated,
+                onSelectedPlayerChanged = onPlayer2Changed,
+                invalidPlayer = player1,
+            )
         }
-
-        PlayerSelection(
-            allPlayers = allPlayers,
-            lastPlayer = lastPlayer2,
-            onNewPlayerCreated = onNewPlayerCreated,
-        )
     }
+
 }
 
 @Composable
 private fun HeaderText(text: String) = Text(
     text = text,
     style = MaterialTheme.typography.headlineSmall,
+    modifier = Modifier.padding(bottom = 16.dp)
 )
 
 
 @Composable
-private fun PlayerSelectionInfoRow() {
-    Row(
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        modifier = Modifier.fillMaxWidth()
+private fun PlayerSelectionInfoColumn() {
+    Column(
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = Modifier.fillMaxHeight()
     ) {
-        PlayerSelectionInfoRowText(text = "Player 1")
-        PlayerSelectionInfoRowText(text = "vs.")
-        PlayerSelectionInfoRowText(text = "Player 2")
+        PlayerSelectionInfoColumnText(text = "Player 1")
+        PlayerSelectionInfoColumnText(text = "vs.")
+        PlayerSelectionInfoColumnText(text = "Player 2")
     }
 }
 
 @Composable
-private fun PlayerSelectionInfoRowText(
+private fun PlayerSelectionInfoColumnText(
     text: String,
 ) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.secondary,
-    )
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.height(48.dp),
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.secondary,
+        )
+    }
 }
 
 @Composable
@@ -155,72 +214,119 @@ private fun PlayerSelection(
     selectedPlayer: Player?,
     onSelectedPlayerChanged: (Player) -> Unit,
     allPlayers: List<Player>,
+    invalidPlayer: Player?,
     onNewPlayerCreated: (String) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
+    var showNewPlayerDialog by remember { mutableStateOf(false) }
 
-    val playerNames = allPlayers.map { it.name }
-
-    DropdownMenu(
-        expanded = isExpanded,
-        onDismissRequest = { isExpanded = false },
-    ) {
-        DropdownMenuItem(
-            onClick = {
-                isExpanded = false
-                onNewPlayerCreated("New Player")
+    SuggestionChip(
+        onClick = {
+            if (selectedPlayer == null) {
+                showNewPlayerDialog = true
+            } else {
+                isExpanded = !isExpanded
             }
-        ) {
-            Text("New Player")
-        }
+        },
+        label = {
+            Row () {
+                Text(
+                    text = selectedPlayer?.name ?: "New Player",
+                    modifier = Modifier.weight(1f),
+                )
 
-        DropdownMenuItem(
-            onClick = {
-                isExpanded = false
-                onNewPlayerCreated("New Player 2")
+                Spacer(Modifier.width(8.dp))
+                val icon = if (selectedPlayer == null) {
+                    Icons.Default.Add
+                } else if (isExpanded) {
+                    Icons.Default.KeyboardArrowUp
+                } else {
+                    Icons.Default.KeyboardArrowDown
+                }
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "Other players"
+                )
             }
-        ) {
-            Text("New Player 2")
-        }
-
-        DropdownMenuItem(
-            onClick = {
-                isExpanded = false
-                onNewPlayerCreated("New Player 3")
-            }
-        ) {
-            Text("New Player 3")
-        }
-
-        DropdownMenuItem(
-            onClick = {
-                isExpanded = false
-                onNewPlayerCreated("New Player 4")
-            }
-        ) {
-            Text("New Player 4")
-        }
-
-        DropdownMenuItem(
-            onClick = {
-                isExpanded = false
-                onNewPlayerCreated("New Player 5")
-            }
-        ) {
-            Text("New Player 5")
-        }
-    }
-
-    OutlinedTonalButton(
-        onClick = { isExpanded = true },
+        },
         modifier = Modifier.fillMaxWidth(),
-    ) {
-        Text(
-            text = selectedPlayer?.name ?: "Select Player",
-            style = MaterialTheme.typography.bodyLarge,
+        colors = SuggestionChipDefaults.suggestionChipColors(
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        ),
+    )
+
+    PlayerSelectionDropDownMenu(
+        isExpanded = isExpanded,
+        allPlayers = allPlayers,
+        invalidPlayer = invalidPlayer,
+        selectedPlayer = selectedPlayer,
+        onSelectedPlayerChanged = onSelectedPlayerChanged,
+        onCreateNewPlayerClick = {
+            showNewPlayerDialog = true
+        },
+    )
+
+    AnimatedVisibility(visible = showNewPlayerDialog) {
+       CreateNewPlayerDialog(
+            onNewPlayerCreated = onNewPlayerCreated,
+            onCancel = { showNewPlayerDialog = false },
         )
     }
 }
+
+@Composable
+private fun PlayerSelectionDropDownMenu(
+    isExpanded: Boolean,
+    allPlayers: List<Player>,
+    invalidPlayer: Player?,
+    selectedPlayer: Player?,
+    onSelectedPlayerChanged: (Player) -> Unit,
+    onCreateNewPlayerClick: () -> Unit,
+) {
+    var isExpanded1 = isExpanded
+    DropdownMenu(
+        expanded = isExpanded1,
+        onDismissRequest = { isExpanded1 = false },
+    ) {
+        for (player in allPlayers) {
+            DropdownMenuItem(
+                onClick = {
+                    isExpanded1 = false
+                    onSelectedPlayerChanged(player)
+                },
+                text = {
+                    Text(
+                        text = player.name,
+                        color = if (player == selectedPlayer) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSecondaryContainer
+                        }
+                    )
+                },
+                enabled = player != invalidPlayer,
+            )
+        }
+
+        DropdownMenuItem(
+            onClick = {
+                isExpanded1 = false
+                onCreateNewPlayerClick()
+            },
+            text = {
+                Text("New Player")
+            },
+            leadingIcon = {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "New Player",
+                )
+            }
+        )
+    }
+}
+
 
 @Composable
 private fun PlayerSwap(
@@ -228,7 +334,7 @@ private fun PlayerSwap(
 ) {
     IconButton(onClick = onClick) {
         Icon(
-            imageVector = Icons.Default.SwapHoriz,
+            imageVector = Icons.Default.SwapVert,
             contentDescription = "Swap players",
         )
     }
@@ -264,6 +370,7 @@ fun StepperRow(
     maxValue: Int = 5
 ) {
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
         Text(
@@ -272,7 +379,10 @@ fun StepperRow(
             color = MaterialTheme.colorScheme.secondary
         )
 
-        Spacer(Modifier.width(8.dp))
+        Spacer(
+            Modifier
+                .width(8.dp)
+                .weight(1f))
 
         Stepper(
             value = value,

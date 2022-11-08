@@ -3,10 +3,12 @@ package com.development_felber.dartapp.ui.screens.home.dialogs
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults.filledTonalButtonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,13 +64,8 @@ private fun StepperButton(
     onClick: () -> Unit,
     content: @Composable () -> Unit
 ) {
-    Button(
+    FilledTonalIconButton(
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-        ),
-        contentPadding = PaddingValues(0.dp),
     ) {
         content()
     }
