@@ -1,4 +1,4 @@
-package com.development_felber.dartapp.ui.screens.game.dialog
+package com.development_felber.dartapp.ui.screens.game.dialog.during_leg
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

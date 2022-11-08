@@ -1,23 +1,18 @@
-@file:OptIn(ExperimentalComposeUiApi::class)
+package com.development_felber.dartapp.ui.screens.game.dialog.solo
 
-package com.development_felber.dartapp.ui.screens.game.dialog
-
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.StackedLineChart
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
@@ -27,15 +22,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.DialogProperties
 import com.development_felber.dartapp.data.persistent.database.Leg
 import com.development_felber.dartapp.data.persistent.database.TestLegData
+import com.development_felber.dartapp.ui.screens.game.dialog.GameFinishedDialog
+import com.development_felber.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
 import com.development_felber.dartapp.ui.screens.historydetails.ServeDistributionChart
-import com.development_felber.dartapp.ui.shared.MyCard
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 import com.development_felber.dartapp.util.extensions.observeAsStateNonOptional
 import kotlinx.coroutines.delay
-
 
 @Composable
 fun LegFinishedDialogEntryPoint(
@@ -59,50 +53,24 @@ private fun LegFinishedDialog(
     onMenuClicked: () -> Unit,
     onPlayAgainClicked: () -> Unit
 ) {
-    AlertDialog(
-        modifier = Modifier.fillMaxWidth(0.85f),
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-        onDismissRequest = { },
-        title = {
-            Text("Leg finished!")
-        },
-        text = {
-            Box(Modifier.animateContentSize()) {
-                if (showStats) {
-                    StatisticsSection(leg, last10GamesAverage, onMoreDetailsClicked)
-                } else {
-                    Text("Would you like to play again?")
-                }
-            }
-        },
-        confirmButton = {
-            Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                TextButton(onClick = onMenuClicked) {
-                    Text("Back to Menu")
-                }
-
-                Spacer(Modifier.width(12.dp))
-
-                Button(onClick = onPlayAgainClicked) {
-                    Text(
-                        text = "Play again",
-                        textAlign = TextAlign.Center
-                    )
-                }
-            }
-
-        }
-    )
+    GameFinishedDialog(
+        title = "Leg finished!",
+        showStatisticsContent = showStats,
+        onMoreDetailsClicked = onMoreDetailsClicked,
+        onMenuClicked = onMenuClicked,
+        onPlayAgainClicked = onPlayAgainClicked
+    ) {
+        SoloStatsContent(
+            leg = leg,
+            last10GamesAverage = last10GamesAverage
+        )
+    }
 }
 
 @Composable
-private fun StatisticsSection(
+private fun SoloStatsContent(
     leg: Leg,
     last10GamesAverage: Double,
-    onMoreDetailsClicked: () -> Unit
 ) {
     val animatedAverage = remember { Animatable(0f) }
     LaunchedEffect(key1 = true) {
@@ -116,35 +84,28 @@ private fun StatisticsSection(
         )
     }
 
-    MyCard(modifier = Modifier.padding(4.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(30.dp),
-            modifier = Modifier.padding(16.dp)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(30.dp),
+    ) {
+        ServeDistribution(leg = leg)
+
+        AverageProgression(average = animatedAverage.value.toDouble(), last10GamesAverage = last10GamesAverage)
+
+        Row(
+            modifier = Modifier.fillMaxWidth()
         ) {
-            ServeDistribution(leg = leg)
+            SmallStatsCard(valueString = leg.dartCount.toString(), description = "Darts")
 
-            AverageProgression(average = animatedAverage.value.toDouble(), last10GamesAverage = last10GamesAverage)
+            SmallStatsCard(
+                valueString = String.format("%.0f%%", 100.0 / leg.doubleAttempts),
+                description = "Double rate"
+            )
 
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                SmallStatsCard(valueString = leg.dartCount.toString(), description = "Darts")
-
-                SmallStatsCard(
-                    valueString = String.format("%.0f%%", 100.0 / leg.doubleAttempts),
-                    description = "Double rate"
-                )
-
-                SmallStatsCard(valueString = leg.checkout.toString(), description = "Checkout")
-            }
-
-            MoreDetailsButton(onClick = onMoreDetailsClicked)
+            SmallStatsCard(valueString = leg.checkout.toString(), description = "Checkout")
         }
     }
 }
-
 
 
 @Composable
@@ -295,21 +256,6 @@ private fun RowScope.SmallStatsCard(
     }
 }
 
-@Composable
-private fun MoreDetailsButton(onClick: (() -> Unit)) {
-    FilledTonalButton(
-        onClick = onClick
-    ) {
-        Icon(
-            imageVector = Icons.Filled.StackedLineChart,
-            contentDescription = null
-        )
-        Text(
-            text = "more Details",
-            modifier = Modifier.padding(start = 8.dp)
-        )
-    }
-}
 
 @Preview
 @Composable

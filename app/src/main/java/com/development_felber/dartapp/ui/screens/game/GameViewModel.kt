@@ -16,8 +16,8 @@ import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.game.numberpad.PerServeNumberPad
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.game.dialog.DialogUiState
-import com.development_felber.dartapp.ui.screens.game.dialog.DoubleAttemptsAndCheckoutDialogResult
 import com.development_felber.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
+import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialogResult
 import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import com.development_felber.dartapp.util.CheckoutTip
 import com.development_felber.dartapp.util.GameUtil

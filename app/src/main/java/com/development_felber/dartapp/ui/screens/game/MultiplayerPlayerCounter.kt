@@ -15,16 +15,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
-data class Score(
-    val legs: Int,
+data class PlayerScore(
+    val legsWon: Int,
     val legsToWin: Int,
-    val sets: Int,
+    val setsWon: Int,
     val setsToWin: Int,
 )
 
 data class PlayerStats(
     val name: String,
-    val score: Score,
+    val playerScore: PlayerScore,
     val pointsLeft: Int,
     val last: Int,
     val average: Double,
@@ -37,7 +37,7 @@ enum class GameStatus {
 }
 
 @Composable
-fun CombinedMultiplayerPlayerStats(
+fun CombinedMultiplayerPlayerCounter(
     playerStatsLeft: PlayerStats,
     playerStatsRight: PlayerStats,
     gameStatus: GameStatus,
@@ -46,7 +46,7 @@ fun CombinedMultiplayerPlayerStats(
         modifier = Modifier.height(180.dp)
     ) {
         Row() {
-            MultiplayerPlayerStatsCell(
+            MultiplayerPlayerCounterCell(
                 playerStats = playerStatsLeft,
                 isActivePlayer = gameStatus == GameStatus.LeftPlayersTurn,
             )
@@ -58,7 +58,7 @@ fun CombinedMultiplayerPlayerStats(
                     .fillMaxHeight()
             )
 
-            MultiplayerPlayerStatsCell(
+            MultiplayerPlayerCounterCell(
                 playerStats = playerStatsRight,
                 isActivePlayer = gameStatus == GameStatus.RightPlayersTurn,
             )
@@ -67,7 +67,7 @@ fun CombinedMultiplayerPlayerStats(
 }
 
 @Composable
-private fun RowScope.MultiplayerPlayerStatsCell(
+private fun RowScope.MultiplayerPlayerCounterCell(
     playerStats: PlayerStats,
     isActivePlayer: Boolean,
 ) {
@@ -83,7 +83,7 @@ private fun RowScope.MultiplayerPlayerStatsCell(
         ) {
             TopRow(
                 name = playerStats.name,
-                score = playerStats.score
+                playerScore = playerStats.playerScore
             )
 
             Text(
@@ -118,7 +118,7 @@ private fun ActiveIndicator(isActivePlayer: Boolean) {
 @Composable
 private fun TopRow(
     name: String,
-    score: Score,
+    playerScore: PlayerScore,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -130,17 +130,17 @@ private fun TopRow(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Medium
         )
-        ScoreRepresentation(score = score)
+        ScoreRepresentation(playerScore = playerScore)
     }
 }
 
 @Composable
 private fun ScoreRepresentation(
-    score: Score
+    playerScore: PlayerScore
 ) {
     // TODO: Do this with dots and dashes? (See figma)
     Text(
-        text = "${score.sets}-${score.legs}",
+        text = "${playerScore.setsWon}-${playerScore.legsWon}",
         color = MaterialTheme.colorScheme.secondary,
         style = MaterialTheme.typography.titleLarge
     )
@@ -173,10 +173,10 @@ private fun CombinedMultiplayerPlayerStatsPreview() {
     DartAppTheme() {
         val playerStatsLeft = PlayerStats(
             name = "Player 1",
-            score = Score(
-                legs = 1,
+            playerScore = PlayerScore(
+                legsWon = 1,
                 legsToWin = 3,
-                sets = 0,
+                setsWon = 0,
                 setsToWin = 2,
             ),
             pointsLeft = 120,
@@ -185,17 +185,17 @@ private fun CombinedMultiplayerPlayerStatsPreview() {
         )
         val playerStatsRight = PlayerStats(
             name = "Player 2",
-            score = Score(
-                legs = 2,
+            playerScore = PlayerScore(
+                legsWon = 2,
                 legsToWin = 3,
-                sets = 1,
+                setsWon = 1,
                 setsToWin = 2,
             ),
             pointsLeft = 420,
             last = 20,
             average = 54.2,
         )
-        CombinedMultiplayerPlayerStats(
+        CombinedMultiplayerPlayerCounter(
             playerStatsLeft = playerStatsLeft,
             playerStatsRight = playerStatsRight,
             gameStatus = GameStatus.LeftPlayersTurn
