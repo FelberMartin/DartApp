@@ -2,9 +2,9 @@ package com.development_felber.dartapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.development_felber.dartapp.data.persistent.database.FakeLegDatabaseDao
-import com.development_felber.dartapp.data.persistent.database.LegDatabase
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
+import com.development_felber.dartapp.data.persistent.database.AppDatabase
+import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.data.persistent.database.TestLegData
 import com.development_felber.dartapp.data.persistent.keyvalue.IKeyValueStorage
 import com.development_felber.dartapp.data.persistent.keyvalue.KeyValueStorage
@@ -34,19 +34,19 @@ object AppModule {
         exampleData = false
     )
 
-    private fun buildRoomDatabase(context: Context, inMemory: Boolean, exampleData: Boolean): LegDatabase {
+    private fun buildRoomDatabase(context: Context, inMemory: Boolean, exampleData: Boolean): AppDatabase {
         val database = if (!inMemory) {
-            Room.databaseBuilder(context, LegDatabase::class.java, DATABASE_NAME).build()
+            Room.databaseBuilder(context, AppDatabase::class.java, DATABASE_NAME).build()
         } else {
-            Room.inMemoryDatabaseBuilder(context, LegDatabase::class.java).build()
+            Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java).build()
         }
 
         if (exampleData) {
             GlobalScope.launch {
-                database.legDatabaseDao().clear()
+                database.getLegDao().clear()
                 val testData = TestLegData.createExampleLegs()
                 for (leg in testData) {
-                    database.legDatabaseDao().insert(leg)
+                    database.getLegDao().insert(leg)
                 }
             }
         }
@@ -56,13 +56,13 @@ object AppModule {
     @Singleton
     @Provides
     fun provideLegDatabaseDao(
-        database: LegDatabase
-    ) = database.legDatabaseDao()
+        database: AppDatabase
+    ) = database.getLegDao()
 
     @Singleton
     @Provides
     @Named("fake_leg_dao")
-    fun provideExampleDataDatabase(): LegDatabaseDao = FakeLegDatabaseDao(fillWithTestData = false)
+    fun provideExampleDataDatabase(): LegDao = FakeLegDao(fillWithTestData = false)
 
     @Singleton
     @Provides

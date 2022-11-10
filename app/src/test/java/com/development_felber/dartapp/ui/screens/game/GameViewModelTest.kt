@@ -4,8 +4,8 @@ package com.development_felber.dartapp.ui.screens.game
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.development_felber.dartapp.MainCoroutineRule
-import com.development_felber.dartapp.data.persistent.database.FakeLegDatabaseDao
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
+import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
@@ -31,14 +31,14 @@ class GameViewModelTest {
     val coroutineRule = MainCoroutineRule()
 
     private lateinit var settingsRepository: SettingsRepository
-    private lateinit var legDatabaseDao: LegDatabaseDao
+    private lateinit var legDao: LegDao
     private lateinit var viewModel: GameViewModel
 
     @Before
     fun setup() {
         settingsRepository = SettingsRepository(InMemoryKeyValueStorage())
-        legDatabaseDao = FakeLegDatabaseDao()
-        viewModel = GameViewModel(NavigationManager(), settingsRepository, legDatabaseDao)
+        legDao = FakeLegDao()
+        viewModel = GameViewModel(NavigationManager(), settingsRepository, legDao)
     }
 
 
@@ -162,7 +162,7 @@ class GameViewModelTest {
         settingsRepository.setBooleanSetting(SettingsRepository.BooleanSetting.AskForCheckout , false)
         enterServes(listOf(180, 180, 141))
         viewModel.enterDoubleAttempts(2)
-        val doubleAttempts = legDatabaseDao.getLatestLeg()?.doubleAttempts
+        val doubleAttempts = legDao.getLatestLeg()?.doubleAttempts
         assertThat(doubleAttempts).isEqualTo(2)
     }
 

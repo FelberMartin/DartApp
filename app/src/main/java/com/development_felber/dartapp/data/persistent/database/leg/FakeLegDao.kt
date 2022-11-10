@@ -1,10 +1,12 @@
-package com.development_felber.dartapp.data.persistent.database
+package com.development_felber.dartapp.data.persistent.database.leg
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.development_felber.dartapp.data.persistent.database.Converters
+import com.development_felber.dartapp.data.persistent.database.TestLegData
 import java.time.ZoneOffset
 
-class FakeLegDatabaseDao(fillWithTestData: Boolean = false) : LegDatabaseDao {
+class FakeLegDao(fillWithTestData: Boolean = false) : LegDao {
 
     private val legsById: HashMap<Long, Leg> = HashMap()
     private val legLiveData = MutableLiveData<List<Leg>>(mutableListOf())

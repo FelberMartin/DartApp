@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.graphs.filter
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.util.graphs.partitioner.PartitionCountLegPartitioner
 
 class GamesLegFilter constructor(

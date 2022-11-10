@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.graphs.statistics.barchart
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 
 object TrainingCountStatistic : BarStatistic("Training Count") {
 

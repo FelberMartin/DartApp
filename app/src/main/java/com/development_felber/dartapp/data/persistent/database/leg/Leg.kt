@@ -1,14 +1,24 @@
-package com.development_felber.dartapp.data.persistent.database
+package com.development_felber.dartapp.data.persistent.database.leg
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.development_felber.dartapp.data.PlayerOption
+import com.development_felber.dartapp.data.persistent.database.Converters
+import com.development_felber.dartapp.util.Constants
 
 @Entity(tableName = "legs_table")
 data class Leg(
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
+
+    var playerOption: PlayerOption = PlayerOption.Solo,
+    @ColumnInfo(name = "player_option")
+    private var _playerOption: Int = playerOption.ordinal,
+
+    @ColumnInfo(name = "player_name")
+    var playerName: String = Constants.SOLO_GAME_PLACEHOLDER_NAME,
 
     @ColumnInfo(name = "end_time")
     var endTime: String = "",
@@ -32,7 +42,7 @@ data class Leg(
     var servesList: String = "",
 
     @ColumnInfo(name = "double_attempts_list")
-    var doubleAttemptsList: String = ""
+    var doubleAttemptsList: String = "",
 ) {
 
     fun nineDartsAverage() : Double {

@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import com.development_felber.dartapp.data.persistent.database.Leg
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import com.development_felber.dartapp.util.graphs.filter.GamesLegFilter
@@ -20,7 +20,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StatisticsViewModel @Inject constructor(
     navigationManager: NavigationManager,
-    private val legDatabaseDao: LegDatabaseDao
+    private val legDao: LegDao
 ): NavigationViewModel(navigationManager) {
 
     private val _statisticType = MutableLiveData<StatisticTypeBase>(StatisticTypeBase.PlaceHolderStatistic)
@@ -44,7 +44,7 @@ class StatisticsViewModel @Inject constructor(
     init {
         _statisticType.value = AverageStatistic
         viewModelScope.launch {
-            legDatabaseDao.getAllLegs().asFlow().collect {
+            legDao.getAllLegs().asFlow().collect {
                 println("Collected legs (size = ${it.size})")
                 legs = it
                 _noLegDataAvailable.value = legs.isEmpty()

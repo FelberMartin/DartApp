@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.ui.screens.history
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.util.categorized_sort.CheckoutCategorizedSortType
 import com.development_felber.dartapp.util.categorized_sort.DartCountCategorizedSortType
 import com.development_felber.dartapp.util.categorized_sort.DateCategorizedSortType

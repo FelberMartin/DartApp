@@ -22,8 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.FakeLegDatabaseDao
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.data.persistent.database.TestLegData
 import com.development_felber.dartapp.ui.navigation.NavigationDirections
 import com.development_felber.dartapp.ui.navigation.NavigationManager
@@ -279,7 +279,7 @@ fun SeeMoreIconButton(
 @Composable
 fun PreviewTableScreen() {
     DartAppTheme() {
-        val viewModel = HistoryViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true))
+        val viewModel = HistoryViewModel(NavigationManager(), FakeLegDao(fillWithTestData = true))
         val legs = TestLegData.createExampleLegs()
         val categorizedLegs = DateCategorizedSortType.sortLegsCategorized(legs, true)
         HistoryScreen(categorizedLegs, viewModel)

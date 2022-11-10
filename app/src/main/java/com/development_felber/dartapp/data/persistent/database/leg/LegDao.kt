@@ -1,4 +1,4 @@
-package com.development_felber.dartapp.data.persistent.database
+package com.development_felber.dartapp.data.persistent.database.leg
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Update
 
 @Dao
-interface LegDatabaseDao {
+interface LegDao {
 
     @Insert
     suspend fun insert(leg: Leg)

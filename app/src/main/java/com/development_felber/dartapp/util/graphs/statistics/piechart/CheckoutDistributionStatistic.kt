@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.graphs.statistics.piechart
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.util.GameUtil
 import com.development_felber.dartapp.util.graphs.filter.LegFilterBase
 import com.development_felber.dartapp.util.graphs.statistics.StatisticTypeBase

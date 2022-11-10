@@ -5,8 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.development_felber.dartapp.data.persistent.database.Leg
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.Game
 import com.development_felber.dartapp.game.gameaction.AddDartGameAction
@@ -33,7 +33,7 @@ const val PLACEHOLDER_STRING = "--"
 class GameViewModel @Inject constructor(
     val navigationManager: NavigationManager,
     val settingsRepository: SettingsRepository,
-    private val legDatabaseDao: LegDatabaseDao
+    private val legDao: LegDao
 ) : NavigationViewModel(navigationManager) {
 
     private val _numberPad: MutableLiveData<NumberPadBase> = MutableLiveData(PerServeNumberPad())
@@ -305,8 +305,8 @@ class GameViewModel @Inject constructor(
 
             Log.d("GameViewModel", "Saving game to legDatabase...")
             val leg = game.toLeg()
-            legDatabaseDao.insert(leg = leg)
-            lastFinishedLeg = legDatabaseDao.getLatestLeg()
+            legDao.insert(leg = leg)
+            lastFinishedLeg = legDao.getLatestLeg()
             _legFinished.value = true   // Shows Leg Finished Dialog
         }
     }
@@ -325,7 +325,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun createLegFinishedDialogViewModel() : LegFinishedDialogViewModel {
-        return LegFinishedDialogViewModel(navigationManager, lastFinishedLeg!!, legDatabaseDao, settingsRepository,
+        return LegFinishedDialogViewModel(navigationManager, lastFinishedLeg!!, legDao, settingsRepository,
             this)
     }
 

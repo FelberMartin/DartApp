@@ -1,8 +1,8 @@
 package com.development_felber.dartapp.ui.screens.game.dialog
 
 import androidx.lifecycle.*
-import com.development_felber.dartapp.data.persistent.database.Leg
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.data.repository.SettingsRepository.BooleanSetting
 import com.development_felber.dartapp.ui.navigation.NavigationDirections
@@ -15,7 +15,7 @@ import kotlinx.coroutines.launch
 class LegFinishedDialogViewModel(
     private val navigationManager: NavigationManager,
     val leg: Leg,
-    private val databaseDao: LegDatabaseDao,
+    private val databaseDao: LegDao,
     private val settingsRepository: SettingsRepository,
     private val callingViewModel: GameViewModel
 ) : NavigationViewModel(

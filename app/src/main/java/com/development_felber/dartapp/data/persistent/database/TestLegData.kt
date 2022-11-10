@@ -1,5 +1,6 @@
 package com.development_felber.dartapp.data.persistent.database
 
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.random.Random

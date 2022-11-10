@@ -2,9 +2,9 @@ package com.development_felber.dartapp.database
 
 
 import androidx.test.filters.SmallTest
-import com.development_felber.dartapp.data.persistent.database.Leg
-import com.development_felber.dartapp.data.persistent.database.LegDatabase
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.AppDatabase
+import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
@@ -17,20 +17,20 @@ import javax.inject.Named
 
 @SmallTest
 @HiltAndroidTest
-class LegDatabaseDaoTest {
+class LegDaoTest {
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
     @Named("in_memory_db")
-    lateinit var legDatabase: LegDatabase
-    private lateinit var legDao: LegDatabaseDao
+    lateinit var appDatabase: AppDatabase
+    private lateinit var legDao: LegDao
 
     @Before
     fun setup() {
         hiltRule.inject()
-        legDao = legDatabase.legDatabaseDao()
+        legDao = appDatabase.getLegDao()
     }
 
     @Test

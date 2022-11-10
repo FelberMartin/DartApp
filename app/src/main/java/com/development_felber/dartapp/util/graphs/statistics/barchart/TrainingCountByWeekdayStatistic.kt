@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.graphs.statistics.barchart
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.util.graphs.partitioner.WeekdayLegPartitioner
 import com.development_felber.dartapp.views.chart.data.DataPoint
 import com.development_felber.dartapp.views.chart.util.DataSet

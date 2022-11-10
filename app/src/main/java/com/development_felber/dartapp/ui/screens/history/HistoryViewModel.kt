@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
-import com.development_felber.dartapp.data.persistent.database.Leg
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import com.development_felber.dartapp.util.categorized_sort.DateCategorizedSortType
@@ -16,7 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
     navigationManager: NavigationManager,
-    private val legDatabaseDao: LegDatabaseDao
+    private val legDao: LegDao
 ) : NavigationViewModel(navigationManager){
 
     private val _categorizedLegsResult = MutableLiveData(CategorizedSortTypeBase.Result())
@@ -34,7 +34,7 @@ class HistoryViewModel @Inject constructor(
         setSelectedSortType(DateCategorizedSortType)
 
         viewModelScope.launch {
-            legDatabaseDao.getAllLegs().asFlow().collect {
+            legDao.getAllLegs().asFlow().collect {
                 legs = it
                 sortLegs()
             }

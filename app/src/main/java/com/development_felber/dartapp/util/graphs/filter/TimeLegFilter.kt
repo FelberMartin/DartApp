@@ -2,7 +2,7 @@ package com.development_felber.dartapp.util.graphs.filter
 
 import com.development_felber.dartapp.util.graphs.partitioner.TimeLegPartitioner
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.util.time.TimeUnit
 import com.development_felber.dartapp.util.time.units.Day
 import com.development_felber.dartapp.util.time.units.Month

@@ -1,7 +1,7 @@
 package com.development_felber.dartapp.util.graphs.partitioner
 
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 

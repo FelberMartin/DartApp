@@ -2,7 +2,7 @@ package com.development_felber.dartapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.development_felber.dartapp.data.persistent.database.LegDatabase
+import com.development_felber.dartapp.data.persistent.database.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,7 +17,7 @@ object TestAppModule {
     @Provides
     @Named("in_memory_db")
     fun provideInMemoryDb(@ApplicationContext context: Context) =
-        Room.inMemoryDatabaseBuilder(context, LegDatabase::class.java)
+        Room.inMemoryDatabaseBuilder(context, AppDatabase::class.java)
             .allowMainThreadQueries()
             .build()
 }

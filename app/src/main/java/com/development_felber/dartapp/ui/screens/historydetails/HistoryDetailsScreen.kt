@@ -20,8 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.FakeLegDatabaseDao
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.data.persistent.database.TestLegData
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
@@ -307,7 +307,7 @@ fun PreviewHistoryDetailsScreen() {
     DartAppTheme() {
         val leg = TestLegData.createExampleLegs().first()
         HistoryDetailsScreen(
-            viewModel = HistoryDetailsViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true)),
+            viewModel = HistoryDetailsViewModel(NavigationManager(), FakeLegDao(fillWithTestData = true)),
             leg = leg
         )
     }

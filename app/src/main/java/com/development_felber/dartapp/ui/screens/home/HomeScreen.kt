@@ -18,14 +18,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.input.key.Key.Companion.Two
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import com.development_felber.dartapp.R
-import com.development_felber.dartapp.data.persistent.database.FakeLegDatabaseDao
+import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
 import com.development_felber.dartapp.ui.navigation.NavigationDirections
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.statistics.StatisticsChart
@@ -35,7 +34,6 @@ import com.development_felber.dartapp.ui.shared.MyCard
 import com.development_felber.dartapp.ui.shared.TowSegmentSingleSelectButton
 import com.development_felber.dartapp.ui.shared.extensions.withDropShadow
 import com.development_felber.dartapp.ui.theme.DartAppTheme
-import com.google.android.material.button.MaterialButtonToggleGroup
 
 @Composable
 fun HomeScreen(
@@ -290,7 +288,7 @@ fun DefaultPreview() {
     DartAppTheme {
         val navManager = NavigationManager()
         val homeViewModel = HomeViewModel(navManager)
-        val statisticsViewModel = StatisticsViewModel(navManager, FakeLegDatabaseDao(fillWithTestData = true))
+        val statisticsViewModel = StatisticsViewModel(navManager, FakeLegDao(fillWithTestData = true))
         HomeScreen(homeViewModel, statisticsViewModel)
     }
 }
