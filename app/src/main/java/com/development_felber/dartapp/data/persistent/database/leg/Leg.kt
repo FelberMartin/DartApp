@@ -2,6 +2,7 @@ package com.development_felber.dartapp.data.persistent.database.leg
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.development_felber.dartapp.data.PlayerOption
 import com.development_felber.dartapp.data.persistent.database.Converters
@@ -13,11 +14,13 @@ data class Leg(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
 
-    var playerOption: PlayerOption = PlayerOption.Solo,
-    @ColumnInfo(name = "player_option")
-    private var _playerOption: Int = playerOption.ordinal,
+    @Ignore
+    val playerOption: PlayerOption = PlayerOption.Solo,
 
-    @ColumnInfo(name = "player_name")
+    @ColumnInfo(name = "player_option", defaultValue = "0")
+    var _playerOption: Int = playerOption.ordinal,
+
+    @ColumnInfo(name = "player_name", defaultValue = "Solo Game")
     var playerName: String = Constants.SOLO_GAME_PLACEHOLDER_NAME,
 
     @ColumnInfo(name = "end_time")

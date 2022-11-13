@@ -31,6 +31,8 @@ import com.development_felber.dartapp.game.numberpad.PerServeNumberPad
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.navigation.command.NavigationCommand
 import com.development_felber.dartapp.ui.screens.game.dialog.*
+import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialog
+import com.development_felber.dartapp.ui.screens.game.dialog.solo.LegFinishedDialogEntryPoint
 import com.development_felber.dartapp.ui.shared.Background
 import com.development_felber.dartapp.ui.shared.KeepScreenOn
 import com.development_felber.dartapp.ui.shared.MyCard

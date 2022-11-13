@@ -2,6 +2,7 @@ package com.development_felber.dartapp.data.persistent.database.multiplayer_game
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.development_felber.dartapp.data.persistent.database.Converters
 
@@ -9,7 +10,7 @@ import com.development_felber.dartapp.data.persistent.database.Converters
 data class MultiplayerGame(
 
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0L,
+    var id: Long = 0L,
 
     @ColumnInfo(name = "player1_name")
     var player1Name: String = "",
@@ -17,9 +18,11 @@ data class MultiplayerGame(
     @ColumnInfo(name = "player2_name")
     var player2Name: String = "",
 
+    @Ignore
     var setIds: List<Long> = listOf(),
+
     @ColumnInfo(name = "set_ids")
-    private var _setIds: String = Converters.fromListOfLongs(setIds),
+    var _setIds: String = Converters.fromListOfLongs(setIds),
 
     @ColumnInfo(name = "sets_won_player1")
     var setsWonPlayer1: Int = 0,
