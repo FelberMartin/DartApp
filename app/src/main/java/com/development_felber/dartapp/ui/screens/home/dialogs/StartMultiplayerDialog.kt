@@ -2,7 +2,6 @@
 
 package com.development_felber.dartapp.ui.screens.home.dialogs
 
-import android.widget.Space
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -14,34 +13,52 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.development_felber.dartapp.data.persistent.database.player.Player
+import com.development_felber.dartapp.data.persistent.database.player.PlayerDao
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
-data class Player(
-    val name: String
-)
+@Composable
+fun StartMultiplayerDialogViewModelEntryPoint(
+    viewModel: StartMultiplayerDialogViewModel,
+) {
+    val players by viewModel.players.collectAsState()
+    val player1 by viewModel.player1.collectAsState()
+    val player2 by viewModel.player2.collectAsState()
+    val legCount by viewModel.legCount.collectAsState()
+    val setCount by viewModel.setCount.collectAsState()
 
-data class StartMultiplayerDialogResult(
-    val player1: Player,
-    val player2: Player,
-    val legCount: Int,
-    val setCount: Int = 1,
-)
+    StartMultiplayerDialog(
+        allPlayers = players,
+        player1 = player1,
+        player2 = player2,
+        onPlayer1Changed = { viewModel.setPlayer(PlayerPosition.PLAYER_1, it) },
+        onPlayer2Changed = { viewModel.setPlayer(PlayerPosition.PLAYER_2, it) },
+        onNewPlayerCreated = viewModel::onCreateNewPlayer,
+        legCount = legCount,
+        setCount = setCount,
+        onLegCountChanged = viewModel::setLegCount,
+        onSetCountChanged = viewModel::setSetCount,
+        onStartClick = viewModel::onDialogConfirmed,
+        onCancel = viewModel::onDialogCancelled,
+    )
+}
+
 
 @Composable
 fun StartMultiplayerDialog(
     allPlayers: List<Player>,
-    lastPlayer1: Player?,
-    lastPlayer2: Player?,
-    onNewPlayerCreated: (String) -> Unit,
-    onStart: (StartMultiplayerDialogResult) -> Unit,
+    player1: Player?,
+    player2: Player?,
+    onPlayer1Changed: (Player?) -> Unit,
+    onPlayer2Changed: (Player?) -> Unit,
+    onNewPlayerCreated: (String, PlayerPosition) -> Unit,
+    legCount: Int,
+    setCount: Int,
+    onLegCountChanged: (Int) -> Unit,
+    onSetCountChanged: (Int) -> Unit,
+    onStartClick: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    val legCount = remember { mutableStateOf(3) }
-    val setCount = remember { mutableStateOf(1) }
-
-    var player1 by remember { mutableStateOf(lastPlayer1) }
-    var player2 by remember { mutableStateOf(lastPlayer2) }
-
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier.padding(32.dp),
@@ -52,29 +69,22 @@ fun StartMultiplayerDialog(
                 allPlayers = allPlayers,
                 player1 = player1,
                 player2 = player2,
-                onPlayer1Changed = { player1 = it },
-                onPlayer2Changed = { player2 = it },
+                onPlayer1Changed = onPlayer1Changed,
+                onPlayer2Changed = onPlayer2Changed,
                 onNewPlayerCreated = onNewPlayerCreated,
             )
             Spacer(modifier = Modifier.height(48.dp))
             LegAndSetSelection(
                 legCount = legCount,
+                onLegCountChanged = onLegCountChanged,
                 setCount = setCount,
+                onSetCountChanged = onSetCountChanged,
             )
         }
 
         CancelConfirmButtonRow(
             onCancel = onCancel,
-            onConfirm = {
-                onStart(
-                    StartMultiplayerDialogResult(
-                        player1 = player1!!,
-                        player2 = player2!!,
-                        legCount = legCount.value,
-                        setCount = setCount.value,
-                    )
-                )
-            },
+            onConfirm = onStartClick,
         )
     }
 }
@@ -127,7 +137,7 @@ private fun ColumnScope.PlayersSelection(
     player2: Player?,
     onPlayer1Changed: (Player?) -> Unit,
     onPlayer2Changed: (Player?) -> Unit,
-    onNewPlayerCreated: (String) -> Unit,
+    onNewPlayerCreated: (String, PlayerPosition) -> Unit,
 ) {
     HeaderText(text = "Players")
 
@@ -139,8 +149,6 @@ private fun ColumnScope.PlayersSelection(
     ) {
         PlayerSelectionInfoColumn()
 
-        // TODO: How to determine where new player should be inserted?
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween,
@@ -151,7 +159,7 @@ private fun ColumnScope.PlayersSelection(
             PlayerSelection(
                 allPlayers = allPlayers,
                 selectedPlayer = player1,
-                onNewPlayerCreated = onNewPlayerCreated,
+                onNewPlayerCreated = { onNewPlayerCreated(it, PlayerPosition.PLAYER_1) },
                 onSelectedPlayerChanged = onPlayer1Changed,
                 invalidPlayer = player2,
             )
@@ -164,7 +172,7 @@ private fun ColumnScope.PlayersSelection(
             PlayerSelection(
                 allPlayers = allPlayers,
                 selectedPlayer = player2,
-                onNewPlayerCreated = onNewPlayerCreated,
+                onNewPlayerCreated = { onNewPlayerCreated(it, PlayerPosition.PLAYER_2) },
                 onSelectedPlayerChanged = onPlayer2Changed,
                 invalidPlayer = player1,
             )
@@ -343,21 +351,23 @@ private fun PlayerSwap(
 
 @Composable
 private fun ColumnScope.LegAndSetSelection(
-    legCount: MutableState<Int>,
-    setCount: MutableState<Int>,
+    legCount: Int,
+    onLegCountChanged: (Int) -> Unit,
+    setCount: Int,
+    onSetCountChanged: (Int) -> Unit,
 ) {
     HeaderText(text = "Game Settings")
 
     StepperRow(
         text = "Legs to win a Set",
-        value = legCount.value,
-        onValueChanged = { legCount.value = it },
+        value = legCount,
+        onValueChanged = onLegCountChanged,
     )
 
     StepperRow(
         text = "Sets to win the game",
-        value = setCount.value,
-        onValueChanged = { setCount.value = it },
+        value = setCount,
+        onValueChanged = onSetCountChanged,
     )
 }
 
@@ -398,17 +408,30 @@ fun StepperRow(
 @Composable
 private fun StartMultiplayerDialogPreview() {
     DartAppTheme() {
+        val allPlayers  = listOf(
+            Player(name = "Player 1"),
+            Player(name = "Player 2"),
+            Player(name = "Player 3"),
+            Player(name = "Player 4"),
+        )
+
+        var player1 by remember { mutableStateOf<Player?>(allPlayers[0]) }
+        var player2 by remember { mutableStateOf<Player?>(allPlayers[1]) }
+        var legCount by remember { mutableStateOf(3) }
+        var setCount by remember { mutableStateOf(2) }
+
         StartMultiplayerDialog(
-            allPlayers = listOf(
-                Player("Player 1"),
-                Player("Player 2"),
-                Player("Player 3"),
-                Player("Player 4"),
-            ),
-            lastPlayer1 = null,
-            lastPlayer2 = null,
-            onNewPlayerCreated = {},
-            onStart = {},
+            allPlayers = allPlayers,
+            player1 = player1,
+            player2 = player2,
+            onPlayer1Changed = { player1 = it },
+            onPlayer2Changed = { player2 = it },
+            legCount =  legCount,
+            onLegCountChanged = { legCount = it },
+            setCount = setCount,
+            onSetCountChanged = { setCount = it },
+            onNewPlayerCreated = { _, _ ->},
+            onStartClick = {},
             onCancel = {},
         )
     }

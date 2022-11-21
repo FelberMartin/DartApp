@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 7,
-    "identityHash": "2a4814405ab4102c65ae2645ae58ad87",
+    "identityHash": "916806233050d9268b8401b53b0f665b",
     "entities": [
       {
         "tableName": "legs_table",
@@ -179,12 +179,32 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "players_table",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`name` TEXT NOT NULL, PRIMARY KEY(`name`))",
+        "fields": [
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "name"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a4814405ab4102c65ae2645ae58ad87')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '916806233050d9268b8401b53b0f665b')"
     ]
   }
 }

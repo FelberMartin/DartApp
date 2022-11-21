@@ -41,6 +41,8 @@ fun HomeScreen(
     statisticsViewModel: StatisticsViewModel
 ) {
     var easterEggActivated by remember { mutableStateOf(false) }
+    val isMultiplayer by homeViewModel.isMultiplayer.collectAsState()
+
     Background {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
@@ -56,8 +58,10 @@ fun HomeScreen(
                 onToggleEasterEgg = { easterEggActivated = !easterEggActivated }
             )
             PlayButtonAndModeSelection(
-                onTrainClicked = { homeViewModel.navigate(NavigationDirections.Game) },
-                easterEggActivated = easterEggActivated
+                onTrainClicked = homeViewModel::onTrainClicked,
+                easterEggActivated = easterEggActivated,
+                isMultiplayer = isMultiplayer,
+                onMultiplayerChange = homeViewModel::setMultiplayer
             )
         }
     }
@@ -176,7 +180,9 @@ private fun AppIconAndName(
 @Composable
 private fun PlayButtonAndModeSelection(
     onTrainClicked: () -> Unit,
-    easterEggActivated: Boolean
+    easterEggActivated: Boolean,
+    isMultiplayer: Boolean,
+    onMultiplayerChange: (Boolean) -> Unit
 ) {
     val trainEmojis = listOf("🚆", "🚅", "🚄", "🚂", "🚉")
     Column(
@@ -197,9 +203,8 @@ private fun PlayButtonAndModeSelection(
 
         Spacer(modifier = Modifier.height(2.dp))
 
-        var isSolo by remember { mutableStateOf(true) }
         SoloMultiplayerSelection(
-            isSolo = isSolo, onChange = { isSolo = it }
+            isSolo = !isMultiplayer, onChange = { onMultiplayerChange(!it) }
         )
 //        SoloModeInformation()
     }

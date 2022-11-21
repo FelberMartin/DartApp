@@ -11,8 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.development_felber.dartapp.data.persistent.database.player.Player
 import com.development_felber.dartapp.ui.screens.game.dialog.GameFinishedDialog
-import com.development_felber.dartapp.ui.screens.home.dialogs.Player
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
 

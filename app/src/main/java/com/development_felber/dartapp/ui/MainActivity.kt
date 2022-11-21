@@ -21,6 +21,7 @@ import com.development_felber.dartapp.ui.screens.history.HistoryScreenEntry
 import com.development_felber.dartapp.ui.screens.historydetails.HistoryDetailsScreenEntry
 import com.development_felber.dartapp.ui.screens.historydetails.HistoryDetailsViewModel
 import com.development_felber.dartapp.ui.screens.home.HomeScreen
+import com.development_felber.dartapp.ui.screens.home.dialogs.StartMultiplayerDialogViewModelEntryPoint
 import com.development_felber.dartapp.ui.screens.settings.SettingsScreen
 import com.development_felber.dartapp.ui.screens.statistics.StatisticsScreen
 import com.development_felber.dartapp.ui.screens.table.TableScreen
@@ -126,6 +127,13 @@ class MainActivity : ComponentActivity() {
             }
             composable(NavigationDirections.Settings.destination) {
                 SettingsScreen(hiltViewModel())
+            }
+
+            composable(NavigationDirections.StartMultiplayer.destination,
+                enterTransition = { slideInVertically(tween(1000)) },
+                exitTransition = { slideOutVertically(tween(1000)) }
+            ) {
+                StartMultiplayerDialogViewModelEntryPoint(hiltViewModel())
             }
 
             composable(NavigationDirections.Game.destination,

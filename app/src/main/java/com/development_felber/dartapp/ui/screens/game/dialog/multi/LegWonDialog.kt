@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.Key.Companion.One
 import androidx.compose.ui.input.key.Key.Companion.Two
 import androidx.compose.ui.unit.dp
+import com.development_felber.dartapp.data.persistent.database.player.Player
 import com.development_felber.dartapp.ui.screens.game.PlayerScore
-import com.development_felber.dartapp.ui.screens.home.dialogs.Player
 
 data class CombinedScore(
     val legs1: Int,

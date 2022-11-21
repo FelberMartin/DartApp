@@ -6,8 +6,10 @@ import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
 import com.development_felber.dartapp.data.persistent.database.AppDatabase
 import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.data.persistent.database.TestLegData
+import com.development_felber.dartapp.data.persistent.database.player.PlayerDao
 import com.development_felber.dartapp.data.persistent.keyvalue.IKeyValueStorage
 import com.development_felber.dartapp.data.persistent.keyvalue.KeyValueStorage
+import com.development_felber.dartapp.data.repository.PlayerRepository
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.util.Constants.DATABASE_NAME
 import dagger.Module
@@ -61,11 +63,6 @@ object AppModule {
 
     @Singleton
     @Provides
-    @Named("fake_leg_dao")
-    fun provideExampleDataDatabase(): LegDao = FakeLegDao(fillWithTestData = false)
-
-    @Singleton
-    @Provides
     fun provideKeyValueStorage(
         @ApplicationContext context: Context
     ): IKeyValueStorage = KeyValueStorage(context)
@@ -73,4 +70,30 @@ object AppModule {
     @Singleton
     @Provides
     fun providesNavigationManager() = NavigationManager()
+
+    @Singleton
+    @Provides
+    fun providesPlayerDao(
+        database: AppDatabase
+    ) = database.getPlayerDao()
+
+    @Singleton
+    @Provides
+    fun providesMultiplayerGameDao(
+        database: AppDatabase
+    ) = database.getMultiplayerGameDao()
+
+    @Singleton
+    @Provides
+    fun providesDartSetDao(
+        database: AppDatabase
+    ) = database.getDartSetDao()
+
+    @Singleton
+    @Provides
+    fun providesPlayerRepository(
+        playerDao: PlayerDao,
+        keyValueStorage: IKeyValueStorage
+    ) = PlayerRepository(keyValueStorage, playerDao)
+
 }

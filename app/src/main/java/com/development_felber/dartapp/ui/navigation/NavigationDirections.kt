@@ -34,6 +34,10 @@ object NavigationDirections {
         destination = "table"
     )
 
+    val StartMultiplayer = NavigationDirectionCommand(
+        destination = "startMultiplayer"
+    )
+
     object HistoryDetails {
 
         const val keyLegId = "legId"
