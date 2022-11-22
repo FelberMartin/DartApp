@@ -3,6 +3,7 @@
 package com.development_felber.dartapp.ui.screens.home.dialogs
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
@@ -61,7 +62,10 @@ fun StartMultiplayerDialog(
 ) {
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.padding(32.dp),
+        modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+            .padding(32.dp),
     ) {
         DialogTitle()
         Column {
@@ -82,6 +86,7 @@ fun StartMultiplayerDialog(
             )
         }
 
+        Spacer(Modifier.height(12.dp))
         CancelConfirmButtonRow(
             onCancel = onCancel,
             onConfirm = onStartClick,
@@ -91,20 +96,19 @@ fun StartMultiplayerDialog(
 
 @Composable
 private fun DialogTitle() {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.fillMaxWidth().padding(top = 50.dp)
     ) {
         Icon(
             imageVector = Icons.Outlined.Group,
             contentDescription = null,
-            modifier = Modifier.size(64.dp),
+            modifier = Modifier.size(96.dp),
         )
-        Spacer(modifier = Modifier.width(24.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = "Multiplayer",
-            style = MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.displaySmall
         )
     }
 }
@@ -404,7 +408,7 @@ fun StepperRow(
 }
 
 
-@Preview(showBackground = true, widthDp = 380, heightDp = 700)
+@Preview(showBackground = true, widthDp = 380, heightDp = 800)
 @Composable
 private fun StartMultiplayerDialogPreview() {
     DartAppTheme() {
