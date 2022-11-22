@@ -22,12 +22,12 @@ Lastly there’s an extra table which offers overall stats about using the app a
 
 For the time being the app solely focuses on 501 training in single player mode, although different game modes and multiplayer may be added in the future.
 
-The app is available for **Android** in the Google Play Store. [Check it out](https://play.google.com/apps/internaltest/4699383055213103194)
+The app is available for **Android** in the Google Play Store. [Check it out](https://play.google.com/store/apps/details?id=com.development_felber.dartapp)
 
 ## 📩 Feedback
 
 You have a feature request, discovered a bug or any other kind of feedback? 
 
 - Reach out to me via email (development.felber@gmail.com)
-- Write a review in the [Google Play Store](https://play.google.com/apps/internaltest/4699383055213103194)
+- Write a review in the [Google Play Store](https://play.google.com/store/apps/details?id=com.development_felber.dartapp)
 - Create an [issue here on GitHub](https://github.com/FelberMartin/DartApp/issues/new)
