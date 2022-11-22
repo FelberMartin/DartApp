@@ -55,6 +55,12 @@ class StartMultiplayerDialogViewModel @Inject constructor(
             PlayerPosition.PLAYER_1 -> _player1.value = player
             PlayerPosition.PLAYER_2 -> _player2.value = player
         }
+        viewModelScope.launch {
+            when (playerPosition) {
+                PlayerPosition.PLAYER_1 -> playerRepository.setLastPlayer1(player!!)
+                PlayerPosition.PLAYER_2 -> playerRepository.setLastPlayer2(player!!)
+            }
+        }
     }
 
     fun setLegCount(count: Int) {
