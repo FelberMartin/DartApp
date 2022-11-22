@@ -42,14 +42,17 @@ fun CreateNewPlayerDialog(
             ) {
                 TextField(
                     value = playerName,
-                    onValueChange = { playerName = it },
+                    onValueChange = {
+                        if (!it.contains("\n")) {
+                            playerName = it
+                        }
+                    },
                     placeholder = {
                         Text(
                             text = "Player name",
                             color = MaterialTheme.colorScheme.outline,
                         )
                     },
-                    singleLine = true,
                     trailingIcon = {
                         if (result.isSuccess) {
                             Icon(

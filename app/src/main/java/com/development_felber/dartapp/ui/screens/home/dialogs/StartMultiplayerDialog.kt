@@ -93,6 +93,7 @@ fun StartMultiplayerDialog(
 
         Spacer(Modifier.height(12.dp))
         CancelConfirmButtonRow(
+            enabled = player1 != null && player2 != null,
             onCancel = onCancel,
             onConfirm = onStartClick,
         )
@@ -122,6 +123,7 @@ private fun DialogTitle() {
 
 @Composable
 private fun CancelConfirmButtonRow(
+    enabled: Boolean,
     onCancel: () -> Unit,
     onConfirm: () -> Unit
 ) {
@@ -135,7 +137,10 @@ private fun CancelConfirmButtonRow(
 
         Spacer(Modifier.width(32.dp))
 
-        Button(onClick = onConfirm) {
+        Button(
+            onClick = onConfirm,
+            enabled = enabled,
+        ) {
             Text("Let's go!")
         }
     }
