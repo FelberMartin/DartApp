@@ -26,8 +26,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
-import com.development_felber.dartapp.ui.navigation.NavigationDirections
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
+import com.development_felber.dartapp.ui.navigation.NavigationDestination
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
 import com.development_felber.dartapp.ui.shared.MyCard
@@ -43,7 +45,7 @@ import com.development_felber.dartapp.views.chart.util.DataSet
 
 @Composable
 fun StatisticsScreen(
-    viewModel: StatisticsViewModel
+    viewModel: StatisticsViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -471,7 +473,7 @@ private fun OtherStatistics(
             BigIconButton(
                 title = "History",
                 icon = Icons.Default.History,
-                onClick = { viewModel.navigate(NavigationDirections.History) }
+                onClick = { viewModel.navigate(NavigationCommand.ToHistory) }
             )
 
             Spacer(Modifier.width(50.dp))
@@ -479,7 +481,7 @@ private fun OtherStatistics(
             BigIconButton(
                 title = "Table",
                 icon = Icons.Default.Toc,
-                onClick = { viewModel.navigate(NavigationDirections.Table) }
+                onClick = { viewModel.navigate(NavigationCommand.ToTable) }
             )
         }
     }

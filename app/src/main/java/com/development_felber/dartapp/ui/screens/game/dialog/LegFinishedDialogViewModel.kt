@@ -5,7 +5,7 @@ import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.data.repository.SettingsRepository.BooleanSetting
-import com.development_felber.dartapp.ui.navigation.NavigationDirections
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.game.GameViewModel
 import com.development_felber.dartapp.ui.shared.NavigationViewModel
@@ -42,6 +42,6 @@ class LegFinishedDialogViewModel(
 
     fun onMoreDetailsClicked() {
         callingViewModel.dismissLegFinishedDialog(temporary = true)
-        navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
+        navigate(NavigationCommand.ToHistoryDetails(leg.id))
     }
 }

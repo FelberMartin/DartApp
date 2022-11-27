@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.development_felber.dartapp.ui.navigation.command.NavigationCommand
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
 @Composable
@@ -46,7 +46,7 @@ fun BackTopAppBar(
 ) = BackTopAppBar(
     title = title,
     scrollBehavior = scrollBehavior,
-    onBackClicked = { navigationViewModel.navigate(NavigationCommand.NAVIGATE_UP) }
+    onBackClicked = { navigationViewModel.navigate(NavigationCommand.Back) }
 )
 
 @Preview(showBackground = true, widthDp = 340, heightDp = 200)

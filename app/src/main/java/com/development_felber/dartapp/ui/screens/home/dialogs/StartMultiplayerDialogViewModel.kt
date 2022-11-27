@@ -6,9 +6,8 @@ import com.development_felber.dartapp.data.repository.PlayerRepository
 import com.development_felber.dartapp.game.GameSetup
 import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.ui.navigation.GameSetupHolder
-import com.development_felber.dartapp.ui.navigation.NavigationDirections
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.navigation.command.NavigationCommand
 import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import com.development_felber.dartapp.util.WhileUiSubscribed
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -102,11 +101,10 @@ class StartMultiplayerDialogViewModel @Inject constructor(
             legsToWin = legCount.value,
             setsToWin = setCount.value
         )
-        GameSetupHolder.gameSetup = gameSetup
-        this.navigate(NavigationDirections.Game)
+        navigate(NavigationCommand.ToGame(gameSetup))
     }
 
     fun onDialogCancelled() {
-        navigate(NavigationCommand.NAVIGATE_UP)
+        navigate(NavigationCommand.Back)
     }
 }

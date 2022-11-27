@@ -1,4 +1,4 @@
-package com.development_felber.dartapp.ui
+package com.development_felber.dartapp.ui.screens.splash
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.EaseInOutCubic
@@ -21,14 +21,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.R
-import com.development_felber.dartapp.ui.navigation.NavigationDirections
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 import kotlinx.coroutines.delay
 
 @Composable
-fun AnimatedSplashScreen(navController: NavController) {
+fun AnimatedSplashScreen(
+    viewModel: SplashViewModel = hiltViewModel()
+) {
     val scale = remember {
         Animatable(0f)
     }
@@ -37,19 +38,18 @@ fun AnimatedSplashScreen(navController: NavController) {
     }
 
     val startDelay = 0L
-    val duration = 1200
+    val duration = 900L
     LaunchedEffect(key1 = true, block = {
         delay(startDelay)
         scale.animateTo(
             targetValue = 1f,
             animationSpec = tween(
-                durationMillis = duration,
+                durationMillis = duration.toInt(),
                 easing = EaseInOutCubic
             ),
         )
-        delay(duration.toLong())
-        navController.popBackStack()
-        navController.navigate(NavigationDirections.Home.destination)
+        delay(duration)
+        viewModel.onSplashFinished()
     })
 
     LaunchedEffect(key1 = true, block = {
@@ -57,7 +57,7 @@ fun AnimatedSplashScreen(navController: NavController) {
         alpha.animateTo(
             targetValue = 1f,
             animationSpec = tween(
-                durationMillis = duration,
+                durationMillis = duration.toInt(),
             )
         )
     })

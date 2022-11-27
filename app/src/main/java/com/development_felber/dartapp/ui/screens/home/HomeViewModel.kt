@@ -1,6 +1,7 @@
 package com.development_felber.dartapp.ui.screens.home
 
-import com.development_felber.dartapp.ui.navigation.NavigationDirections
+import com.development_felber.dartapp.game.GameSetup
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,9 +25,9 @@ class HomeViewModel @Inject constructor(
 
     fun onTrainClicked() {
         if (isMultiplayer.value) {
-            navigate(NavigationDirections.StartMultiplayer)
+            navigate(NavigationCommand.ToStartMultiplayer)
         } else {
-            navigate(NavigationDirections.Game)
+            navigate(NavigationCommand.ToGame(GameSetup.Solo))
         }
     }
 

@@ -6,4 +6,5 @@
 TODO:
  - Set to normal database and no random data
  - Move graph library to Jetpack Compose
- - Update navigation similar to BuergerZeiterfassung
+ - Remove NavigationViewModel
+ - Check app launch on api level 21 (does localtime work?)

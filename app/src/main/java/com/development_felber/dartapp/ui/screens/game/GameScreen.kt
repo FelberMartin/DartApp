@@ -22,14 +22,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.numberpad.NumberPadBase
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.game.numberpad.PerServeNumberPad
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.navigation.command.NavigationCommand
 import com.development_felber.dartapp.ui.screens.game.dialog.*
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialog
 import com.development_felber.dartapp.ui.screens.game.dialog.solo.LegFinishedDialogEntryPoint
@@ -44,7 +45,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun GameScreen(
-    viewModel: GameViewModel
+    viewModel: GameViewModel = hiltViewModel()
 ) {
     KeepScreenOn()
     BackHandler() {
@@ -361,7 +362,7 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
             onPlayAgainClicked = viewModel::onPlayAgainClicked,
             onMenuClicked = {
                 viewModel.dismissLegFinishedDialog()
-                viewModel.navigate(NavigationCommand.NAVIGATE_UP)
+                viewModel.navigate(NavigationCommand.Back)
             }
         )
     }
@@ -388,7 +389,7 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
         ExitDialog(
             onDismissDialog = viewModel::dismissExitDialog) {
             viewModel.dismissExitDialog()
-            viewModel.navigate(NavigationCommand.NAVIGATE_UP)
+            viewModel.navigate(NavigationCommand.Back)
         }
     }
 }

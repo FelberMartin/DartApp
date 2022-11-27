@@ -21,11 +21,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.data.persistent.database.Converters
 import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
 import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.data.persistent.database.TestLegData
-import com.development_felber.dartapp.ui.navigation.NavigationDirections
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.statistics.NoDataWarning
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
@@ -38,7 +39,9 @@ import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun HistoryScreenEntry(viewModel: HistoryViewModel) {
+fun HistoryScreenEntry(
+    viewModel: HistoryViewModel = hiltViewModel()
+) {
     val result by viewModel.categorizedLegsResult.observeAsStateNonOptional()
     HistoryScreen(categorizedLegsResult = result, viewModel = viewModel)
 }
@@ -96,7 +99,7 @@ private fun HistoryScreenContent(
                 HistoryItem(
                     leg = leg,
                     onSeeMorePressed = {
-                        viewModel.navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
+                        viewModel.navigate(NavigationCommand.ToHistoryDetails(leg.id))
                     }
                 )
             }
