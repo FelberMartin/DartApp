@@ -4,7 +4,6 @@ package com.development_felber.dartapp.data.persistent.database
 import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import androidx.room.migration.AutoMigrationSpec
 import com.development_felber.dartapp.data.persistent.database.dart_set.DartSet
 import com.development_felber.dartapp.data.persistent.database.dart_set.DartSetDao
 import com.development_felber.dartapp.data.persistent.database.leg.Leg

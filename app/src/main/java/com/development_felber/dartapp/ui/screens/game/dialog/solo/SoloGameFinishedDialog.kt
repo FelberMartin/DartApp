@@ -22,8 +22,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.data.persistent.database.TestLegData
+import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.ui.screens.game.dialog.GameFinishedDialog
 import com.development_felber.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
 import com.development_felber.dartapp.ui.screens.historydetails.ServeDistributionChart

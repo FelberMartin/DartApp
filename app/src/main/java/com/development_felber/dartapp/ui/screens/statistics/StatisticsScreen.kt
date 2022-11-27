@@ -29,7 +29,6 @@ import androidx.core.view.children
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
 import com.development_felber.dartapp.ui.navigation.NavigationCommand
-import com.development_felber.dartapp.ui.navigation.NavigationDestination
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
 import com.development_felber.dartapp.ui.shared.MyCard

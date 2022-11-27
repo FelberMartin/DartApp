@@ -1,8 +1,8 @@
 package com.development_felber.dartapp.util.graphs.partitioner
 
-import com.development_felber.dartapp.util.graphs.filter.TimeLegFilter
 import com.development_felber.dartapp.data.persistent.database.Converters
 import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.util.graphs.filter.TimeLegFilter
 import com.development_felber.dartapp.util.time.TimeUnit
 import com.development_felber.dartapp.util.time.units.Day
 import com.development_felber.dartapp.util.time.units.Quarter

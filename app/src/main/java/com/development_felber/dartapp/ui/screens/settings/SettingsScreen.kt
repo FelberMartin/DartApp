@@ -2,12 +2,8 @@
 
 package com.development_felber.dartapp.ui.screens.settings
 
-import android.inputmethodservice.Keyboard
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -27,7 +23,6 @@ import com.development_felber.dartapp.ui.shared.BackTopAppBar
 import com.development_felber.dartapp.ui.shared.MyCard
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 import com.development_felber.dartapp.ui.values.Padding
-import org.w3c.dom.Text
 
 @Composable
 fun SettingsScreen(

@@ -5,7 +5,6 @@ import com.development_felber.dartapp.data.persistent.database.player.Player
 import com.development_felber.dartapp.data.repository.PlayerRepository
 import com.development_felber.dartapp.game.GameSetup
 import com.development_felber.dartapp.game.PlayerRole
-import com.development_felber.dartapp.ui.navigation.GameSetupHolder
 import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.NavigationViewModel

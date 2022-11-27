@@ -2,9 +2,7 @@ package com.development_felber.dartapp.di
 
 import android.content.Context
 import androidx.room.Room
-import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
 import com.development_felber.dartapp.data.persistent.database.AppDatabase
-import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.data.persistent.database.TestLegData
 import com.development_felber.dartapp.data.persistent.database.player.PlayerDao
 import com.development_felber.dartapp.data.persistent.keyvalue.IKeyValueStorage
@@ -19,7 +17,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module

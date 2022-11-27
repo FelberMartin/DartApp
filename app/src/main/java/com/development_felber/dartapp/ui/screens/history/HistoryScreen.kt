@@ -23,9 +23,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.data.persistent.database.Converters
+import com.development_felber.dartapp.data.persistent.database.TestLegData
 import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
 import com.development_felber.dartapp.data.persistent.database.leg.Leg
-import com.development_felber.dartapp.data.persistent.database.TestLegData
 import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.statistics.NoDataWarning
