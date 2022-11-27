@@ -5,5 +5,5 @@
 
 TODO:
  - Set to normal database and no random data
- - Update Github page link to playstore
  - Move graph library to Jetpack Compose
+ - Update navigation similar to BuergerZeiterfassung

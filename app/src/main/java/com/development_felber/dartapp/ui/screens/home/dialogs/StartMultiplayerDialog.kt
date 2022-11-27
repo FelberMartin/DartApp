@@ -14,10 +14,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.development_felber.dartapp.data.persistent.database.player.Player
+import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
 @Composable
@@ -34,8 +34,8 @@ fun StartMultiplayerDialogViewModelEntryPoint(
         allPlayers = players,
         player1 = player1,
         player2 = player2,
-        onPlayer1Changed = { viewModel.setPlayer(PlayerPosition.PLAYER_1, it) },
-        onPlayer2Changed = { viewModel.setPlayer(PlayerPosition.PLAYER_2, it) },
+        onPlayer1Changed = { viewModel.setPlayer(PlayerRole.One, it) },
+        onPlayer2Changed = { viewModel.setPlayer(PlayerRole.Two, it) },
         onNewPlayerCreated = viewModel::onCreateNewPlayer,
         validateNewPlayerName = viewModel::isNewPlayerNameValid,
         legCount = legCount,
@@ -55,7 +55,7 @@ fun StartMultiplayerDialog(
     player2: Player?,
     onPlayer1Changed: (Player?) -> Unit,
     onPlayer2Changed: (Player?) -> Unit,
-    onNewPlayerCreated: (String, PlayerPosition) -> Unit,
+    onNewPlayerCreated: (String, PlayerRole) -> Unit,
     validateNewPlayerName:(String) -> Result<Unit>,
     legCount: Int,
     setCount: Int,
@@ -153,7 +153,7 @@ private fun ColumnScope.PlayersSelection(
     player2: Player?,
     onPlayer1Changed: (Player?) -> Unit,
     onPlayer2Changed: (Player?) -> Unit,
-    onNewPlayerCreated: (String, PlayerPosition) -> Unit,
+    onNewPlayerCreated: (String, PlayerRole) -> Unit,
     validateNewPlayerName:(String) -> Result<Unit>,
     ) {
     HeaderText(text = "Players")
@@ -176,7 +176,7 @@ private fun ColumnScope.PlayersSelection(
             PlayerSelection(
                 allPlayers = allPlayers,
                 selectedPlayer = player1,
-                onNewPlayerCreated = { onNewPlayerCreated(it, PlayerPosition.PLAYER_1) },
+                onNewPlayerCreated = { onNewPlayerCreated(it, PlayerRole.One) },
                 onSelectedPlayerChanged = onPlayer1Changed,
                 invalidPlayer = player2,
                 validateNewPlayerName = validateNewPlayerName,
@@ -190,7 +190,7 @@ private fun ColumnScope.PlayersSelection(
             PlayerSelection(
                 allPlayers = allPlayers,
                 selectedPlayer = player2,
-                onNewPlayerCreated = { onNewPlayerCreated(it, PlayerPosition.PLAYER_2) },
+                onNewPlayerCreated = { onNewPlayerCreated(it, PlayerRole.Two) },
                 onSelectedPlayerChanged = onPlayer2Changed,
                 invalidPlayer = player1,
                 validateNewPlayerName = validateNewPlayerName,

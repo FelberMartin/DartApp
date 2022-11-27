@@ -3,6 +3,10 @@ package com.development_felber.dartapp.ui.screens.home.dialogs
 import androidx.lifecycle.viewModelScope
 import com.development_felber.dartapp.data.persistent.database.player.Player
 import com.development_felber.dartapp.data.repository.PlayerRepository
+import com.development_felber.dartapp.game.GameSetup
+import com.development_felber.dartapp.game.PlayerRole
+import com.development_felber.dartapp.ui.navigation.GameSetupHolder
+import com.development_felber.dartapp.ui.navigation.NavigationDirections
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.navigation.command.NavigationCommand
 import com.development_felber.dartapp.ui.shared.NavigationViewModel
@@ -13,11 +17,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
-enum class PlayerPosition {
-    PLAYER_1,
-    PLAYER_2
-}
 
 const val MAX_PLAYER_NAME_LENGTH = 12
 
@@ -50,15 +49,15 @@ class StartMultiplayerDialogViewModel @Inject constructor(
         }
     }
 
-    fun setPlayer(playerPosition: PlayerPosition, player: Player?) {
+    fun setPlayer(playerPosition: PlayerRole, player: Player?) {
         when (playerPosition) {
-            PlayerPosition.PLAYER_1 -> _player1.value = player
-            PlayerPosition.PLAYER_2 -> _player2.value = player
+            PlayerRole.One -> _player1.value = player
+            PlayerRole.Two -> _player2.value = player
         }
         viewModelScope.launch {
             when (playerPosition) {
-                PlayerPosition.PLAYER_1 -> playerRepository.setLastPlayer1(player!!)
-                PlayerPosition.PLAYER_2 -> playerRepository.setLastPlayer2(player!!)
+                PlayerRole.One -> playerRepository.setLastPlayer1(player!!)
+                PlayerRole.Two -> playerRepository.setLastPlayer2(player!!)
             }
         }
     }
@@ -71,13 +70,13 @@ class StartMultiplayerDialogViewModel @Inject constructor(
         _setCount.value = count
     }
 
-    fun onCreateNewPlayer(playerName: String, playerPosition: PlayerPosition) {
+    fun onCreateNewPlayer(playerName: String, playerPosition: PlayerRole) {
         viewModelScope.launch {
             val result = playerRepository.createNewPlayer(playerName)
             if (result.isSuccess) {
                 when (playerPosition) {
-                    PlayerPosition.PLAYER_1 -> _player1.value = result.getOrNull()
-                    PlayerPosition.PLAYER_2 -> _player2.value = result.getOrNull()
+                    PlayerRole.One -> _player1.value = result.getOrNull()
+                    PlayerRole.Two -> _player2.value = result.getOrNull()
                 }
             }
         }
@@ -97,7 +96,14 @@ class StartMultiplayerDialogViewModel @Inject constructor(
     }
 
     fun onDialogConfirmed() {
-        // TODO
+        val gameSetup = GameSetup.Multiplayer(
+            player1 = player1.value!!,
+            player2 = player2.value!!,
+            legsToWin = legCount.value,
+            setsToWin = setCount.value
+        )
+        GameSetupHolder.gameSetup = gameSetup
+        this.navigate(NavigationDirections.Game)
     }
 
     fun onDialogCancelled() {

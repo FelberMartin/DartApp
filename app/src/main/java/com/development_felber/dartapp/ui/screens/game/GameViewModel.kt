@@ -9,13 +9,16 @@ import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.Game
+import com.development_felber.dartapp.game.GameSetup
+import com.development_felber.dartapp.game.GameState
+import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.game.gameaction.AddDartGameAction
 import com.development_felber.dartapp.game.gameaction.AddServeGameAction
 import com.development_felber.dartapp.game.numberpad.NumberPadBase
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.game.numberpad.PerServeNumberPad
+import com.development_felber.dartapp.ui.navigation.GameSetupHolder
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.screens.game.dialog.DialogUiState
 import com.development_felber.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialogResult
 import com.development_felber.dartapp.ui.shared.NavigationViewModel
@@ -28,6 +31,41 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 const val PLACEHOLDER_STRING = "--"
+
+data class PlayerUiState(
+    val name: String,
+    val score: PlayerScore,
+    val pointsLeft: Int,
+    val last: Int,
+    val average: Double,
+    val dartCount: Int,
+)
+
+data class GameUiState(
+    val currentPlayer: PlayerRole = PlayerRole.One,
+    val checkoutTip: String? = null,
+    val playerUiStates: List<PlayerUiState>,
+    val numberPadUiState: NumberPadUiState = NumberPadUiState(),
+    val dialogUiState: DialogUiState = DialogUiState(),
+)
+
+data class NumberPadUiState(
+    val numberPad: NumberPadBase = PerServeNumberPad(),
+    val enterEnabled: Boolean = true,
+    val disabledNumbers: List<Int> = emptyList(),
+)
+
+data class DialogUiState(
+    val exitDialogOpen: Boolean = false,
+    val simpleDoubleAttemptsDialogOpen: Boolean = false,
+    val doubleAttemptsDialogOpen: Boolean = false,
+    val checkoutDialogOpen: Boolean = false,
+) {
+    fun anyDialogOpen(): Boolean {
+        return exitDialogOpen || simpleDoubleAttemptsDialogOpen || doubleAttemptsDialogOpen || checkoutDialogOpen
+    }
+}
+
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
@@ -73,6 +111,9 @@ class GameViewModel @Inject constructor(
         private set
 
     private var lastFinishedLeg: Leg? = null
+
+    val gameSetup: GameSetup
+        get() = GameSetupHolder.gameSetup!!
 
     init {
         updateUi()
