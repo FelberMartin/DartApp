@@ -38,16 +38,6 @@ fun BackTopAppBar(
     )
 }
 
-@Composable
-fun BackTopAppBar(
-    title: String,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    navigationViewModel: NavigationViewModel
-) = BackTopAppBar(
-    title = title,
-    scrollBehavior = scrollBehavior,
-    onBackClicked = { navigationViewModel.navigate(NavigationCommand.Back) }
-)
 
 @Preview(showBackground = true, widthDp = 340, heightDp = 200)
 @Composable

@@ -1,10 +1,7 @@
 package com.development_felber.dartapp.ui.screens.game
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.data.persistent.database.leg.LegDao
 import com.development_felber.dartapp.data.repository.SettingsRepository
@@ -17,10 +14,10 @@ import com.development_felber.dartapp.game.numberpad.NumberPadBase
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.game.numberpad.PerServeNumberPad
 import com.development_felber.dartapp.ui.navigation.GameSetupHolder
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialogResult
-import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import com.development_felber.dartapp.util.CheckoutTip
 import com.development_felber.dartapp.util.GameUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -68,10 +65,10 @@ data class DialogUiState(
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
-    val navigationManager: NavigationManager,
+    private val navigationManager: NavigationManager,
     val settingsRepository: SettingsRepository,
     private val legDao: LegDao
-) : NavigationViewModel(navigationManager) {
+) : ViewModel() {
 
     private val _numberPad: MutableLiveData<NumberPadBase> = MutableLiveData(PerServeNumberPad())
     val numberPad: LiveData<NumberPadBase> = _numberPad
@@ -367,6 +364,10 @@ class GameViewModel @Inject constructor(
     fun createLegFinishedDialogViewModel() : LegFinishedDialogViewModel {
         return LegFinishedDialogViewModel(navigationManager, lastFinishedLeg!!, legDao, settingsRepository,
             this)
+    }
+
+    fun navigateBack() {
+        navigationManager.navigate(NavigationCommand.Back)
     }
 
 }

@@ -31,7 +31,7 @@ fun TableScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { BackTopAppBar(
             title = "Table",
-            navigationViewModel = viewModel,
+            onBackClicked = viewModel::navigateBack,
             scrollBehavior = scrollBehavior
         )},
         content = { innerPadding ->

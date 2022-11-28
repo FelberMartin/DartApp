@@ -39,7 +39,7 @@ fun SettingsScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { BackTopAppBar(
             title = "Settings",
-            navigationViewModel = viewModel,
+            onBackClicked = viewModel::navigateBack,
             scrollBehavior = scrollBehavior
         )},
         content = { innerPadding ->

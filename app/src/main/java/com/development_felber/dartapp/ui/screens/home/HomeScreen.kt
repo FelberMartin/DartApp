@@ -38,11 +38,11 @@ import com.development_felber.dartapp.ui.theme.DartAppTheme
 
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel = hiltViewModel(),
+    viewModel: HomeViewModel = hiltViewModel(),
     statisticsViewModel: StatisticsViewModel = hiltViewModel(),
 ) {
     var easterEggActivated by remember { mutableStateOf(false) }
-    val isMultiplayer by homeViewModel.isMultiplayer.collectAsState()
+    val isMultiplayer by viewModel.isMultiplayer.collectAsState()
 
     Background {
         Column(
@@ -53,16 +53,16 @@ fun HomeScreen(
 //                .padding(top = 24.dp, bottom = 12.dp)
                 .fillMaxSize(),
         ) {
-            SettingsRow(onSettingsClicked = { homeViewModel.navigate(NavigationCommand.ToSettings) })
-            StatisticsCard(homeViewModel, statisticsViewModel)
+            SettingsRow(onSettingsClicked = viewModel::navigateToSettings)
+            StatisticsCard(viewModel, statisticsViewModel)
             AppIconAndName(
                 onToggleEasterEgg = { easterEggActivated = !easterEggActivated }
             )
             PlayButtonAndModeSelection(
-                onTrainClicked = homeViewModel::onTrainClicked,
+                onTrainClicked = viewModel::onTrainClicked,
                 easterEggActivated = easterEggActivated,
                 isMultiplayer = isMultiplayer,
-                onMultiplayerChange = homeViewModel::setMultiplayer
+                onMultiplayerChange = viewModel::setMultiplayer
             )
         }
     }
@@ -91,7 +91,7 @@ private fun SettingsRow(
 
 @Composable
 private fun StatisticsCard(
-    homeViewModel: HomeViewModel,
+    viewModel: HomeViewModel,
     statisticsViewModel: StatisticsViewModel
 ) {
     MyCard {
@@ -105,7 +105,7 @@ private fun StatisticsCard(
             StatisticsPreview(statisticsViewModel)
 
             FilledTonalButton(
-                onClick = { homeViewModel.navigate(NavigationCommand.ToStatistics) }
+                onClick = viewModel::navigateToStatistics
             ) {
                 Icon(
                     imageVector = Icons.Filled.StackedLineChart,

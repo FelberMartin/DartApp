@@ -362,7 +362,7 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
             onPlayAgainClicked = viewModel::onPlayAgainClicked,
             onMenuClicked = {
                 viewModel.dismissLegFinishedDialog()
-                viewModel.navigate(NavigationCommand.Back)
+                viewModel.navigateBack()
             }
         )
     }
@@ -389,7 +389,7 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
         ExitDialog(
             onDismissDialog = viewModel::dismissExitDialog) {
             viewModel.dismissExitDialog()
-            viewModel.navigate(NavigationCommand.Back)
+            viewModel.navigateBack()
         }
     }
 }

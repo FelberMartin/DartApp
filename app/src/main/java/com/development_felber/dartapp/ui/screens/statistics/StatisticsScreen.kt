@@ -52,7 +52,7 @@ fun StatisticsScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { BackTopAppBar(
             title = "Statistics",
-            navigationViewModel = viewModel,
+            onBackClicked = viewModel::navigateBack,
             scrollBehavior = scrollBehavior
         )},
         content = { innerPadding ->
@@ -472,7 +472,7 @@ private fun OtherStatistics(
             BigIconButton(
                 title = "History",
                 icon = Icons.Default.History,
-                onClick = { viewModel.navigate(NavigationCommand.ToHistory) }
+                onClick = viewModel::navigateToHistory
             )
 
             Spacer(Modifier.width(50.dp))
@@ -480,7 +480,7 @@ private fun OtherStatistics(
             BigIconButton(
                 title = "Table",
                 icon = Icons.Default.Toc,
-                onClick = { viewModel.navigate(NavigationCommand.ToTable) }
+                onClick = viewModel::navigateToTable
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.development_felber.dartapp.ui.screens.home.dialogs
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.development_felber.dartapp.data.persistent.database.player.Player
 import com.development_felber.dartapp.data.repository.PlayerRepository
@@ -7,7 +8,6 @@ import com.development_felber.dartapp.game.GameSetup
 import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import com.development_felber.dartapp.util.WhileUiSubscribed
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,9 +20,9 @@ const val MAX_PLAYER_NAME_LENGTH = 12
 
 @HiltViewModel
 class StartMultiplayerDialogViewModel @Inject constructor(
-    navigationManager: NavigationManager,
+    private val navigationManager: NavigationManager,
     private val playerRepository: PlayerRepository,
-) : NavigationViewModel(navigationManager) {
+) : ViewModel() {
 
     private val _player1 = MutableStateFlow<Player?>(null)
     val player1 = _player1.asStateFlow()
@@ -100,10 +100,10 @@ class StartMultiplayerDialogViewModel @Inject constructor(
             legsToWin = legCount.value,
             setsToWin = setCount.value
         )
-        navigate(NavigationCommand.ToGame(gameSetup))
+        navigationManager.navigate(NavigationCommand.ToGame(gameSetup))
     }
 
     fun onDialogCancelled() {
-        navigate(NavigationCommand.Back)
+        navigationManager.navigate(NavigationCommand.Back)
     }
 }

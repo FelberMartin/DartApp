@@ -1,13 +1,10 @@
 package com.development_felber.dartapp.ui.screens.statistics
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.development_felber.dartapp.data.persistent.database.leg.Leg
 import com.development_felber.dartapp.data.persistent.database.leg.LegDao
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import com.development_felber.dartapp.util.graphs.filter.GamesLegFilter
 import com.development_felber.dartapp.util.graphs.filter.LegFilterBase
 import com.development_felber.dartapp.util.graphs.statistics.StatisticTypeBase
@@ -19,9 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StatisticsViewModel @Inject constructor(
-    navigationManager: NavigationManager,
+    private val navigationManager: NavigationManager,
     private val legDao: LegDao
-): NavigationViewModel(navigationManager) {
+): ViewModel() {
 
     private val _statisticType = MutableLiveData<StatisticTypeBase>(StatisticTypeBase.PlaceHolderStatistic)
     val statisticType: LiveData<StatisticTypeBase> = _statisticType
@@ -78,6 +75,18 @@ class StatisticsViewModel @Inject constructor(
 
     private fun rebuildDataSet() {
         _dataSet.value = statisticType.value!!.buildDataSet(legs, legFilter.value!!)
+    }
+
+    fun navigateBack() {
+        navigationManager.navigate(NavigationCommand.Back)
+    }
+
+    fun navigateToTable() {
+        navigationManager.navigate(NavigationCommand.ToTable)
+    }
+
+    fun navigateToHistory() {
+        navigationManager.navigate(NavigationCommand.ToHistory)
     }
 
 }

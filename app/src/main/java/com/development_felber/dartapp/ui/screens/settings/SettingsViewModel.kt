@@ -1,12 +1,13 @@
 package com.development_felber.dartapp.ui.screens.settings
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.development_felber.dartapp.data.AppearanceOption
 import com.development_felber.dartapp.data.repository.SettingsRepository
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,8 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val settingsRepository: SettingsRepository,
-    navigationManager: NavigationManager
-): NavigationViewModel(navigationManager) {
+    private val navigationManager: NavigationManager
+): ViewModel() {
 
     val appearanceOption: LiveData<AppearanceOption> = settingsRepository.appearanceOptionFlow.asLiveData()
     val askForDouble: LiveData<Boolean> =
@@ -47,6 +48,10 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             settingsRepository.setBooleanSetting(SettingsRepository.BooleanSetting.ShowStatsAfterLegFinished, checked)
         }
+    }
+
+    fun navigateBack() {
+        navigationManager.navigate(NavigationCommand.Back)
     }
 
 }

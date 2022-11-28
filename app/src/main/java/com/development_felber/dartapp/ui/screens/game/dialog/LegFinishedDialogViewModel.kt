@@ -8,7 +8,6 @@ import com.development_felber.dartapp.data.repository.SettingsRepository.Boolean
 import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.game.GameViewModel
-import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import com.development_felber.dartapp.util.graphs.filter.GamesLegFilter
 import kotlinx.coroutines.launch
 
@@ -18,9 +17,7 @@ class LegFinishedDialogViewModel(
     private val databaseDao: LegDao,
     private val settingsRepository: SettingsRepository,
     private val callingViewModel: GameViewModel
-) : NavigationViewModel(
-    navigationManager
-){
+) : ViewModel(){
 
     private val _last10GamesAverage = MutableLiveData(0.0)
     val last10GamesAverage: LiveData<Double> = _last10GamesAverage
@@ -39,9 +36,8 @@ class LegFinishedDialogViewModel(
         }
     }
 
-
     fun onMoreDetailsClicked() {
         callingViewModel.dismissLegFinishedDialog(temporary = true)
-        navigate(NavigationCommand.ToHistoryDetails(leg.id))
+        navigationManager.navigate(NavigationCommand.ToHistoryDetails(leg.id))
     }
 }

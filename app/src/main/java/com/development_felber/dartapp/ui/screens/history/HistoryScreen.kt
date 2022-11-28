@@ -57,7 +57,7 @@ fun HistoryScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { BackTopAppBar(
             title = "History",
-            navigationViewModel = viewModel,
+            onBackClicked = viewModel::navigateBack,
             scrollBehavior = scrollBehavior
         )},
         content = { innerPadding ->
@@ -98,9 +98,7 @@ private fun HistoryScreenContent(
             items(legs, key = { it.id }) { leg ->
                 HistoryItem(
                     leg = leg,
-                    onSeeMorePressed = {
-                        viewModel.navigate(NavigationCommand.ToHistoryDetails(leg.id))
-                    }
+                    onSeeMorePressed = viewModel::navigateToLegDetails
                 )
             }
         }
