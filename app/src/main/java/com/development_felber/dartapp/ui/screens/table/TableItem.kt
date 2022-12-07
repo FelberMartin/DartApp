@@ -1,16 +1,16 @@
 package com.development_felber.dartapp.ui.screens.table
 
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.util.GameUtil
 import com.development_felber.dartapp.util.extensions.toPrettyString
 
 open class TableItem(
     val name: String,
-    private val evaluator: ((List<Leg>) -> String)?,
+    private val evaluator: ((List<FinishedLeg>) -> String)?,
 ) {
 
-    fun getValue(legs: List<Leg>?): String {
+    fun getValue(legs: List<FinishedLeg>?): String {
         if (legs == null) return "No Data"
         val stringToShow = evaluator?.invoke(legs) ?: ""
         return stringToShow.replace("NaN", "-")

@@ -1,7 +1,7 @@
 package com.development_felber.dartapp.util.categorized_sort
 
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.ui.screens.history.CategorizedSortTypeBase
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -16,7 +16,7 @@ object DateCategorizedSortType : CategorizedSortTypeBase(name = "Date", byDefaul
             Category("A long time ago...", 0),
         )
 
-    override fun valueForLeg(leg: Leg): Number {
+    override fun valueForLeg(leg: FinishedLeg): Number {
         val endDateTime = Converters.toLocalDateTime(leg.endTime)
         return endDateTime.toEpochSecond(ZoneOffset.UTC)
     }

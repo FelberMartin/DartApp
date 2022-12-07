@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.graphs.filter
 
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.util.graphs.partitioner.LegPartitioner
 
 abstract class LegFilterBase(
@@ -8,7 +8,7 @@ abstract class LegFilterBase(
     val partitioner: LegPartitioner
 ) {
 
-    abstract fun filterLegs(legs: List<Leg>): List<Leg>
+    abstract fun filterLegs(legs: List<FinishedLeg>): List<FinishedLeg>
 
     enum class Category(val displayedName: String, val filterOptions: List<LegFilterBase>) {
         ByGameCount("Games", GamesLegFilter.allFilters),

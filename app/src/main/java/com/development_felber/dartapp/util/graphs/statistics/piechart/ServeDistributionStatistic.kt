@@ -1,7 +1,7 @@
 package com.development_felber.dartapp.util.graphs.statistics.piechart
 
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.util.GameUtil
 import com.development_felber.dartapp.util.graphs.filter.LegFilterBase
 import com.development_felber.dartapp.util.graphs.statistics.StatisticTypeBase
@@ -15,7 +15,7 @@ object ServeDistributionStatistic : StatisticTypeBase(
 ) {
     val DEFAULT_SERVE_CATEGORIES = listOf(0, 60, 100, 140, 180)
 
-    override fun buildDataSet(legs: List<Leg>, filter: LegFilterBase): DataSet {
+    override fun buildDataSet(legs: List<FinishedLeg>, filter: LegFilterBase): DataSet {
         val filteredLegs = filter.filterLegs(legs)
         val serves = filteredLegs.flatMap { leg -> Converters.toListOfInts(leg.servesList) }
         val categoryCounts = GameUtil.partitionSizeForLowerLimits(serves, DEFAULT_SERVE_CATEGORIES)

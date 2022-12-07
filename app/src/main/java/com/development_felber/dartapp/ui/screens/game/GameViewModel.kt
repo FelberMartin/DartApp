@@ -2,10 +2,10 @@ package com.development_felber.dartapp.ui.screens.game
 
 import android.util.Log
 import androidx.lifecycle.*
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
-import com.development_felber.dartapp.data.persistent.database.leg.LegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
 import com.development_felber.dartapp.data.repository.SettingsRepository
-import com.development_felber.dartapp.game.Game
+import com.development_felber.dartapp.game.Leg
 import com.development_felber.dartapp.game.GameSetup
 import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.game.gameaction.AddDartGameAction
@@ -67,7 +67,7 @@ data class DialogUiState(
 class GameViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     val settingsRepository: SettingsRepository,
-    private val legDao: LegDao
+    private val finishedLegDao: FinishedLegDao
 ) : ViewModel() {
 
     private val _numberPad: MutableLiveData<NumberPadBase> = MutableLiveData(PerServeNumberPad())
@@ -98,15 +98,15 @@ class GameViewModel @Inject constructor(
         get() = numberPad.value is PerDartNumberPad
 
     private val _dialogUiState = MutableStateFlow(DialogUiState())
-    val dialogUiState: LiveData<DialogUiState> = _dialogUiState.asLiveData()
+    val dialogUiState = _dialogUiState.asStateFlow()
 
     private val _dartOrServeEnteredFlow = MutableSharedFlow<Int>(replay = 0)
     val dartOrServeEnteredFlow: SharedFlow<Int> = _dartOrServeEnteredFlow
 
-    var game = Game()
+    var leg = Leg()
         private set
 
-    private var lastFinishedLeg: Leg? = null
+    private var lastFinishedLeg: FinishedLeg? = null
 
     val gameSetup: GameSetup
         get() = GameSetupHolder.gameSetup!!
@@ -116,14 +116,12 @@ class GameViewModel @Inject constructor(
     }
 
     fun closeClicked() {
-        _dialogUiState.update { currentState ->
-            currentState.copy(exitDialogOpen = true)
-        }
+        _dialogUiState.value = _dialogUiState.value.copy(exitDialogOpen = true)
     }
 
     fun onUndoClicked() {
         viewModelScope.launch {
-            game.undo()
+            leg.undo()
             numberPad.value!!.clear()
             updateUi()
         }
@@ -132,7 +130,7 @@ class GameViewModel @Inject constructor(
     fun onSwapNumberPadClicked() {
         if (usePerDartNumberPad) {
             _numberPad.value = PerServeNumberPad()
-            game.completeDartsToFullServe()
+            leg.completeDartsToFullServe()
         } else {
             _numberPad.value = PerDartNumberPad()
         }
@@ -154,7 +152,7 @@ class GameViewModel @Inject constructor(
 
     private fun updateEnterButton() {
         val number = numberPad.value!!.number.value
-        val valid = game.isNumberValid(number, usePerDartNumberPad)
+        val valid = leg.isNumberValid(number, usePerDartNumberPad)
         _enterDisabled.value = !valid
     }
 
@@ -166,7 +164,7 @@ class GameViewModel @Inject constructor(
         for (i in numbersToCheck) {
             val dart = i * modifier.multiplier
             val doubleModifierEnabled =  modifier == PerDartNumberPad.Modifier.Double
-            val valid = game.isNumberValid(dart, true, doubleModifierEnabled)
+            val valid = leg.isNumberValid(dart, true, doubleModifierEnabled)
             if (!valid) {
                 disabledNumbers.add(i)
             }
@@ -195,19 +193,17 @@ class GameViewModel @Inject constructor(
 
     private suspend fun enterNumberToGame(number: Int) {
         if (usePerDartNumberPad) {
-            game.applyAction(AddDartGameAction(number))
+            leg.applyAction(AddDartGameAction(number))
         } else {
-            game.applyAction(AddServeGameAction(number))
+            leg.applyAction(AddServeGameAction(number))
         }
 
         updateUi()
-        _dialogUiState.update { state ->
-            state.copy(
-                simpleDoubleAttemptsDialogOpen = shouldShowSimpleDoubleAttemptDialog(number),
-                doubleAttemptsDialogOpen = shouldShowDoubleAttemptsDialog(number),
-                checkoutDialogOpen = shouldShowCheckoutDialog()
-            )
-        }
+        _dialogUiState.value = _dialogUiState.value.copy(
+            simpleDoubleAttemptsDialogOpen = shouldShowSimpleDoubleAttemptDialog(number),
+            doubleAttemptsDialogOpen = shouldShowDoubleAttemptsDialog(number),
+            checkoutDialogOpen = shouldShowCheckoutDialog()
+        )
 
         checkLegFinished()
     }
@@ -221,12 +217,12 @@ class GameViewModel @Inject constructor(
         if (!askForDouble) {
             return false
         }
-        if (game.pointsLeft == 0) {
+        if (leg.pointsLeft == 0) {
             // The game was finished with a double, so do not ask, but automatically add a double attempt.
-            game.doubleAttemptsList.add(1)
+            leg.doubleAttemptsList.add(1)
             return false
         }
-        val points = game.pointsLeft + lastDart
+        val points = leg.pointsLeft + lastDart
         val couldFinishWithDouble = points % 2 == 0 && (points == 50 || points <= 40)
         return couldFinishWithDouble
     }
@@ -240,27 +236,27 @@ class GameViewModel @Inject constructor(
         if (!askForDouble) {
             return false
         }
-        if (game.pointsLeft > 50 && lastServe > 0) {
+        if (leg.pointsLeft > 50 && lastServe > 0) {
             return false
         }
-        val pointsBeforeServe = game.pointsLeft + lastServe
+        val pointsBeforeServe = leg.pointsLeft + lastServe
         return CheckoutTip.checkoutTips.contains(pointsBeforeServe)
     }
 
     private fun updateUi() {
-        _pointsLeft.value = game.pointsLeft
-        _dartCount.value = game.dartCount
-        val average = game.getAverage(usePerDartNumberPad)
+        _pointsLeft.value = leg.pointsLeft
+        _dartCount.value = leg.dartCount
+        val average = leg.getAverage(usePerDartNumberPad)
         _average.value = if (average != null) String.format("%.2f", average) else PLACEHOLDER_STRING
-        val lastString = game.getLast(usePerDartNumberPad)?.toString()
+        val lastString = leg.getLast(usePerDartNumberPad)?.toString()
         _last.value = lastString ?: PLACEHOLDER_STRING
 
-        _checkoutTip.value = CheckoutTip.checkoutTips[game.pointsLeft]
+        _checkoutTip.value = CheckoutTip.checkoutTips[leg.pointsLeft]
         updateEnterButton()
     }
 
     fun dismissExitDialog() {
-        _dialogUiState.update { state -> state.copy(exitDialogOpen = false) }
+        _dialogUiState.value = _dialogUiState.value.copy(exitDialogOpen = false)
     }
 
     fun dismissLegFinishedDialog(temporary: Boolean = false) {
@@ -275,9 +271,9 @@ class GameViewModel @Inject constructor(
 
     fun simpleDoubleAttemptsEntered(attempt: Boolean) {
         if (attempt) {
-            game.doubleAttemptsList.add(1)
+            leg.doubleAttemptsList.add(1)
         }
-        _dialogUiState.update { state -> state.copy(simpleDoubleAttemptsDialogOpen = false) }
+        _dialogUiState.value = _dialogUiState.value.copy(simpleDoubleAttemptsDialogOpen = false)
     }
 
     private suspend fun shouldShowCheckoutDialog() : Boolean {
@@ -289,15 +285,18 @@ class GameViewModel @Inject constructor(
         if (!askForCheckout) {
             return false
         }
-        return game.pointsLeft == 0
+        return leg.pointsLeft == 0
     }
 
     fun getMinimumDartCount() : Int? {
-        return GameUtil.minDartCountRequiredToFinishWithinServe(game.pointsLeftBeforeLastServe())
+        return GameUtil.minDartCountRequiredToFinishWithinServe(leg.pointsLeftBeforeLastServe())
     }
 
     fun onDoubleAttemptsAndCheckoutCancelled() {
-        _dialogUiState.update { state -> state.copy(doubleAttemptsDialogOpen = false, checkoutDialogOpen = false) }
+        _dialogUiState.value = _dialogUiState.value.copy(
+            doubleAttemptsDialogOpen = false,
+            checkoutDialogOpen = false
+        )
         onUndoClicked()
     }
 
@@ -311,20 +310,20 @@ class GameViewModel @Inject constructor(
     }
 
     fun enterDoubleAttempts(attempts: Int) {
-        game.doubleAttemptsList.add(attempts)
-        _dialogUiState.update { state -> state.copy(doubleAttemptsDialogOpen = false) }
+        leg.doubleAttemptsList.add(attempts)
+        _dialogUiState.value = _dialogUiState.value.copy(doubleAttemptsDialogOpen = false)
         checkLegFinished()
     }
 
     fun enterCheckoutDarts(darts: Int) {
-        game.unusedDartCount += 3- darts
-        _dialogUiState.update { state -> state.copy(checkoutDialogOpen = false) }
+        leg.unusedDartCount += 3- darts
+        _dialogUiState.value = _dialogUiState.value.copy(checkoutDialogOpen = false)
         updateUi()
         checkLegFinished()
     }
 
     private fun checkLegFinished() {
-        if (game.pointsLeft == 0 && !_dialogUiState.value.anyDialogOpen()) {
+        if (leg.pointsLeft == 0 && !_dialogUiState.value.anyDialogOpen()) {
             legFinished()
         }
     }
@@ -341,16 +340,16 @@ class GameViewModel @Inject constructor(
             }
 
             Log.d("GameViewModel", "Saving game to legDatabase...")
-            val leg = game.toLeg()
-            legDao.insert(leg = leg)
-            lastFinishedLeg = legDao.getLatestLeg()
+            val leg = leg.toLeg()
+            finishedLegDao.insert(leg = leg)
+            lastFinishedLeg = finishedLegDao.getLatestLeg()
             _legFinished.value = true   // Shows Leg Finished Dialog
         }
     }
 
     fun onPlayAgainClicked() {
         _legFinished.value = false
-        game = Game()
+        leg = Leg()
         updateUi()
     }
 
@@ -362,7 +361,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun createLegFinishedDialogViewModel() : LegFinishedDialogViewModel {
-        return LegFinishedDialogViewModel(navigationManager, lastFinishedLeg!!, legDao, settingsRepository,
+        return LegFinishedDialogViewModel(navigationManager, lastFinishedLeg!!, finishedLegDao, settingsRepository,
             this)
     }
 

@@ -1,8 +1,8 @@
 package com.development_felber.dartapp.ui.screens.table
 
 import androidx.lifecycle.*
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
-import com.development_felber.dartapp.data.persistent.database.leg.LegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
 import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -12,10 +12,10 @@ import javax.inject.Inject
 @HiltViewModel
 class TableViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
-    private val legDao: LegDao
+    private val finishedLegDao: FinishedLegDao
 ) : ViewModel() {
 
-    private var legs: List<Leg> = listOf()
+    private var legs: List<FinishedLeg> = listOf()
 
     private val _totalItems = MutableLiveData<List<Pair<String, String>>>(listOf())
     val totalItems: LiveData<List<Pair<String, String>>> = _totalItems
@@ -30,7 +30,7 @@ class TableViewModel @Inject constructor(
         updateItems()
 
         viewModelScope.launch {
-            legDao.getAllLegs().asFlow().collect {
+            finishedLegDao.getAllLegs().asFlow().collect {
                 legs = it
                 updateItems()
             }

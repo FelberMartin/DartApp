@@ -4,8 +4,8 @@ package com.development_felber.dartapp.ui.screens.game
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.development_felber.dartapp.MainCoroutineRule
-import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
-import com.development_felber.dartapp.data.persistent.database.leg.LegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
@@ -21,7 +21,7 @@ import org.junit.Rule
 import org.junit.Test
 import java.lang.Integer.min
 
-class GameViewModelTest {
+class LegViewModelTest {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -31,14 +31,14 @@ class GameViewModelTest {
     val coroutineRule = MainCoroutineRule()
 
     private lateinit var settingsRepository: SettingsRepository
-    private lateinit var legDao: LegDao
+    private lateinit var finishedLegDao: FinishedLegDao
     private lateinit var viewModel: GameViewModel
 
     @Before
     fun setup() {
         settingsRepository = SettingsRepository(InMemoryKeyValueStorage())
-        legDao = FakeLegDao()
-        viewModel = GameViewModel(NavigationManager(), settingsRepository, legDao)
+        finishedLegDao = FakeFinishedLegDao()
+        viewModel = GameViewModel(NavigationManager(), settingsRepository, finishedLegDao)
     }
 
 
@@ -153,7 +153,7 @@ class GameViewModelTest {
     fun `enter double attempts, get added to game list`() {
         enterServes(listOf(180, 180, 141))
         viewModel.enterDoubleAttempts(2)
-        val doubleAttempts = viewModel.game.doubleAttempts
+        val doubleAttempts = viewModel.leg.doubleAttempts
         assertThat(doubleAttempts).isEqualTo(2)
     }
 
@@ -162,7 +162,7 @@ class GameViewModelTest {
         settingsRepository.setBooleanSetting(SettingsRepository.BooleanSetting.AskForCheckout , false)
         enterServes(listOf(180, 180, 141))
         viewModel.enterDoubleAttempts(2)
-        val doubleAttempts = legDao.getLatestLeg()?.doubleAttempts
+        val doubleAttempts = finishedLegDao.getLatestLeg()?.doubleAttempts
         assertThat(doubleAttempts).isEqualTo(2)
     }
 

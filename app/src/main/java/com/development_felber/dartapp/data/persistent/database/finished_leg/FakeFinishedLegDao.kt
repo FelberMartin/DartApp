@@ -1,4 +1,4 @@
-package com.development_felber.dartapp.data.persistent.database.leg
+package com.development_felber.dartapp.data.persistent.database.finished_leg
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,10 +6,10 @@ import com.development_felber.dartapp.data.persistent.database.Converters
 import com.development_felber.dartapp.data.persistent.database.TestLegData
 import java.time.ZoneOffset
 
-class FakeLegDao(fillWithTestData: Boolean = false) : LegDao {
+class FakeFinishedLegDao(fillWithTestData: Boolean = false) : FinishedLegDao {
 
-    private val legsById: HashMap<Long, Leg> = HashMap()
-    private val legLiveData = MutableLiveData<List<Leg>>(mutableListOf())
+    private val legsById: HashMap<Long, FinishedLeg> = HashMap()
+    private val legLiveData = MutableLiveData<List<FinishedLeg>>(mutableListOf())
 
     init {
         if (fillWithTestData) {
@@ -20,11 +20,11 @@ class FakeLegDao(fillWithTestData: Boolean = false) : LegDao {
         }
     }
 
-    override suspend fun insert(leg: Leg) {
+    override suspend fun insert(leg: FinishedLeg) {
         insertBlocking(leg)
     }
 
-    private fun insertBlocking(leg: Leg) {
+    private fun insertBlocking(leg: FinishedLeg) {
         if (legsById.containsKey(leg.id)) {
             leg.id = legsById.keys.max() + 1
         }
@@ -37,12 +37,12 @@ class FakeLegDao(fillWithTestData: Boolean = false) : LegDao {
         legLiveData.value = sortedLegs
     }
 
-    override fun update(leg: Leg) {
+    override fun update(leg: FinishedLeg) {
         legsById[leg.id] = leg
         updateLiveData()
     }
 
-    override suspend fun get(id: Long): Leg? {
+    override suspend fun get(id: Long): FinishedLeg? {
         return legsById[id]
     }
 
@@ -51,11 +51,11 @@ class FakeLegDao(fillWithTestData: Boolean = false) : LegDao {
         updateLiveData()
     }
 
-    override fun getAllLegs(): LiveData<List<Leg>> {
+    override fun getAllLegs(): LiveData<List<FinishedLeg>> {
         return legLiveData
     }
 
-    override suspend fun getLatestLeg(): Leg? {
+    override suspend fun getLatestLeg(): FinishedLeg? {
         return legsById.values.maxByOrNull { leg ->
             Converters.toLocalDateTime(leg.endTime).toEpochSecond(ZoneOffset.UTC)
         }

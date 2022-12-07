@@ -1,4 +1,4 @@
-package com.development_felber.dartapp.data.persistent.database.leg
+package com.development_felber.dartapp.data.persistent.database.finished_leg
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -9,7 +9,7 @@ import com.development_felber.dartapp.data.persistent.database.Converters
 import com.development_felber.dartapp.util.Constants
 
 @Entity(tableName = "legs_table")
-data class Leg(
+data class FinishedLeg(
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,

@@ -27,8 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
-import com.development_felber.dartapp.ui.navigation.NavigationCommand
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
 import com.development_felber.dartapp.ui.shared.MyCard
@@ -522,7 +521,7 @@ private fun BigIconButton(
 @Composable
 private fun StatisticsScreenPreview() {
     DartAppTheme() {
-        val viewModel = StatisticsViewModel(NavigationManager(), FakeLegDao(fillWithTestData = true))
+        val viewModel = StatisticsViewModel(NavigationManager(), FakeFinishedLegDao(fillWithTestData = true))
         StatisticsScreen(viewModel)
     }
 }

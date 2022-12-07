@@ -22,8 +22,8 @@ import androidx.core.view.children
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.data.persistent.database.Converters
 import com.development_felber.dartapp.data.persistent.database.TestLegData
-import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
 import com.development_felber.dartapp.ui.shared.MyCard
@@ -53,7 +53,7 @@ fun HistoryDetailsScreenEntry(
 @Composable
 fun HistoryDetailsScreen(
     viewModel: HistoryDetailsViewModel,
-    leg: Leg?
+    leg: FinishedLeg?
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -100,7 +100,7 @@ fun HistoryDetailsScreen(
 }
 
 @Composable
-private fun ServeDistributionCard(leg: Leg) {
+private fun ServeDistributionCard(leg: FinishedLeg) {
     DetailElementCard(title = "Serve Distribution") {
         Box(
             modifier = Modifier
@@ -114,7 +114,7 @@ private fun ServeDistributionCard(leg: Leg) {
 }
 
 @Composable
-fun ServeDistributionChart(leg: Leg) {
+fun ServeDistributionChart(leg: FinishedLeg) {
     val dataSet = ServeDistributionStatistic.buildDataSet(listOf(leg), GamesLegFilter.all)
     val materialThemeBasedColorManager = ColorManager.materialThemeBasedColorManager()
     AndroidView(
@@ -176,7 +176,7 @@ private fun DetailElementCard(
 }
 
 @Composable
-private fun NumbersAndDataCard(leg: Leg) {
+private fun NumbersAndDataCard(leg: FinishedLeg) {
     DetailElementCard(title = "Numbers & Data") {
         Row(
             horizontalArrangement = Arrangement.SpaceAround,
@@ -272,7 +272,7 @@ private fun LegInfoTableRow(legInfo: Pair<String, String>) {
 }
 
 @Composable
-private fun ServeProgressCard(leg: Leg) {
+private fun ServeProgressCard(leg: FinishedLeg) {
     DetailElementCard(title = "Serve Progress") {
         val dataSet: DataSet = DataSet(Converters.toListOfInts(leg.servesList).mapIndexed { index, serve ->
             DataPoint(index + 1, serve)
@@ -308,7 +308,7 @@ fun PreviewHistoryDetailsScreen() {
     DartAppTheme() {
         val leg = TestLegData.createExampleLegs().first()
         HistoryDetailsScreen(
-            viewModel = HistoryDetailsViewModel(NavigationManager(), FakeLegDao(fillWithTestData = true)),
+            viewModel = HistoryDetailsViewModel(NavigationManager(), FakeFinishedLegDao(fillWithTestData = true)),
             leg = leg
         )
     }

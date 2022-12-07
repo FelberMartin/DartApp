@@ -24,9 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.data.persistent.database.Converters
 import com.development_felber.dartapp.data.persistent.database.TestLegData
-import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
-import com.development_felber.dartapp.ui.navigation.NavigationCommand
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.statistics.NoDataWarning
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
@@ -161,8 +160,8 @@ private fun LazyItemScope.CategoryTitle(category: CategorizedSortTypeBase.Catego
 
 @Composable
 private fun LazyItemScope.HistoryItem(
-    leg: Leg,
-    onSeeMorePressed: (Leg) -> Unit
+    leg: FinishedLeg,
+    onSeeMorePressed: (FinishedLeg) -> Unit
 ) {
     MyCard(
         onClick = { onSeeMorePressed(leg) },
@@ -239,7 +238,7 @@ private fun DateAndTimeLabels(
 
 @Composable
 private fun LegShortInfo(
-    leg: Leg
+    leg: FinishedLeg
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -280,7 +279,7 @@ fun SeeMoreIconButton(
 @Composable
 fun PreviewTableScreen() {
     DartAppTheme() {
-        val viewModel = HistoryViewModel(NavigationManager(), FakeLegDao(fillWithTestData = true))
+        val viewModel = HistoryViewModel(NavigationManager(), FakeFinishedLegDao(fillWithTestData = true))
         val legs = TestLegData.createExampleLegs()
         val categorizedLegs = DateCategorizedSortType.sortLegsCategorized(legs, true)
         HistoryScreen(categorizedLegs, viewModel)

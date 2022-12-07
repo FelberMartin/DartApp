@@ -23,13 +23,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.numberpad.NumberPadBase
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.game.numberpad.PerServeNumberPad
-import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.game.dialog.*
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialog
@@ -351,7 +350,7 @@ private fun SmallIconButton(
 
 @Composable
 private fun DialogsOverlay(viewModel: GameViewModel) {
-    val uiState by viewModel.dialogUiState.observeAsState(DialogUiState())
+    val uiState by viewModel.dialogUiState.collectAsState()
     val legFinished by viewModel.legFinished.observeAsState(false)
 
     // The upper dialogs are hidden behind the dialogs listed later
@@ -401,7 +400,7 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
 private fun GameScreenPreview() {
     DartAppTheme() {
         val viewModel = GameViewModel(NavigationManager(), SettingsRepository(InMemoryKeyValueStorage()),
-            FakeLegDao()
+            FakeFinishedLegDao()
         )
         GameScreen(viewModel)
     }

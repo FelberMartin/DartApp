@@ -1,8 +1,8 @@
 package com.development_felber.dartapp.ui.screens.statistics
 
 import androidx.lifecycle.*
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
-import com.development_felber.dartapp.data.persistent.database.leg.LegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
 import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.util.graphs.filter.GamesLegFilter
@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class StatisticsViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
-    private val legDao: LegDao
+    private val finishedLegDao: FinishedLegDao
 ): ViewModel() {
 
     private val _statisticType = MutableLiveData<StatisticTypeBase>(StatisticTypeBase.PlaceHolderStatistic)
@@ -32,7 +32,7 @@ class StatisticsViewModel @Inject constructor(
     private val _dataSet = MutableLiveData<DataSet>(DataSet())
     val dataSet: LiveData<DataSet> = _dataSet
 
-    private var legs: List<Leg> = listOf()
+    private var legs: List<FinishedLeg> = listOf()
 
     private val _noLegDataAvailable = MutableLiveData(true)
     val noLegDataAvailable: LiveData<Boolean> = _noLegDataAvailable
@@ -41,7 +41,7 @@ class StatisticsViewModel @Inject constructor(
     init {
         _statisticType.value = AverageStatistic
         viewModelScope.launch {
-            legDao.getAllLegs().asFlow().collect {
+            finishedLegDao.getAllLegs().asFlow().collect {
                 println("Collected legs (size = ${it.size})")
                 legs = it
                 _noLegDataAvailable.value = legs.isEmpty()

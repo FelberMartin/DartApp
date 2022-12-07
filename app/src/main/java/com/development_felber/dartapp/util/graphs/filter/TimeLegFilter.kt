@@ -1,7 +1,7 @@
 package com.development_felber.dartapp.util.graphs.filter
 
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.util.graphs.partitioner.TimeLegPartitioner
 import com.development_felber.dartapp.util.time.TimeUnit
 import com.development_felber.dartapp.util.time.units.Day
@@ -19,7 +19,7 @@ class TimeLegFilter private constructor(
     partitioner = TimeLegPartitioner(timeUnit, timeUnitCount)
 ) {
 
-    override fun filterLegs(legs: List<Leg>): List<Leg> {
+    override fun filterLegs(legs: List<FinishedLeg>): List<FinishedLeg> {
         if (timeUnitCount == Int.MAX_VALUE) {
             return legs
         }

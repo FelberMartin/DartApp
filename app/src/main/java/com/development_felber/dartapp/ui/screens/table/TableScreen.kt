@@ -14,7 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.development_felber.dartapp.data.persistent.database.leg.FakeLegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
 import com.development_felber.dartapp.ui.shared.MyCard
@@ -133,7 +133,7 @@ private fun TableItem(
 @Composable
 fun PreviewTableScreen() {
     DartAppTheme() {
-        TableScreen(viewModel = TableViewModel(NavigationManager(), FakeLegDao(fillWithTestData = true)))
+        TableScreen(viewModel = TableViewModel(NavigationManager(), FakeFinishedLegDao(fillWithTestData = true)))
     }
 }
 

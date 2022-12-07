@@ -1,18 +1,18 @@
 package com.development_felber.dartapp.game.gameaction
 
-import com.development_felber.dartapp.game.Game
+import com.development_felber.dartapp.game.Leg
 
 class FillServeGameAction(private val remaining: Int) : GameActionBase() {
 
-    override fun apply(game: Game) {
+    override fun apply(leg: Leg) {
         repeat(remaining) {
-            game.dartsEntered.add(0)
+            leg.dartsEntered.add(0)
         }
     }
 
-    override fun undo(game: Game) {
+    override fun undo(leg: Leg) {
         repeat(remaining) {
-            game.dartsEntered.removeLast()
+            leg.dartsEntered.removeLast()
         }
     }
 }

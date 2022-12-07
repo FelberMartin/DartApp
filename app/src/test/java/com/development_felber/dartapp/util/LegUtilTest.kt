@@ -3,7 +3,7 @@ package com.development_felber.dartapp.util
 import com.google.common.truth.Truth.assertThat
 import org.junit.Test
 
-class GameUtilTest {
+class LegUtilTest {
 
     @Test
     fun `two categories`() {

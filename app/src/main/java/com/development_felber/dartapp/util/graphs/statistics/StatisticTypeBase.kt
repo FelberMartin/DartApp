@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.graphs.statistics
 
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.util.graphs.filter.LegFilterBase
 import com.development_felber.dartapp.util.graphs.partitioner.LegPartitioner
 import com.development_felber.dartapp.util.graphs.statistics.barchart.TrainingCountByWeekdayStatistic
@@ -25,7 +25,7 @@ abstract class StatisticTypeBase (
 
     open fun modifyChart(chart: Chart) { }
 
-    abstract fun buildDataSet(legs: List<Leg>, filter: LegFilterBase) : DataSet
+    abstract fun buildDataSet(legs: List<FinishedLeg>, filter: LegFilterBase) : DataSet
 
     companion object {
         val all = listOf(
@@ -42,7 +42,7 @@ abstract class StatisticTypeBase (
     // This is added for the initialization of the StatisticsViewModel. For some reason the use of a normal statistic
     // at that place results in a NPE when calling the object :raised_eyebrow:
     object PlaceHolderStatistic : LineStatistic("") {
-        override fun reduceLegsToNumber(legs: List<Leg>): Number {
+        override fun reduceLegsToNumber(legs: List<FinishedLeg>): Number {
             return 0
         }
 

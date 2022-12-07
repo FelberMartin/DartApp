@@ -23,7 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.development_felber.dartapp.data.persistent.database.TestLegData
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.ui.screens.game.dialog.GameFinishedDialog
 import com.development_felber.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
 import com.development_felber.dartapp.ui.screens.historydetails.ServeDistributionChart
@@ -47,7 +47,7 @@ fun LegFinishedDialogEntryPoint(
 @Composable
 private fun LegFinishedDialog(
     showStats: Boolean,
-    leg: Leg,
+    leg: FinishedLeg,
     last10GamesAverage: Double,
     onMoreDetailsClicked: () -> Unit,
     onMenuClicked: () -> Unit,
@@ -69,7 +69,7 @@ private fun LegFinishedDialog(
 
 @Composable
 private fun SoloStatsContent(
-    leg: Leg,
+    leg: FinishedLeg,
     last10GamesAverage: Double,
 ) {
     val animatedAverage = remember { Animatable(0f) }
@@ -109,7 +109,7 @@ private fun SoloStatsContent(
 
 
 @Composable
-private fun ServeDistribution(leg: Leg) {
+private fun ServeDistribution(leg: FinishedLeg) {
     Box(
         modifier = Modifier
             .fillMaxWidth()

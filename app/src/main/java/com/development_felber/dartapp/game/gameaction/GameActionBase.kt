@@ -1,9 +1,9 @@
 package com.development_felber.dartapp.game.gameaction
 
-import com.development_felber.dartapp.game.Game
+import com.development_felber.dartapp.game.Leg
 
 abstract class GameActionBase {
 
-    abstract fun apply(game: Game)
-    abstract fun undo(game: Game)
+    abstract fun apply(leg: Leg)
+    abstract fun undo(leg: Leg)
 }

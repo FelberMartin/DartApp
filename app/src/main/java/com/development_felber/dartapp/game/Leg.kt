@@ -1,7 +1,7 @@
 package com.development_felber.dartapp.game
 
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.leg.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.game.gameaction.FillServeGameAction
 import com.development_felber.dartapp.game.gameaction.GameActionBase
 import com.development_felber.dartapp.util.CheckoutTip
@@ -10,7 +10,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.*
 
-class Game() {
+class Leg() {
 
     private val startDateTime = LocalDateTime.now()
     private val startPoints = 501
@@ -21,6 +21,8 @@ class Game() {
 
     val pointsLeft: Int
         get() = startPoints - dartsEntered.sum()
+    val isOver: Boolean
+        get() = pointsLeft == 0
 
     var doubleAttemptsList = ArrayList<Int>()
     val doubleAttempts: Int
@@ -127,10 +129,10 @@ class Game() {
         return serves
     }
 
-    fun toLeg() : Leg {
+    fun toLeg() : FinishedLeg {
         val now = LocalDateTime.now()
         val serves = getServes()
-        return Leg(
+        return FinishedLeg(
             endTime = Converters.fromLocalDateTime(now),
             durationSeconds = Converters.fromDuration(Duration.between(startDateTime, now)),
             dartCount = dartCount,
