@@ -3,7 +3,6 @@ package com.development_felber.dartapp.game
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.game.gameaction.FillServeGameAction
 import com.development_felber.dartapp.game.gameaction.GameActionBase
-import com.development_felber.dartapp.ui.screens.game.PlayerScore
 import java.util.*
 
 class GameState(
