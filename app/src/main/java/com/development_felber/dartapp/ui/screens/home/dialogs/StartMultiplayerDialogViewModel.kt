@@ -97,7 +97,7 @@ class StartMultiplayerDialogViewModel @Inject constructor(
         val gameSetup = GameSetup.Multiplayer(
             player1 = player1.value!!,
             player2 = player2.value!!,
-            legsToWin = legCount.value,
+            legsToWinSet = legCount.value,
             setsToWin = setCount.value
         )
         navigationManager.navigate(NavigationCommand.ToGame(gameSetup))

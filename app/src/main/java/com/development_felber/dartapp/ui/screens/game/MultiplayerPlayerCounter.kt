@@ -13,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.development_felber.dartapp.game.PlayerRole
+import com.development_felber.dartapp.ui.shared.MyCard
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
 data class PlayerScore(
@@ -22,33 +24,19 @@ data class PlayerScore(
     val setsToWin: Int,
 )
 
-data class PlayerStats(
-    val name: String,
-    val playerScore: PlayerScore,
-    val pointsLeft: Int,
-    val last: Int,
-    val average: Double,
-)
-
-enum class GameStatus {
-    LeftPlayersTurn,
-    RightPlayersTurn,
-    Other
-}
-
 @Composable
 fun CombinedMultiplayerPlayerCounter(
-    playerStatsLeft: PlayerStats,
-    playerStatsRight: PlayerStats,
-    gameStatus: GameStatus,
+    playerStateLeft: PlayerUiState,
+    playerStateRight: PlayerUiState,
+    currentPlayerRole: PlayerRole,
 ) {
-    Card(
+    MyCard(
         modifier = Modifier.height(180.dp)
     ) {
         Row() {
             MultiplayerPlayerCounterCell(
-                playerStats = playerStatsLeft,
-                isActivePlayer = gameStatus == GameStatus.LeftPlayersTurn,
+                playerState = playerStateLeft,
+                isActivePlayer = currentPlayerRole == playerStateLeft.playerRole,
             )
 
             Spacer(
@@ -59,8 +47,8 @@ fun CombinedMultiplayerPlayerCounter(
             )
 
             MultiplayerPlayerCounterCell(
-                playerStats = playerStatsRight,
-                isActivePlayer = gameStatus == GameStatus.RightPlayersTurn,
+                playerState = playerStateRight,
+                isActivePlayer = currentPlayerRole == playerStateRight.playerRole,
             )
         }
     }
@@ -68,7 +56,7 @@ fun CombinedMultiplayerPlayerCounter(
 
 @Composable
 private fun RowScope.MultiplayerPlayerCounterCell(
-    playerStats: PlayerStats,
+    playerState: PlayerUiState,
     isActivePlayer: Boolean,
 ) {
     Column(
@@ -82,19 +70,19 @@ private fun RowScope.MultiplayerPlayerCounterCell(
             modifier = Modifier.padding(horizontal = 12.dp).fillMaxHeight()
         ) {
             TopRow(
-                name = playerStats.name,
-                playerScore = playerStats.playerScore
+                name = playerState.name,
+                playerScore = playerState.score
             )
 
             Text(
-                text = playerStats.pointsLeft.toString(),
+                text = playerState.pointsLeft.toString(),
                 style = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.Medium),
                 color = MaterialTheme.colorScheme.primary,
             )
 
             StatsRow(
-                last = playerStats.last,
-                average = playerStats.average,
+                last = playerState.last,
+                average = playerState.average,
             )
         }
     }
@@ -148,8 +136,8 @@ private fun ScoreRepresentation(
 
 @Composable
 private fun StatsRow(
-    last: Int,
-    average: Double,
+    last: Int?,
+    average: Double?,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
@@ -158,11 +146,11 @@ private fun StatsRow(
     ) {
         PlayerGameStatistic(
             name = "Last:",
-            valueString = last.toString()
+            valueString = last?.toString() ?: "-",
         )
         PlayerGameStatistic(
             name = "Ø",
-            valueString = String.format("%.1f", average)
+            valueString = average?.let { String.format("%.1f", it) } ?: "-",
         )
     }
 }
@@ -171,9 +159,10 @@ private fun StatsRow(
 @Composable
 private fun CombinedMultiplayerPlayerStatsPreview() {
     DartAppTheme() {
-        val playerStatsLeft = PlayerStats(
+        val playerStatsLeft = PlayerUiState(
             name = "Player 1",
-            playerScore = PlayerScore(
+            playerRole = PlayerRole.One,
+            score = PlayerScore(
                 legsWon = 1,
                 legsToWin = 3,
                 setsWon = 0,
@@ -182,10 +171,12 @@ private fun CombinedMultiplayerPlayerStatsPreview() {
             pointsLeft = 120,
             last = 66,
             average = 20.0,
+            dartCount = 12,
         )
-        val playerStatsRight = PlayerStats(
+        val playerStatsRight = PlayerUiState(
             name = "Player 2",
-            playerScore = PlayerScore(
+            playerRole = PlayerRole.Two,
+            score = PlayerScore(
                 legsWon = 2,
                 legsToWin = 3,
                 setsWon = 1,
@@ -194,11 +185,12 @@ private fun CombinedMultiplayerPlayerStatsPreview() {
             pointsLeft = 420,
             last = 20,
             average = 54.2,
+            dartCount = 11,
         )
         CombinedMultiplayerPlayerCounter(
-            playerStatsLeft = playerStatsLeft,
-            playerStatsRight = playerStatsRight,
-            gameStatus = GameStatus.LeftPlayersTurn
+            playerStateLeft = playerStatsLeft,
+            playerStateRight = playerStatsRight,
+            currentPlayerRole = PlayerRole.One,
         )
     }
 }

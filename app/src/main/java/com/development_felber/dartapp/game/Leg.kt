@@ -129,7 +129,7 @@ class Leg() {
         return serves
     }
 
-    fun toLeg() : FinishedLeg {
+    fun toFinishedLeg() : FinishedLeg {
         val now = LocalDateTime.now()
         val serves = getServes()
         return FinishedLeg(
