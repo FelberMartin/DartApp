@@ -73,7 +73,7 @@ fun GameScreen(
 @Composable
 private fun GameScreenContent(
     gameUiState: GameUiState,
-    dartOrServeEnteredFlow: Flow<Int>,
+    dartOrServeEnteredFlow: Flow<Int?>,
     onCloseClicked: () -> Unit,
     onUndoClicked: () -> Unit,
     onSwapNumberPadClicked: () -> Unit,
@@ -156,7 +156,7 @@ private fun PlayerStats(
 private fun BottomElements(
     numberPadUiState: NumberPadUiState,
     checkoutTip: String?,
-    dartOrServeEnteredFlow: Flow<Int>,
+    dartOrServeEnteredFlow: Flow<Int?>,
     onUndoClicked: () -> Unit,
     onSwapNumberPadClicked: () -> Unit,
     onNumberTyped: (Int) -> Unit,
@@ -260,7 +260,7 @@ private fun NumPadInfoAndActionsRow(
     numberState: State<Int>,
     isEnterDisabled: Boolean,
     onSwapNumberPadClicked: () -> Unit,
-    dartOrServeEnteredFlow: Flow<Int>,
+    dartOrServeEnteredFlow: Flow<Int?>,
 ) {
     // Shake animation
     var wasEnterDisabledPreviously = remember { false }
@@ -296,6 +296,7 @@ private fun NumPadInfoAndActionsRow(
 
     LaunchedEffect(key1 = true) {
         dartOrServeEnteredFlow.collect {
+            it ?: return@collect
             indexedNumberHolder.number = it
             indexedNumberHolder = indexedNumberHolder.next()
         }

@@ -27,8 +27,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-const val PLACEHOLDER_STRING = "--"
-
 data class PlayerUiState(
     val name: String,
     val playerRole: PlayerRole,
@@ -73,6 +71,11 @@ class GameViewModel @Inject constructor(
     private val finishedLegDao: FinishedLegDao
 ) : ViewModel() {
 
+    private val gameSetup: GameSetup
+        get() = GameSetupHolder.gameSetup!!
+
+    private var gameState: GameState = GameState(gameSetup)
+
     private val _numberPadUiState = MutableStateFlow(NumberPadUiState())
     private val numberPad: NumberPadBase
         get() = _numberPadUiState.value.numberPad
@@ -81,14 +84,16 @@ class GameViewModel @Inject constructor(
 
     private val _dialogUiState = MutableStateFlow(DialogUiState())
 
-    private val _dartOrServeEnteredFlow = MutableSharedFlow<Int>(replay = 0)
-    val dartOrServeEnteredFlow: SharedFlow<Int> = _dartOrServeEnteredFlow
-
     private val _checkoutTip = MutableStateFlow<String?>(null)
 
-    val gameUiState = combine(_numberPadUiState, _dialogUiState, _checkoutTip, dartOrServeEnteredFlow) {
+    private val _dartOrServeEnteredFlow = MutableSharedFlow<Int?>(replay = 0)
+    val dartOrServeEnteredFlow: SharedFlow<Int?> = _dartOrServeEnteredFlow
+
+    private val updateRequired: MutableStateFlow<Int> = MutableStateFlow(0)
+
+    val gameUiState = combine(_numberPadUiState, _dialogUiState, _checkoutTip, updateRequired) {
         numberPadUiState, dialogUiState, checkoutTip, _ ->
-        GameUiState(
+         GameUiState(
             currentPlayer = gameState.getCurrentPlayerRole(),
             checkoutTip = checkoutTip,
             playerUiStates = getPlayerUiStates(),
@@ -97,21 +102,14 @@ class GameViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, WhileUiSubscribed, GameUiState())
 
-
     private val _legFinished = MutableLiveData(false)
     val legFinished: LiveData<Boolean> = _legFinished
 
-
     private var lastFinishedLeg: FinishedLeg? = null
 
-    private val gameSetup: GameSetup
-        get() = GameSetupHolder.gameSetup!!
-
-    var gameState: GameState = GameState(gameSetup)
-        private set
 
     init {
-        updateUi()
+        update()
     }
 
     private fun getPlayerUiStates() : List<PlayerUiState> {
@@ -135,31 +133,28 @@ class GameViewModel @Inject constructor(
     }
 
     fun onCloseClicked() {
-        _dialogUiState.value = _dialogUiState.value.copy(exitDialogOpen = true)
+        _dialogUiState.update { it.copy(exitDialogOpen = true) }
     }
 
     fun onUndoClicked() {
         viewModelScope.launch {
             gameState.undo()
             numberPad.clear()
-            updateUi()
+            update()
         }
     }
 
     fun onSwapNumberPadClicked() {
         if (usePerDartNumberPad) {
+            gameState.completeDartsToFullServe()
             _numberPadUiState.update { it.copy(numberPad = PerServeNumberPad()) }
-            gameState.currentLeg.completeDartsToFullServe()
         } else {
             _numberPadUiState.update { it.copy(numberPad = PerDartNumberPad()) }
         }
-        updateUi()
+        update()
     }
 
     fun onNumberTyped(number: Int) {
-        if (numberPad.number.value >= 100) {
-            return
-        }
         viewModelScope.launch {
             numberPad.numberTyped(number)
             disableInvalidInputs()
@@ -191,9 +186,9 @@ class GameViewModel @Inject constructor(
     fun onEnterClicked() {
         viewModelScope.launch {
             val number = numberPad.number.value
-            _dartOrServeEnteredFlow.emit(number)
             numberPad.clear()
             enterNumberToGame(number)
+            _dartOrServeEnteredFlow.emit(number)
         }
     }
 
@@ -204,7 +199,7 @@ class GameViewModel @Inject constructor(
             gameState.applyAction(AddServeGameAction(number))
         }
 
-        updateUi()
+        update()
         _dialogUiState.value = _dialogUiState.value.copy(
             simpleDoubleAttemptsDialogOpen = shouldShowSimpleDoubleAttemptDialog(number),
             doubleAttemptsDialogOpen = shouldShowDoubleAttemptsDialog(number),
@@ -251,9 +246,10 @@ class GameViewModel @Inject constructor(
         return CheckoutTip.checkoutTips.contains(pointsBeforeServe)
     }
 
-    private fun updateUi() {
+    private fun update() {
         _checkoutTip.value = CheckoutTip.checkoutTips[gameState.currentLeg.pointsLeft]
         disableInvalidInputs()
+        updateRequired.update { it + 1 }
     }
 
     fun dismissExitDialog() {
@@ -320,7 +316,7 @@ class GameViewModel @Inject constructor(
     fun enterCheckoutDarts(darts: Int) {
         gameState.currentLeg.unusedDartCount += 3- darts
         _dialogUiState.value = _dialogUiState.value.copy(checkoutDialogOpen = false)
-        updateUi()
+        update()
         checkLegFinished()
     }
 
@@ -352,7 +348,7 @@ class GameViewModel @Inject constructor(
     fun onPlayAgainClicked() {
         _legFinished.value = false
         gameState = GameState(gameSetup)
-        updateUi()
+        update()
     }
 
     fun onModifierToggled(modifier: PerDartNumberPad.Modifier) {

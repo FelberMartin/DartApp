@@ -16,8 +16,6 @@ class Leg() {
     private val startPoints = 501
 
     var dartsEntered: ArrayList<Int> = ArrayList()
-    private val gameActions = Stack<GameActionBase>()
-
 
     val pointsLeft: Int
         get() = startPoints - dartsEntered.sum()
@@ -33,17 +31,6 @@ class Leg() {
     val dartCount
         get() = dartsEntered.size - unusedDartCount
 
-
-    fun applyAction(action: GameActionBase) {
-        gameActions.push(action)
-        action.apply(this)
-    }
-
-    fun undo() {
-        if (gameActions.isNotEmpty()) {
-            gameActions.pop().undo(this)
-        }
-    }
 
     fun getAverage(perDart: Boolean = false) : Double?  {
         if (dartsEntered.isEmpty()) {
@@ -66,14 +53,6 @@ class Leg() {
             dartsEntered.last()
         }
         return getServes().last()
-    }
-
-    fun completeDartsToFullServe() {
-        val started = dartCount % 3
-        if (started == 0) {
-            return
-        }
-        applyAction(FillServeGameAction(3 - started))
     }
 
     fun isNumberValid(number: Int, singleDart: Boolean, doubleModifierEnabled: Boolean = false) : Boolean {
