@@ -16,10 +16,13 @@ class GameState(
     val playerGameStatesByPlayerRole: Map<PlayerRole, PlayerGameState> = availablePlayerRoles.associateWith {
         PlayerGameState()
     }
-    val currentPlayerGameState = playerGameStatesByPlayerRole[getCurrentPlayerRole()]!!
+    val currentPlayerGameState
+        get() = playerGameStatesByPlayerRole[getCurrentPlayerRole()]!!
+    val currentLeg: Leg
+        get() = currentPlayerGameState.currentLeg
+
     var gameStatus: GameStatus = GameStatus.LegInProgress
 
-    val currentLeg: Leg = currentPlayerGameState.currentLeg
 
 
     fun getCurrentPlayerRole() : PlayerRole {
@@ -43,9 +46,8 @@ class GameState(
 
     fun applyAction(action: GameActionBase) {
         gameActions.push(action)
-        val leg = currentPlayerGameState.currentLeg
-        action.apply(leg)
-        if (leg.isOver) {
+        action.apply(currentLeg)
+        if (currentLeg.isOver) {
             gameActions.clear()     // Only allow undo during legs.
             updateGameStatus()
         }
@@ -73,7 +75,7 @@ class GameState(
 
     fun undo() {
         if (undoAvailable) {
-            gameActions.pop().undo(currentPlayerGameState.currentLeg)
+            gameActions.pop().undo(currentLeg)
         }
     }
 }

@@ -6,5 +6,4 @@
 TODO:
  - Set to normal database and no random data
  - Move graph library to Jetpack Compose
- - Remove NavigationViewModel
- - Check app launch on api level 21 (does localtime work?)
+ - Update tests to work with new GameViewModel and GameState
