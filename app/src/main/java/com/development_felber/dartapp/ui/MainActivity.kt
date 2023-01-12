@@ -144,13 +144,13 @@ private fun NavGraphBuilder.startMultiplayer() {
     composable(NavigationDestination.StartMultiplayer,
         enterTransition = {
             slideInVertically(
-                animationSpec = tween(1000),
+                animationSpec = tween(500),
                 initialOffsetY = { it },
             )
         },
         exitTransition = {
             slideOutVertically(
-                animationSpec = tween(1000),
+                animationSpec = tween(500),
                 targetOffsetY = { it },
             )
         }

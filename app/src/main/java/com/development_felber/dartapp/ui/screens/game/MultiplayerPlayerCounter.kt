@@ -1,13 +1,19 @@
 package com.development_felber.dartapp.ui.screens.game
 
-import androidx.compose.animation.animateColorAsState
+import android.annotation.SuppressLint
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -15,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.ui.shared.MyCard
 import com.development_felber.dartapp.ui.theme.DartAppTheme
+
 
 data class PlayerScore(
     val legsWon: Int,
@@ -32,43 +39,80 @@ fun CombinedMultiplayerPlayerCounter(
     MyCard(
         modifier = Modifier.height(180.dp)
     ) {
-        Row() {
-            MultiplayerPlayerCounterCell(
-                playerState = playerStateLeft,
-                isActivePlayer = currentPlayerRole == playerStateLeft.playerRole,
-            )
+        Column() {
+            RoleIndicator(playerRole = currentPlayerRole)
 
-            Spacer(
-                Modifier
-                    .background(color = MaterialTheme.colorScheme.outline)
-                    .width(1.dp)
-                    .fillMaxHeight()
-            )
+            Row() {
+                MultiplayerPlayerCounterCell(
+                    playerState = playerStateLeft,
+                )
 
-            MultiplayerPlayerCounterCell(
-                playerState = playerStateRight,
-                isActivePlayer = currentPlayerRole == playerStateRight.playerRole,
-            )
+                Spacer(
+                    Modifier
+                        .background(color = MaterialTheme.colorScheme.outline)
+                        .width(1.dp)
+                        .fillMaxHeight()
+                )
+
+                MultiplayerPlayerCounterCell(
+                    playerState = playerStateRight,
+                )
+            }
         }
+
     }
+}
+
+@Composable
+private fun RoleIndicator(
+    playerRole: PlayerRole,
+) {
+    val alignment by animateHorizontalAlignmentAsState(
+        targetBiasValue = when (playerRole) {
+            PlayerRole.One -> -1f
+            PlayerRole.Two -> 1f
+        },
+        animationSpec = tween(400)
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = alignment,
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.5f)
+                .height(8.dp)
+                .background(color = MaterialTheme.colorScheme.primary)
+        )
+    }
+}
+
+@SuppressLint("UnrememberedMutableState")
+@Composable
+private fun animateHorizontalAlignmentAsState(
+    targetBiasValue: Float,
+    animationSpec: AnimationSpec<Float> = tween(300),
+): State<BiasAlignment.Horizontal> {
+    val bias by animateFloatAsState(targetBiasValue, animationSpec)
+    return derivedStateOf { BiasAlignment.Horizontal(bias) }
 }
 
 @Composable
 private fun RowScope.MultiplayerPlayerCounterCell(
     playerState: PlayerUiState,
-    isActivePlayer: Boolean,
 ) {
     Column(
         modifier = Modifier.weight(1f)
     ) {
-        ActiveIndicator(isActivePlayer)
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier.padding(horizontal = 12.dp).fillMaxHeight()
+            modifier = Modifier
+                .padding(horizontal = 12.dp)
+                .fillMaxHeight()
         ) {
-            TopRow(
+            com.development_felber.dartapp.ui.screens.game.TopRow(
                 name = playerState.name,
                 playerScore = playerState.score
             )
@@ -85,21 +129,6 @@ private fun RowScope.MultiplayerPlayerCounterCell(
             )
         }
     }
-}
-
-@Composable
-private fun ActiveIndicator(isActivePlayer: Boolean) {
-    val color by animateColorAsState(
-        targetValue = MaterialTheme.colorScheme.primary.copy(
-            alpha = if (isActivePlayer) 1f else 0f
-        ),
-    )
-    Box(
-        modifier = Modifier
-            .height(8.dp)
-            .fillMaxWidth()
-            .background(color = color)
-    )
 }
 
 @Composable
