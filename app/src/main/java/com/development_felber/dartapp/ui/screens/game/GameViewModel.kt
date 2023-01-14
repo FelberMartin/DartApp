@@ -10,6 +10,7 @@ import com.development_felber.dartapp.data.persistent.database.finished_leg.Fini
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.GameSetup
 import com.development_felber.dartapp.game.GameState
+import com.development_felber.dartapp.game.GameStatus
 import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.game.gameaction.AddDartGameAction
 import com.development_felber.dartapp.game.gameaction.AddServeGameAction
@@ -19,6 +20,7 @@ import com.development_felber.dartapp.game.numberpad.PerServeNumberPad
 import com.development_felber.dartapp.ui.navigation.GameSetupHolder
 import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
+import com.development_felber.dartapp.ui.screens.game.dialog.GameDialogManager
 import com.development_felber.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialogResult
 import com.development_felber.dartapp.util.CheckoutTip
@@ -43,9 +45,9 @@ data class PlayerUiState(
 data class GameUiState(
     val currentPlayer: PlayerRole = PlayerRole.One,
     val checkoutTip: String? = null,
+    val dialogToShow: GameDialogManager.DialogType? = null,
     val playerUiStates: List<PlayerUiState> = emptyList(),
     val numberPadUiState: NumberPadUiState = NumberPadUiState(),
-    val dialogUiState: DialogUiState = DialogUiState(),
 )
 
 data class NumberPadUiState(
@@ -53,18 +55,6 @@ data class NumberPadUiState(
     val enterEnabled: Boolean = true,
     val disabledNumbers: List<Int> = emptyList(),
 )
-
-data class DialogUiState(
-    val finishedDialogOpen: Boolean = false,
-    val exitDialogOpen: Boolean = false,
-    val simpleDoubleAttemptsDialogOpen: Boolean = false,
-    val doubleAttemptsDialogOpen: Boolean = false,
-    val checkoutDialogOpen: Boolean = false,
-) {
-    fun anyDialogOpen(): Boolean {
-        return exitDialogOpen || simpleDoubleAttemptsDialogOpen || doubleAttemptsDialogOpen || checkoutDialogOpen
-    }
-}
 
 
 @HiltViewModel
@@ -85,8 +75,6 @@ class GameViewModel @Inject constructor(
     val usePerDartNumberPad
         get() = numberPad is PerDartNumberPad
 
-    private val _dialogUiState = MutableStateFlow(DialogUiState())
-
     private val _checkoutTip = MutableStateFlow<String?>(null)
 
     private val _dartOrServeEnteredFlow = MutableSharedFlow<Int?>(replay = 0)
@@ -94,14 +82,16 @@ class GameViewModel @Inject constructor(
 
     private val updateRequired: MutableStateFlow<Int> = MutableStateFlow(0)
 
-    val gameUiState = combine(_numberPadUiState, _dialogUiState, _checkoutTip, updateRequired) {
-        numberPadUiState, dialogUiState, checkoutTip, _ ->
+    private val dialogManager = GameDialogManager()
+
+    val gameUiState = combine(_numberPadUiState, dialogManager.currentDialog, _checkoutTip, updateRequired) {
+        numberPadUiState, dialog, checkoutTip, _ ->
          GameUiState(
             currentPlayer = gameState.getCurrentPlayerRole(),
             checkoutTip = checkoutTip,
+            dialogToShow = dialog,
             playerUiStates = getPlayerUiStates(),
             numberPadUiState = numberPadUiState,
-            dialogUiState = dialogUiState
         )
     }.stateIn(viewModelScope, WhileUiSubscribed, GameUiState())
 
@@ -136,7 +126,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun onCloseClicked() {
-        _dialogUiState.update { it.copy(exitDialogOpen = true) }
+        dialogManager.openDialog(GameDialogManager.DialogType.ExitGame)
     }
 
     fun onUndoClicked() {
@@ -203,51 +193,16 @@ class GameViewModel @Inject constructor(
         }
 
         update()
-        _dialogUiState.value = _dialogUiState.value.copy(
-            simpleDoubleAttemptsDialogOpen = shouldShowSimpleDoubleAttemptDialog(number),
-            doubleAttemptsDialogOpen = shouldShowDoubleAttemptsDialog(number),
-            checkoutDialogOpen = shouldShowCheckoutDialog()
+        dialogManager.determineDialogsToOpen(
+            lastNumberEntered = number,
+            gameState = gameState,
+            settingsRepository = settingsRepository,
+            usePerDartNumberPad = usePerDartNumberPad,
         )
 
         checkLegFinished()
     }
 
-    private suspend fun shouldShowSimpleDoubleAttemptDialog(lastDart: Int) : Boolean {
-        if (!usePerDartNumberPad) {
-            return false
-        }
-        val askForDouble = settingsRepository
-            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
-        if (!askForDouble) {
-            return false
-        }
-        val leg = gameState.currentLeg
-        if (leg.pointsLeft == 0) {
-            // The game was finished with a double, so do not ask, but automatically add a double attempt.
-            leg.doubleAttemptsList.add(1)
-            return false
-        }
-        val points = leg.pointsLeft + lastDart
-        val couldFinishWithDouble = points % 2 == 0 && (points == 50 || points <= 40)
-        return couldFinishWithDouble
-    }
-
-    private suspend fun shouldShowDoubleAttemptsDialog(lastServe: Int) : Boolean {
-        if (usePerDartNumberPad) {
-            return false
-        }
-        val askForDouble = settingsRepository
-            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
-        if (!askForDouble) {
-            return false
-        }
-        val leg = gameState.currentLeg
-        if (leg.pointsLeft > 50 && lastServe > 0) {
-            return false
-        }
-        val pointsBeforeServe = leg.pointsLeft + lastServe
-        return CheckoutTip.checkoutTips.contains(pointsBeforeServe)
-    }
 
     private fun update() {
         _checkoutTip.value = CheckoutTip.checkoutTips[gameState.currentLeg.pointsLeft]
@@ -256,7 +211,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun dismissExitDialog() {
-        _dialogUiState.value = _dialogUiState.value.copy(exitDialogOpen = false)
+        dialogManager.closeDialog()
     }
 
     fun dismissLegFinishedDialog(temporary: Boolean = false) {
@@ -273,19 +228,7 @@ class GameViewModel @Inject constructor(
         if (attempt) {
             gameState.currentLeg.doubleAttemptsList.add(1)
         }
-        _dialogUiState.value = _dialogUiState.value.copy(simpleDoubleAttemptsDialogOpen = false)
-    }
-
-    private suspend fun shouldShowCheckoutDialog() : Boolean {
-        if (usePerDartNumberPad) {
-            return false
-        }
-        val askForCheckout = settingsRepository
-            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForCheckout).first()
-        if (!askForCheckout) {
-            return false
-        }
-        return gameState.currentLeg.pointsLeft == 0
+        dialogManager.closeDialog()
     }
 
     fun getMinimumDartCount() : Int? {
@@ -294,10 +237,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun onDoubleAttemptsAndCheckoutCancelled() {
-        _dialogUiState.value = _dialogUiState.value.copy(
-            doubleAttemptsDialogOpen = false,
-            checkoutDialogOpen = false
-        )
+        dialogManager.closeDialog()
         onUndoClicked()
     }
 
@@ -312,21 +252,24 @@ class GameViewModel @Inject constructor(
 
     fun enterDoubleAttempts(attempts: Int) {
         gameState.currentLeg.doubleAttemptsList.add(attempts)
-        _dialogUiState.value = _dialogUiState.value.copy(doubleAttemptsDialogOpen = false)
+       dialogManager.closeDialog()
         checkLegFinished()
     }
 
     fun enterCheckoutDarts(darts: Int) {
         gameState.currentLeg.unusedDartCount += 3- darts
-        _dialogUiState.value = _dialogUiState.value.copy(checkoutDialogOpen = false)
+        dialogManager.closeDialog()
         update()
         checkLegFinished()
     }
 
     private fun checkLegFinished() {
-        if (gameState.currentLeg.pointsLeft == 0 && !_dialogUiState.value.anyDialogOpen()) {
+        if (gameState.gameStatus == GameStatus.LegJustFinished) {
             legFinished()
         }
+//        if (gameState.currentLeg.pointsLeft == 0 && !_dialogUiState.value.anyDialogOpen()) {
+//            legFinished()
+//        }
     }
 
     private fun legFinished() {

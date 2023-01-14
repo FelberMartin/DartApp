@@ -11,9 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.development_felber.dartapp.data.persistent.database.player.Player
 import com.development_felber.dartapp.ui.screens.game.PlayerScore
+import com.development_felber.dartapp.ui.theme.DartAppTheme
 
 data class CombinedScore(
     val legs1: Int,
@@ -110,9 +112,23 @@ private fun PlayerScore(
             color = MaterialTheme.colorScheme.secondary,
         )
         Text(
-            text = "${playerScore.setsWon}-${playerScore.legsWon}",
+            text = "${playerScore.legsWon}-${playerScore.setsWon}",
             style = MaterialTheme.typography.headlineLarge,
         )
     }
+}
 
+@Preview(showBackground = true, widthDp = 380, heightDp = 700)
+@Composable
+private fun LegWonDialogPreview() {
+    DartAppTheme() {
+        LegWonDialog(
+            player1 = Player("Player 1"),
+            player2 = Player("Player 2"),
+            hasPlayer1WonLeg = true,
+            combinedScore = CombinedScore(1, 0, 3, 1, 2, 3),
+        ) {
+
+        }
+    }
 }
