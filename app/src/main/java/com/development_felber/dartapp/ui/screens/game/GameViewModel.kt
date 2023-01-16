@@ -27,6 +27,8 @@ import com.development_felber.dartapp.util.CheckoutTip
 import com.development_felber.dartapp.util.GameUtil
 import com.development_felber.dartapp.util.WhileUiSubscribed
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -61,7 +63,8 @@ data class NumberPadUiState(
 class GameViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     val settingsRepository: SettingsRepository,
-    private val finishedLegDao: FinishedLegDao
+    private val finishedLegDao: FinishedLegDao,
+    private val dispatcher: CoroutineDispatcher,
 ) : ViewModel() {
 
     private val gameSetup: GameSetup
@@ -86,13 +89,15 @@ class GameViewModel @Inject constructor(
 
     val gameUiState = combine(_numberPadUiState, dialogManager.currentDialog, _checkoutTip, updateRequired) {
         numberPadUiState, dialog, checkoutTip, _ ->
-         GameUiState(
+         val g = GameUiState(
             currentPlayer = gameState.getCurrentPlayerRole(),
             checkoutTip = checkoutTip,
             dialogToShow = dialog,
             playerUiStates = getPlayerUiStates(),
             numberPadUiState = numberPadUiState,
         )
+        println(g.toString())
+        g
     }.stateIn(viewModelScope, WhileUiSubscribed, GameUiState())
 
     private val _legFinished = MutableLiveData(false)
@@ -130,7 +135,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun onUndoClicked() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             gameState.undo()
             numberPad.clear()
             update()
@@ -148,7 +153,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun onNumberTyped(number: Int) {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             numberPad.numberTyped(number)
             disableInvalidInputs()
             if (usePerDartNumberPad) {
@@ -170,14 +175,14 @@ class GameViewModel @Inject constructor(
     }
 
     fun clearNumberPad() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             numberPad.clear()
             disableInvalidInputs()
         }
     }
 
     fun onEnterClicked() {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             val number = numberPad.number.value
             numberPad.clear()
             enterNumberToGame(number)
@@ -217,7 +222,7 @@ class GameViewModel @Inject constructor(
     fun dismissLegFinishedDialog(temporary: Boolean = false) {
         _legFinished.value = false
         if (temporary) {
-            viewModelScope.launch {
+            viewModelScope.launch(dispatcher) {
                 delay(1000)
                 _legFinished.value = true
             }
@@ -276,7 +281,7 @@ class GameViewModel @Inject constructor(
         if (legFinished.value == true) {
             return
         }
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             val setDefaultDoubleAttempt = !settingsRepository
                 .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
             if (setDefaultDoubleAttempt) {
@@ -298,7 +303,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun onModifierToggled(modifier: PerDartNumberPad.Modifier) {
-        viewModelScope.launch {
+        viewModelScope.launch(dispatcher) {
             val perDartNumberPad = numberPad as PerDartNumberPad
             perDartNumberPad.toggleModifier(modifier)
         }

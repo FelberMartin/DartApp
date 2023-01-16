@@ -25,6 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.development_felber.dartapp.data.repository.SettingsRepository
+import com.development_felber.dartapp.game.GameStatus
 import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.ui.navigation.NavigationManager
@@ -36,6 +37,7 @@ import com.development_felber.dartapp.ui.shared.KeepScreenOn
 import com.development_felber.dartapp.ui.shared.MyCard
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 import com.development_felber.dartapp.ui.values.Padding
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
@@ -63,9 +65,9 @@ fun GameScreen(
         onEnterClicked = viewModel::onEnterClicked,
     )
 
-    val dialogUiState = viewModel.gameUiState.collectAsState().value.dialogUiState
+    val dialog = gameUiState.dialogToShow
     DialogsOverlay(
-        dialogUiState = dialogUiState,
+        dialogToShow = dialog,
         gameViewModel = viewModel,
     )
 }
@@ -358,15 +360,20 @@ private fun SmallIconButton(
 
 @Composable
 private fun DialogsOverlay(
-    dialogUiState: DialogUiState,
+    dialogToShow: GameDialogManager.DialogType?,
     gameViewModel: GameViewModel
 ) {
-    val legFinished by gameViewModel.legFinished.observeAsState(false)
-
-    // The upper dialogs are hidden behind the dialogs listed later
-
-    if (legFinished) {
-        LegFinishedDialogEntryPoint(
+    when (dialogToShow) {
+        GameDialogManager.DialogType.ExitGame -> ExitDialog(
+            onDismissDialog = gameViewModel::dismissExitDialog
+        ) {
+            gameViewModel.dismissExitDialog()
+            gameViewModel.navigateBack()
+        }
+        GameDialogManager.DialogType.AskForDoubleSimple -> SimpleDoubleAttemptsDialog(
+            onAttemptClicked = gameViewModel::simpleDoubleAttemptsEntered
+        )
+        GameDialogManager.DialogType.GameFinished -> LegFinishedDialogEntryPoint(
             viewModel = gameViewModel.createLegFinishedDialogViewModel(),
             onPlayAgainClicked = gameViewModel::onPlayAgainClicked,
             onMenuClicked = {
@@ -374,31 +381,23 @@ private fun DialogsOverlay(
                 gameViewModel.navigateBack()
             }
         )
-    }
-
-    val doubleAttempts = dialogUiState.doubleAttemptsDialogOpen
-    val checkout = dialogUiState.checkoutDialogOpen
-    if (doubleAttempts || checkout) {
-        DoubleAttemptsAndCheckoutDialog(
-            askForDoubleAttempts = doubleAttempts,
-            askForCheckout = checkout,
-            minDartCount = gameViewModel.getMinimumDartCount(),
-            onDialogCancelled = gameViewModel::onDoubleAttemptsAndCheckoutCancelled,
-            onDialogConfirmed = gameViewModel::doubleAttemptsAndCheckoutConfirmed
-        )
-    }
-
-    if (dialogUiState.simpleDoubleAttemptsDialogOpen) {
-        SimpleDoubleAttemptsDialog(
-            onAttemptClicked = gameViewModel::simpleDoubleAttemptsEntered
-        )
-    }
-
-    if (dialogUiState.exitDialogOpen) {
-        ExitDialog(
-            onDismissDialog = gameViewModel::dismissExitDialog) {
-            gameViewModel.dismissExitDialog()
-            gameViewModel.navigateBack()
+        is GameDialogManager.DialogType.AskForDoubleAndOrCheckout -> {
+            DoubleAttemptsAndCheckoutDialog(
+                askForDoubleAttempts = dialogToShow.askForDouble,
+                askForCheckout = dialogToShow.askForCheckout,
+                minDartCount = gameViewModel.getMinimumDartCount(),
+                onDialogCancelled = gameViewModel::onDoubleAttemptsAndCheckoutCancelled,
+                onDialogConfirmed = gameViewModel::doubleAttemptsAndCheckoutConfirmed
+            )
+        }
+        GameDialogManager.DialogType.LegJustFinished -> {
+            // TODO
+        }
+        GameDialogManager.DialogType.SetJustFinished -> {
+            // TODO
+        }
+        null -> {
+            // No dialog to show
         }
     }
 }
@@ -410,7 +409,7 @@ private fun DialogsOverlay(
 private fun GameScreenPreview() {
     DartAppTheme() {
         val viewModel = GameViewModel(NavigationManager(), SettingsRepository(InMemoryKeyValueStorage()),
-            FakeFinishedLegDao()
+            FakeFinishedLegDao(), Dispatchers.Main,
         )
         GameScreen(viewModel)
     }

@@ -1,58 +1,140 @@
-//@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class)
-//
-//package com.development_felber.dartapp.ui.screens.game
-//
-//import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-//import com.development_felber.dartapp.MainCoroutineRule
-//import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
-//import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
-//import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
-//import com.development_felber.dartapp.data.repository.SettingsRepository
-//import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
-//import com.development_felber.dartapp.getOrAwaitValueTest
-//import com.development_felber.dartapp.ui.navigation.NavigationManager
-//import com.development_felber.dartapp.ui.screens.game.testutil.PerDartNumPadEnter
-//import com.google.common.truth.Truth.assertThat
-//import kotlinx.coroutines.ExperimentalCoroutinesApi
-//import kotlinx.coroutines.test.runTest
-//import org.junit.Before
-//import org.junit.Ignore
-//import org.junit.Rule
-//import org.junit.Test
-//import java.lang.Integer.min
-//
-//class LegViewModelTest {
-//
-//    @get:Rule
-//    var instantTaskExecutorRule = InstantTaskExecutorRule()
-//
-//    @OptIn(ExperimentalCoroutinesApi::class)
-//    @get:Rule
-//    val coroutineRule = MainCoroutineRule()
-//
-//    private lateinit var settingsRepository: SettingsRepository
-//    private lateinit var finishedLegDao: FinishedLegDao
-//    private lateinit var viewModel: GameViewModel
-//
-//    @Before
-//    fun setup() {
-//        settingsRepository = SettingsRepository(InMemoryKeyValueStorage())
-//        finishedLegDao = FakeFinishedLegDao()
-//        viewModel = GameViewModel(NavigationManager(), settingsRepository, finishedLegDao)
-//    }
-//
-//
-//    @Test
-//    fun `swap to serve numpad after entering a single dart, add remaining two darts`() {
-//        enterDart(PerDartNumPadEnter(10))
-//        viewModel.onSwapNumberPadClicked()
-//        val dartCount = viewModel.dartCount.getOrAwaitValueTest()
-//        assertThat(dartCount).isEqualTo(3)
-//    }
-//
-//
-//    // ------------ Average ---------------------
-//
+@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class)
+
+package com.development_felber.dartapp.ui.screens.game
+
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.asLiveData
+import com.development_felber.dartapp.MainCoroutineScopeRule
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
+import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
+import com.development_felber.dartapp.data.repository.SettingsRepository
+import com.development_felber.dartapp.game.GameSetup
+import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
+import com.development_felber.dartapp.game.numberpad.PerServeNumberPad
+import com.development_felber.dartapp.getOrAwaitValueTest
+import com.development_felber.dartapp.ui.navigation.GameSetupHolder
+import com.development_felber.dartapp.ui.navigation.NavigationManager
+import com.development_felber.dartapp.ui.screens.game.testutil.PerDartNumPadEnter
+import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
+import org.junit.Before
+import org.junit.Rule
+import org.junit.Test
+import java.lang.Integer.min
+
+abstract class GameViewModelTest {
+
+    @get:Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @get:Rule
+    val coroutineRule = MainCoroutineScopeRule()
+
+    protected lateinit var settingsRepository: SettingsRepository
+    protected lateinit var finishedLegDao: FinishedLegDao
+    protected lateinit var viewModel: GameViewModel
+
+    abstract val gameSetup: GameSetup
+
+    @Before
+    fun setup() {
+        settingsRepository = SettingsRepository(InMemoryKeyValueStorage())
+        finishedLegDao = FakeFinishedLegDao()
+        GameSetupHolder.gameSetup = gameSetup
+        viewModel = GameViewModel(NavigationManager(), settingsRepository, finishedLegDao, coroutineRule.dispatcher)
+    }
+
+    // ++++++++++++++ Utility ++++++++++++++++++++++
+
+    fun enterServes(serves: List<Int>)  {
+        for (serve in serves) {
+            enterServe(serve)
+        }
+    }
+
+    fun generateServesTillAt(wantedScore: Int): List<Int> {
+        var neededPoints = 501 - wantedScore
+        val serves = mutableListOf<Int>()
+        while (neededPoints > 0) {
+            val serve = min(180, neededPoints)
+            serves.add(serve)
+            neededPoints -= serve
+        }
+        return serves
+    }
+
+    fun enterServe(serve: Int) {
+        swapIfNeeded(false)
+        val string = serve.toString()
+        for (char in string.toCharArray()) {
+            viewModel.onNumberTyped(char.digitToInt())
+        }
+        viewModel.onEnterClicked()
+    }
+
+    private fun swapIfNeeded(onPerDartNumberPad: Boolean) {
+        val swap = viewModel.usePerDartNumberPad != onPerDartNumberPad
+        if (swap) {
+            viewModel.onSwapNumberPadClicked()
+        }
+    }
+
+    suspend fun enterDart(dart: PerDartNumPadEnter) {
+        swapIfNeeded(true)
+        dart.apply(viewModel)
+    }
+}
+
+class SoloGameViewModelTest : GameViewModelTest() {
+
+    override val gameSetup = GameSetup.Solo
+
+    private val numberPad
+        get() = viewModel.gameUiState.value.numberPadUiState.numberPad
+
+    @Test
+    fun `swap number pad works as expected`() = runTest {
+        // Create an empty collector for the StateFlow
+        val collectJob = launch(UnconfinedTestDispatcher(testScheduler)) {
+            viewModel.gameUiState.collect()
+        }
+
+        // Dont use the suspend fun here to get the initial state of the gameUiState, because this
+        // would be the state after the first swap, which is not what we want to test here.
+        assertThat(numberPad).isInstanceOf(PerServeNumberPad::class.java)
+        viewModel.onSwapNumberPadClicked()
+        delay(1000)
+        assertThat(viewModel.gameUiState.value.numberPadUiState.numberPad).isInstanceOf(PerDartNumberPad::class.java)
+        viewModel.onSwapNumberPadClicked()
+        assertThat(numberPad).isInstanceOf(PerServeNumberPad::class.java)
+
+        collectJob.cancel()
+    }
+
+    @Test
+    fun `swap to serve numpad after entering a single dart, add remaining two darts`() = runTest {
+        enterDart(PerDartNumPadEnter(10))
+        viewModel.onSwapNumberPadClicked()
+        delay(1)    // Wait for the state to be updated
+        val dartCount = viewModel.gameUiState.value.playerUiStates[0].dartCount
+//        val dartCount = viewModel.gameUiState.asLiveData().getOrAwaitValueTest().playerUiStates[0].dartCount
+        assertThat(dartCount).isEqualTo(3)
+    }
+
+
+    // ------------ Average ---------------------
+
 //    @Test
 //    fun `enter one number, correct average calculated`() {
 //        enterServe(69)
@@ -225,45 +307,6 @@
 //        val disabled = viewModel.enterDisabled.getOrAwaitValueTest()
 //        assertThat(disabled).isFalse()
 //    }
-//
-//
-//    // ++++++++++++++ Utility ++++++++++++++++++++++
-//
-//    private fun enterServes(serves: List<Int>)  {
-//        for (serve in serves) {
-//            enterServe(serve)
-//        }
-//    }
-//
-//    private fun generateServesTillAt(wantedScore: Int): List<Int> {
-//        var neededPoints = 501 - wantedScore
-//        val serves = mutableListOf<Int>()
-//        while (neededPoints > 0) {
-//            val serve = min(180, neededPoints)
-//            serves.add(serve)
-//            neededPoints -= serve
-//        }
-//        return serves
-//    }
-//
-//    private fun enterServe(serve: Int) {
-//        swapIfNeeded(false)
-//        val string = serve.toString()
-//        for (char in string.toCharArray()) {
-//            viewModel.onNumberTyped(char.digitToInt())
-//        }
-//        viewModel.onEnterClicked()
-//    }
-//
-//    private fun swapIfNeeded(onPerDartNumberPad: Boolean) {
-//        val swap = viewModel.usePerDartNumberPad != onPerDartNumberPad
-//        if (swap) {
-//            viewModel.onSwapNumberPadClicked()
-//        }
-//    }
-//
-//    private fun enterDart(dart: PerDartNumPadEnter) {
-//        swapIfNeeded(true)
-//        dart.apply(viewModel)
-//    }
-//}
+
+}
+

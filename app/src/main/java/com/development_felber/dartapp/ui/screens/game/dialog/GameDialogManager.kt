@@ -11,23 +11,27 @@ import kotlinx.coroutines.flow.first
 
 class GameDialogManager {
 
-    enum class DialogType {
-        AskForDouble,
-        AskForDoubleSimple,
-        AskForCheckout,
-        AskForDoubleAndCheckoutCombined,
-        LegJustFinished,
-        SetJustFinished,
-        GameFinished,
-        ExitGame
+    sealed class DialogType {
+        class AskForDoubleAndOrCheckout(
+            val askForDouble: Boolean,
+            val askForCheckout: Boolean
+        ) : DialogType() {
+            override fun equals(other: Any?): Boolean {
+                return other is AskForDoubleAndOrCheckout
+            }
+        }
+
+        object AskForDoubleSimple : DialogType()
+        object LegJustFinished : DialogType()
+        object SetJustFinished : DialogType()
+        object GameFinished : DialogType()
+        object ExitGame : DialogType()
     }
 
     private val hierarchy = listOf(
         DialogType.ExitGame,
         DialogType.AskForDoubleSimple,
-        DialogType.AskForDouble,
-        DialogType.AskForCheckout,
-        DialogType.AskForDoubleAndCheckoutCombined,
+        DialogType.AskForDoubleAndOrCheckout(true, true),
         DialogType.GameFinished,
         DialogType.SetJustFinished,
         DialogType.LegJustFinished,
@@ -88,10 +92,8 @@ class GameDialogManager {
                 gameState = gameState,
                 settingsRepository = settingsRepository,
             )
-            when {
-                checkout && double -> openDialog(DialogType.AskForDoubleAndCheckoutCombined)
-                checkout -> openDialog(DialogType.AskForCheckout)
-                double -> openDialog(DialogType.AskForDouble)
+            if (checkout || double) {
+                openDialog(DialogType.AskForDoubleAndOrCheckout(double, checkout))
             }
         }
 
