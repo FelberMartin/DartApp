@@ -120,8 +120,7 @@ private fun NavGraphBuilder.home() {
                     fadeIn(tween(1000))
                 }
                 NavigationDestination.StartMultiplayer -> {
-                    scaleIn(initialScale = 0.9f, animationSpec = tween(1000)) +
-                            expandVertically(animationSpec = tween(1000), expandFrom = Alignment.Top)
+                    fadeIn(tween(400))
                 }
                 else -> {
                     fadeIn(tween(NavigationAnimation.DEFAULT_DURATION))
