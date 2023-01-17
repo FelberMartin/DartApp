@@ -1,11 +1,9 @@
 package com.development_felber.dartapp.ui.screens.game
 
 import android.util.Log
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.GameSetup
@@ -21,14 +19,13 @@ import com.development_felber.dartapp.ui.navigation.GameSetupHolder
 import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.game.dialog.GameDialogManager
-import com.development_felber.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
+import com.development_felber.dartapp.ui.screens.game.dialog.SoloGameFinishedDialogViewModel
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialogResult
 import com.development_felber.dartapp.util.CheckoutTip
 import com.development_felber.dartapp.util.GameUtil
 import com.development_felber.dartapp.util.WhileUiSubscribed
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -99,8 +96,6 @@ class GameViewModel @Inject constructor(
     }.stateIn(viewModelScope, WhileUiSubscribed, GameUiState())
 
     private val _legFinished = MutableLiveData(false)
-    private var lastFinishedLeg: FinishedLeg? = null
-
 
     init {
         update()
@@ -178,7 +173,6 @@ class GameViewModel @Inject constructor(
     }
 
     fun onEnterClicked() {
-        println("onEnterClicked")
         viewModelScope.launch(dispatcher) {
             val number = numberPad.number.value
             numberPad.clear()
@@ -250,19 +244,17 @@ class GameViewModel @Inject constructor(
         if (result.checkout != null) {
             enterCheckoutDarts(result.checkout)
         }
+        dialogManager.closeDialog()
+        update()
+        checkLegFinished()
     }
 
     fun enterDoubleAttempts(attempts: Int) {
         gameState.currentLeg.doubleAttemptsList.add(attempts)
-        dialogManager.closeDialog()
-        checkLegFinished()
     }
 
     fun enterCheckoutDarts(darts: Int) {
         gameState.currentLeg.unusedDartCount += 3- darts
-        dialogManager.closeDialog()
-        update()
-        checkLegFinished()
     }
 
     private fun checkLegFinished() {
@@ -274,16 +266,15 @@ class GameViewModel @Inject constructor(
         if (gameState.gameStatus == GameStatus.Finished && !anyEnterDataToGameDialogOpen) {
             legFinished()
         }
-//        if (gameState.currentLeg.pointsLeft == 0 && !_dialogUiState.value.anyDialogOpen()) {
-//            legFinished()
-//        }
     }
 
     private fun legFinished() {
-        if (_legFinished.value == true) {
-            return
-        }
         viewModelScope.launch(dispatcher) {
+            if (_legFinished.value == true) {
+                return@launch
+            }
+            _legFinished.value = true
+
             val setDefaultDoubleAttempt = !settingsRepository
                 .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
             if (setDefaultDoubleAttempt) {
@@ -293,8 +284,6 @@ class GameViewModel @Inject constructor(
             Log.d("GameViewModel", "Saving game to legDatabase...")
             val leg = gameState.currentLeg.toFinishedLeg()
             finishedLegDao.insert(leg = leg)
-            lastFinishedLeg = finishedLegDao.getLatestLeg()
-            _legFinished.value = true   // Shows Leg Finished Dialog
         }
     }
 
@@ -311,8 +300,8 @@ class GameViewModel @Inject constructor(
         }
     }
 
-    fun createLegFinishedDialogViewModel() : LegFinishedDialogViewModel {
-        return LegFinishedDialogViewModel(navigationManager, lastFinishedLeg!!, finishedLegDao, settingsRepository,
+    fun createLegFinishedDialogViewModel() : SoloGameFinishedDialogViewModel {
+        return SoloGameFinishedDialogViewModel(navigationManager, finishedLegDao, settingsRepository,
             this)
     }
 

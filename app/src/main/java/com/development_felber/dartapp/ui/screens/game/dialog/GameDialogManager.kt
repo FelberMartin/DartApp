@@ -1,5 +1,6 @@
 package com.development_felber.dartapp.ui.screens.game.dialog
 
+import android.util.Log
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.GameState
 import com.development_felber.dartapp.game.GameStatus
@@ -49,6 +50,7 @@ class GameDialogManager {
 
 
     fun openDialog(dialogType: DialogType) {
+        Log.d("GameDialogManager", "openDialog: $dialogType")
         dialogsToOpen.add(dialogType)
         updateCurrentDialog()
     }
@@ -60,11 +62,13 @@ class GameDialogManager {
         } else {
             dialogsToOpen.remove(currentDialog)
         }
+        Log.d("GameDialogManager", "closeDialog: $currentDialog")
         updateCurrentDialog()
     }
 
     private fun updateCurrentDialog() {
         val nextDialog = dialogsToOpen.minByOrNull { hierarchy.indexOf(it) }
+        Log.d("GameDialogManager", "updateCurrentDialog: $nextDialog")
         _currentDialog.value = nextDialog
     }
 

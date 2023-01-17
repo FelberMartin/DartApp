@@ -7,11 +7,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -25,22 +21,21 @@ import androidx.compose.ui.unit.dp
 import com.development_felber.dartapp.data.persistent.database.TestLegData
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.ui.screens.game.dialog.GameFinishedDialog
-import com.development_felber.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
+import com.development_felber.dartapp.ui.screens.game.dialog.SoloGameFinishedDialogViewModel
 import com.development_felber.dartapp.ui.screens.historydetails.ServeDistributionChart
 import com.development_felber.dartapp.ui.theme.DartAppTheme
-import com.development_felber.dartapp.util.extensions.observeAsStateNonOptional
 import kotlinx.coroutines.delay
 
 @Composable
 fun LegFinishedDialogEntryPoint(
-    viewModel: LegFinishedDialogViewModel,
+    viewModel: SoloGameFinishedDialogViewModel,
     onPlayAgainClicked: () -> Unit,
     onMenuClicked: () -> Unit
 ) {
-    val showStats by viewModel.showStats.observeAsState()
-    val leg = viewModel.leg
-    val last10GamesAverage by viewModel.last10GamesAverage.observeAsStateNonOptional()
-    LegFinishedDialog(showStats ?: false, leg, last10GamesAverage,
+    val showStats by viewModel.showStats.collectAsState()
+    val leg by viewModel.leg.collectAsState()
+    val last10GamesAverage by viewModel.last10GamesAverage.collectAsState()
+    LegFinishedDialog(showStats, leg ?: TestLegData.createRandomLeg(), last10GamesAverage,
         viewModel::onMoreDetailsClicked, onMenuClicked, onPlayAgainClicked)
 }
 
