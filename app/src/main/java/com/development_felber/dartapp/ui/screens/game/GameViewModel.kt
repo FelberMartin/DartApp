@@ -300,6 +300,7 @@ class GameViewModel @Inject constructor(
         viewModelScope.launch(dispatcher) {
             val perDartNumberPad = numberPad as PerDartNumberPad
             perDartNumberPad.toggleModifier(modifier)
+            update()
         }
     }
 
