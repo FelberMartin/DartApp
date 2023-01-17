@@ -1,7 +1,6 @@
 package com.development_felber.dartapp.ui.screens.game
 
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
@@ -95,7 +94,7 @@ class GameViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, WhileUiSubscribed, GameUiState())
 
-    private val _legFinished = MutableLiveData(false)
+    private var gameSaved = false
 
     init {
         update()
@@ -189,14 +188,17 @@ class GameViewModel @Inject constructor(
         }
 
         update()
+        updateDialogs(number)
+        checkLegFinished()
+    }
+
+    private suspend fun updateDialogs(lastEnteredNumber: Int) {
         dialogManager.determineDialogsToOpen(
-            lastNumberEntered = number,
+            lastNumberEntered = lastEnteredNumber,
             gameState = gameState,
             settingsRepository = settingsRepository,
             usePerDartNumberPad = usePerDartNumberPad,
         )
-
-        checkLegFinished()
     }
 
 
@@ -211,11 +213,11 @@ class GameViewModel @Inject constructor(
     }
 
     fun dismissLegFinishedDialog(temporary: Boolean = false) {
-        _legFinished.value = false
+        dialogManager.closeDialog()
         if (temporary) {
             viewModelScope.launch(dispatcher) {
                 delay(1000)
-                _legFinished.value = true
+                dialogManager.openDialog(GameDialogManager.DialogType.GameFinished)
             }
         }
     }
@@ -270,10 +272,10 @@ class GameViewModel @Inject constructor(
 
     private fun legFinished() {
         viewModelScope.launch(dispatcher) {
-            if (_legFinished.value == true) {
+            if (gameSaved) {
                 return@launch
             }
-            _legFinished.value = true
+            gameSaved = true
 
             val setDefaultDoubleAttempt = !settingsRepository
                 .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
@@ -288,8 +290,9 @@ class GameViewModel @Inject constructor(
     }
 
     fun onPlayAgainClicked() {
-        _legFinished.value = false
+        gameSaved = false
         gameState = GameState(gameSetup)
+        dialogManager.closeDialog()
         update()
     }
 

@@ -68,7 +68,7 @@ private fun SoloStatsContent(
     last10GamesAverage: Double,
 ) {
     val animatedAverage = remember { Animatable(0f) }
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = leg) {
         delay(600)
         animatedAverage.animateTo(
             targetValue = leg.average.toFloat(),
