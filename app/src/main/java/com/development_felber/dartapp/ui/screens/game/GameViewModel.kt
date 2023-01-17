@@ -70,7 +70,7 @@ class GameViewModel @Inject constructor(
     private val gameSetup: GameSetup
         get() = GameSetupHolder.gameSetup!!
 
-    private var gameState: GameState = GameState(gameSetup)
+    var gameState: GameState = GameState(gameSetup)
 
     private val _numberPadUiState = MutableStateFlow(NumberPadUiState())
     private val numberPad: NumberPadBase
@@ -89,20 +89,16 @@ class GameViewModel @Inject constructor(
 
     val gameUiState = combine(_numberPadUiState, dialogManager.currentDialog, _checkoutTip, updateRequired) {
         numberPadUiState, dialog, checkoutTip, _ ->
-         val g = GameUiState(
+         GameUiState(
             currentPlayer = gameState.getCurrentPlayerRole(),
             checkoutTip = checkoutTip,
             dialogToShow = dialog,
             playerUiStates = getPlayerUiStates(),
             numberPadUiState = numberPadUiState,
         )
-        println(g.toString())
-        g
     }.stateIn(viewModelScope, WhileUiSubscribed, GameUiState())
 
     private val _legFinished = MutableLiveData(false)
-    val legFinished: LiveData<Boolean> = _legFinished
-
     private var lastFinishedLeg: FinishedLeg? = null
 
 
@@ -182,6 +178,7 @@ class GameViewModel @Inject constructor(
     }
 
     fun onEnterClicked() {
+        println("onEnterClicked")
         viewModelScope.launch(dispatcher) {
             val number = numberPad.number.value
             numberPad.clear()
@@ -257,7 +254,7 @@ class GameViewModel @Inject constructor(
 
     fun enterDoubleAttempts(attempts: Int) {
         gameState.currentLeg.doubleAttemptsList.add(attempts)
-       dialogManager.closeDialog()
+        dialogManager.closeDialog()
         checkLegFinished()
     }
 
@@ -269,7 +266,12 @@ class GameViewModel @Inject constructor(
     }
 
     private fun checkLegFinished() {
-        if (gameState.gameStatus == GameStatus.LegJustFinished) {
+        val anyEnterDataToGameDialogOpen = when (dialogManager.currentDialog.value) {
+            is GameDialogManager.DialogType.AskForDoubleSimple,
+            is GameDialogManager.DialogType.AskForDoubleAndOrCheckout -> true
+            else -> false
+        }
+        if (gameState.gameStatus == GameStatus.Finished && !anyEnterDataToGameDialogOpen) {
             legFinished()
         }
 //        if (gameState.currentLeg.pointsLeft == 0 && !_dialogUiState.value.anyDialogOpen()) {
@@ -278,7 +280,7 @@ class GameViewModel @Inject constructor(
     }
 
     private fun legFinished() {
-        if (legFinished.value == true) {
+        if (_legFinished.value == true) {
             return
         }
         viewModelScope.launch(dispatcher) {
