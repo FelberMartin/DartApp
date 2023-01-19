@@ -6,4 +6,6 @@
 TODO:
  - Set to normal database and no random data
  - Move graph library to Jetpack Compose
- - Undo not working in multiplayer
+ - Multiplayer:
+    - PerDartNumPad switching turn too often
+    - After finishing a leg as player one, player two still gets to throw

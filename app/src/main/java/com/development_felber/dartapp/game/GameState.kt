@@ -1,5 +1,6 @@
 package com.development_felber.dartapp.game
 
+import android.util.Log
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.game.gameaction.FillServeGameAction
 import com.development_felber.dartapp.game.gameaction.GameActionBase
@@ -8,7 +9,7 @@ import java.util.*
 class GameState(
     private val setup: GameSetup,
 ) {
-    private val gameActions = Stack<GameActionBase>()
+    private val gameActions = Stack<Pair<GameActionBase, Leg>>()
     val undoAvailable: Boolean
         get() = gameActions.isNotEmpty()
 
@@ -44,9 +45,10 @@ class GameState(
     }
 
     fun applyAction(action: GameActionBase) {
-        gameActions.push(action)
+        gameActions.push(Pair(action, currentLeg))
         action.apply(currentLeg)
         if (currentLeg.isOver) {
+            Log.i("GameState", "Player ${getCurrentPlayerRole()} finished leg")
             gameActions.clear()     // Only allow undo during legs.
             updateGameStatus()
         }
@@ -74,7 +76,8 @@ class GameState(
 
     fun undo() {
         if (undoAvailable) {
-            gameActions.pop().undo(currentLeg)
+            val (action, leg) = gameActions.pop()
+            action.undo(leg)
         }
     }
 }
