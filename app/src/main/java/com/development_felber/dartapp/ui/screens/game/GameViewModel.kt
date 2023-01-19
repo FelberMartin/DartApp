@@ -52,6 +52,7 @@ data class NumberPadUiState(
     val numberPad: NumberPadBase = PerServeNumberPad(),
     val enterEnabled: Boolean = true,
     val disabledNumbers: List<Int> = emptyList(),
+    val undoEnabled: Boolean = false,
 )
 
 
@@ -162,6 +163,7 @@ class GameViewModel @Inject constructor(
             val valid = gameState.currentLeg.isNumberValid(number, singleDart = usePerDartNumberPad)
             _numberPadUiState.update { it.copy(enterEnabled = valid) }
         }
+        _numberPadUiState.update { it.copy(undoEnabled = gameState.undoAvailable) }
     }
 
     fun clearNumberPad() {

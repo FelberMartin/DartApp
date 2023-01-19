@@ -177,6 +177,7 @@ private fun BottomElements(
 
             NumPadInfoAndActionsRow(
                 onUndoClicked = onUndoClicked,
+                undoEnabled = numberPadUiState.undoEnabled,
                 numberState = numberPadUiState.numberPad.number.collectAsState(),
                 onSwapNumberPadClicked = onSwapNumberPadClicked,
                 isEnterDisabled = !numberPadUiState.enterEnabled,
@@ -259,6 +260,7 @@ private fun CheckoutInfo(
 @Composable
 private fun NumPadInfoAndActionsRow(
     onUndoClicked: () -> Unit,
+    undoEnabled: Boolean,
     numberState: State<Int>,
     isEnterDisabled: Boolean,
     onSwapNumberPadClicked: () -> Unit,
@@ -310,6 +312,7 @@ private fun NumPadInfoAndActionsRow(
     ) {
         SmallIconButton(
             icon = Icons.Default.Undo,
+            enabled = undoEnabled,
             onClick = onUndoClicked
         )
 
@@ -343,17 +346,22 @@ private fun NumPadInfoAndActionsRow(
 @Composable
 private fun SmallIconButton(
     icon: ImageVector,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     ElevatedButton(
         onClick = onClick,
+        enabled = enabled,
+        colors = ButtonDefaults.elevatedButtonColors(
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+        ),
         contentPadding = PaddingValues(vertical = 4.dp),
         elevation = ButtonDefaults.elevatedButtonElevation(pressedElevation = 0.dp)
     ) {
         Icon(
             imageVector = icon,
             contentDescription = "Change NumPad Layout",
-            tint = MaterialTheme.colorScheme.onSurface
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.6f)
         )
     }
 }

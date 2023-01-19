@@ -24,7 +24,6 @@ class GameState(
     var gameStatus: GameStatus = GameStatus.LegInProgress
 
 
-
     fun getCurrentPlayerRole() : PlayerRole {
         val sortedByPlayerRole = playerGameStatesByPlayerRole.entries.sortedBy {
             it.key.ordinal  // Prefer player 1 over player 2
