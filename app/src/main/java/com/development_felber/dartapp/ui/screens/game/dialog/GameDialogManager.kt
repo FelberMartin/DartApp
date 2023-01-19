@@ -4,13 +4,14 @@ import android.util.Log
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.GameState
 import com.development_felber.dartapp.game.GameStatus
-import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.util.CheckoutTip
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.*
 
-class GameDialogManager {
+class GameDialogManager (
+    private val settingsRepository: SettingsRepository,
+    coroutineScope: CoroutineScope,
+) {
 
     sealed class DialogType {
         class AskForDoubleAndOrCheckout(
@@ -48,6 +49,14 @@ class GameDialogManager {
     private val _currentDialog = MutableStateFlow<DialogType?>(null)
     val currentDialog = _currentDialog.asStateFlow()
 
+    private val askForDoubleSetting = settingsRepository
+        .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble)
+        .stateIn(coroutineScope, SharingStarted.WhileSubscribed(), false)
+
+    private val askForCheckoutSetting = settingsRepository
+        .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForCheckout)
+        .stateIn(coroutineScope, SharingStarted.WhileSubscribed(), false)
+
 
     fun openDialog(dialogType: DialogType) {
         Log.d("GameDialogManager", "openDialog: $dialogType")
@@ -72,29 +81,25 @@ class GameDialogManager {
         _currentDialog.value = nextDialog
     }
 
-    suspend fun determineDialogsToOpen(
+    fun determineDialogsToOpen(
         gameState: GameState,
         lastNumberEntered: Int,
         usePerDartNumberPad: Boolean,
-        settingsRepository: SettingsRepository,
     ) {
         if (usePerDartNumberPad) {
             if (shouldShowSimpleDoubleAttemptDialog(
                 lastDart = lastNumberEntered,
                 gameState = gameState,
-                settingsRepository = settingsRepository,
             )) {
                 openDialog(DialogType.AskForDoubleSimple)
             }
         } else {
             val checkout = shouldShowCheckoutDialog(
                 gameState = gameState,
-                settingsRepository = settingsRepository,
             )
             val double = shouldShowDoubleAttemptsDialog(
                 lastServe = lastNumberEntered,
                 gameState = gameState,
-                settingsRepository = settingsRepository,
             )
             if (checkout || double) {
                 openDialog(DialogType.AskForDoubleAndOrCheckout(double, checkout))
@@ -102,21 +107,18 @@ class GameDialogManager {
         }
 
         when (gameState.gameStatus) {
-            GameStatus.LegJustFinished -> openDialog(DialogType.LegJustFinished)
-            GameStatus.SetJustFinished -> openDialog(DialogType.SetJustFinished)
+            is GameStatus.LegJustFinished -> openDialog(DialogType.LegJustFinished)
+            is GameStatus.SetJustFinished -> openDialog(DialogType.SetJustFinished)
             GameStatus.Finished -> openDialog(DialogType.GameFinished)
             else -> { /* Do nothing */ }
         }
     }
 
-    private suspend fun shouldShowSimpleDoubleAttemptDialog(
+    private fun shouldShowSimpleDoubleAttemptDialog(
         lastDart: Int,
-        settingsRepository: SettingsRepository,
         gameState: GameState,
     ) : Boolean {
-        val askForDouble = settingsRepository
-            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
-        if (!askForDouble) {
+        if (!askForDoubleSetting.value) {
             return false
         }
         val leg = gameState.currentLeg
@@ -130,14 +132,11 @@ class GameDialogManager {
         return couldFinishWithDouble
     }
 
-    private suspend fun shouldShowDoubleAttemptsDialog(
+    private fun shouldShowDoubleAttemptsDialog(
         lastServe: Int,
-        settingsRepository: SettingsRepository,
         gameState: GameState,
     ) : Boolean {
-        val askForDouble = settingsRepository
-            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
-        if (!askForDouble) {
+        if (!askForDoubleSetting.value) {
             return false
         }
         val leg = gameState.currentLeg
@@ -148,13 +147,10 @@ class GameDialogManager {
         return CheckoutTip.checkoutTips.contains(pointsBeforeServe)
     }
 
-    private suspend fun shouldShowCheckoutDialog(
-        settingsRepository: SettingsRepository,
+    private fun shouldShowCheckoutDialog(
         gameState: GameState,
     ) : Boolean {
-        val askForCheckout = settingsRepository
-            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForCheckout).first()
-        if (!askForCheckout) {
+        if (!askForCheckoutSetting.value) {
             return false
         }
         return gameState.currentLeg.pointsLeft == 0

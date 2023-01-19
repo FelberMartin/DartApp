@@ -1,7 +1,11 @@
 package com.development_felber.dartapp.ui.screens.game.dialog
 
+import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.google.common.truth.Truth.assertThat
+import kotlinx.coroutines.test.TestCoroutineScope
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.createTestCoroutineScope
 import org.junit.Before
 import org.junit.Test
 
@@ -12,7 +16,10 @@ internal class GameDialogManagerTest {
 
     @Before
     fun setUp() {
-        gameDialogManager = GameDialogManager()
+        gameDialogManager = GameDialogManager(
+            coroutineScope = TestScope(),
+            settingsRepository = SettingsRepository(InMemoryKeyValueStorage()),
+        )
     }
 
     @Test

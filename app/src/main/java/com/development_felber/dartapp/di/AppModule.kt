@@ -8,7 +8,9 @@ import com.development_felber.dartapp.data.persistent.database.player.PlayerDao
 import com.development_felber.dartapp.data.persistent.keyvalue.IKeyValueStorage
 import com.development_felber.dartapp.data.persistent.keyvalue.KeyValueStorage
 import com.development_felber.dartapp.data.repository.PlayerRepository
+import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.ui.navigation.NavigationManager
+import com.development_felber.dartapp.ui.screens.game.dialog.GameDialogManager
 import com.development_felber.dartapp.util.Constants.DATABASE_NAME
 import dagger.Module
 import dagger.Provides
@@ -29,6 +31,7 @@ object AppModule {
     @Singleton
     @Provides
     fun provideCoroutineContext(): CoroutineDispatcher = Dispatchers.Main
+
 
     @Singleton
     @Provides

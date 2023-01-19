@@ -11,27 +11,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.development_felber.dartapp.data.persistent.database.player.Player
+import com.development_felber.dartapp.data.persistent.database.multiplayer_game.MultiplayerGame
+import com.development_felber.dartapp.game.PlayerRole
+import com.development_felber.dartapp.ui.screens.game.PlayerScore
+import com.development_felber.dartapp.ui.screens.game.PlayerUiState
 import com.development_felber.dartapp.ui.screens.game.dialog.GameFinishedDialog
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
-
-data class MultiplayerStatsInfo(
-    val player1: Player,
-    val player2: Player,
-    val combinedScore: CombinedScore,
-    val avgScore1: Double,
-    val avgScore2: Double,
-    val doubleRate1: Double,
-    val doubleRate2: Double,
+data class MultiplayerGamePlayerStats(
+    val overallAverage: Double,
+    val overallDoubleRate: Double,
 )
 
 @Composable
 fun MultiplayerGameFinishedDialog(
+    players: List<PlayerUiState>,
+    stats: List<MultiplayerGamePlayerStats>,
     onMenuClicked: () -> Unit,
     onPlayAgainClicked: () -> Unit,
-    multiplayerStatsInfo: MultiplayerStatsInfo
 ) {
+    assert(players.size == stats.size && players.size == 2) {
+        "MultiplayerGameFinishedDialog only supports 2 players"
+    }
+
     GameFinishedDialog(
         title = "Game finished!",
         onMoreDetailsClicked = { /*TODO*/ },
@@ -40,14 +42,16 @@ fun MultiplayerGameFinishedDialog(
         onPlayAgainClicked = onPlayAgainClicked
     ) {
         MultiplayerStatsContent(
-            multiplayerStatsInfo = multiplayerStatsInfo
+            players = players,
+            stats = stats,
         )
     }
 }
 
 @Composable
 fun MultiplayerStatsContent(
-    multiplayerStatsInfo: MultiplayerStatsInfo
+   players: List<PlayerUiState>,
+   stats: List<MultiplayerGamePlayerStats>,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -55,21 +59,20 @@ fun MultiplayerStatsContent(
         modifier = Modifier.fillMaxWidth(),
     ) {
         ScoreComparison(
-            player1 = multiplayerStatsInfo.player1,
-            player2 = multiplayerStatsInfo.player2,
-            combinedScore = multiplayerStatsInfo.combinedScore
+            player1 = players[0],
+            player2 = players[1],
         )
 
         MultiplayerStatsRow(
             name = "Avg",
-            leftValueString = "%.1f".format(multiplayerStatsInfo.avgScore1),
-            rightValueString = "%.1f".format(multiplayerStatsInfo.avgScore2)
+            leftValueString = "%.1f".format(stats[0].overallAverage),
+            rightValueString = "%.1f".format(stats[1].overallAverage),
         )
 
         MultiplayerStatsRow(
             name = "Double Rate",
-            leftValueString = "%.0f%%".format(multiplayerStatsInfo.doubleRate1),
-            rightValueString = "%.0f%%".format(multiplayerStatsInfo.doubleRate2)
+                leftValueString = "%.0f%%".format(stats[0].overallDoubleRate * 100),
+            rightValueString = "%.0f%%".format(stats[1].overallDoubleRate * 100),
         )
     }
 }
@@ -108,17 +111,38 @@ private fun MultiplayerStatsRow(
 private fun MultiplayerGameFinishedDialogPreview() {
     DartAppTheme {
         MultiplayerGameFinishedDialog(
-            onMenuClicked = { /*TODO*/ },
-            onPlayAgainClicked = { /*TODO*/ },
-            multiplayerStatsInfo = MultiplayerStatsInfo(
-                player1 = Player("Player 1"),
-                player2 = Player("Player 2"),
-                combinedScore = CombinedScore(3, 2, 3, 2, 0, 2),
-                avgScore1 = 20.0,
-                avgScore2 = 20.0,
-                doubleRate1 = 50.0,
-                doubleRate2 = 50.0,
-            )
+            players = listOf(
+                PlayerUiState(
+                    playerRole = PlayerRole.One,
+                    name = "Player 1",
+                    score = PlayerScore(1, 3, 0, 2),
+                    average = 0.0,
+                    dartCount = 0,
+                    pointsLeft = 0,
+                    last = 0,
+                ),
+                PlayerUiState(
+                    playerRole = PlayerRole.Two,
+                    name = "Player 2",
+                    score = PlayerScore(2, 3, 1, 2),
+                    average = 0.0,
+                    dartCount = 0,
+                    pointsLeft = 0,
+                    last = 0,
+                ),
+            ),
+            stats = listOf(
+                MultiplayerGamePlayerStats(
+                    overallAverage = 50.0,
+                    overallDoubleRate = 0.6,
+                ),
+                MultiplayerGamePlayerStats(
+                    overallAverage = 61.2,
+                    overallDoubleRate = 0.1,
+                ),
+            ),
+            onMenuClicked = { },
+            onPlayAgainClicked = { },
         )
     }
 }

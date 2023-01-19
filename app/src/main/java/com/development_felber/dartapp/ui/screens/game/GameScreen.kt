@@ -22,6 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.development_felber.dartapp.data.repository.SettingsRepository
@@ -31,6 +32,7 @@ import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.game.dialog.*
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialog
+import com.development_felber.dartapp.ui.screens.game.dialog.multi.LegWonDialog
 import com.development_felber.dartapp.ui.screens.game.dialog.solo.LegFinishedDialogEntryPoint
 import com.development_felber.dartapp.ui.shared.Background
 import com.development_felber.dartapp.ui.shared.KeepScreenOn
@@ -371,6 +373,9 @@ private fun DialogsOverlay(
     dialogToShow: GameDialogManager.DialogType?,
     gameViewModel: GameViewModel
 ) {
+    val gameUiState by gameViewModel.gameUiState.collectAsState()
+    val gameStatus = gameViewModel.gameState.gameStatus
+
     when (dialogToShow) {
         GameDialogManager.DialogType.ExitGame -> ExitDialog(
             onDismissDialog = gameViewModel::dismissExitDialog
@@ -399,10 +404,18 @@ private fun DialogsOverlay(
             )
         }
         GameDialogManager.DialogType.LegJustFinished -> {
-            // TODO
+            LegWonDialog(
+                players = gameUiState.playerUiStates,
+                playerWon = (gameStatus as GameStatus.LegJustFinished).winningPlayer,
+                onContinue = gameViewModel::onContinueInDialogClicked
+            )
         }
         GameDialogManager.DialogType.SetJustFinished -> {
-            // TODO
+            LegWonDialog(
+                players = gameUiState.playerUiStates,
+                playerWon = (gameStatus as GameStatus.SetJustFinished).winningPlayer,
+                onContinue = gameViewModel::onContinueInDialogClicked
+            )
         }
         null -> {
             // No dialog to show

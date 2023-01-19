@@ -59,7 +59,7 @@ data class NumberPadUiState(
 @HiltViewModel
 class GameViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
-    val settingsRepository: SettingsRepository,
+    private val settingsRepository: SettingsRepository,
     private val finishedLegDao: FinishedLegDao,
     private val dispatcher: CoroutineDispatcher,
 ) : ViewModel() {
@@ -82,12 +82,15 @@ class GameViewModel @Inject constructor(
 
     private val updateRequired: MutableStateFlow<Int> = MutableStateFlow(0)
 
-    private val dialogManager = GameDialogManager()
+    private val dialogManager = GameDialogManager(
+        coroutineScope = viewModelScope,
+        settingsRepository = settingsRepository,
+    )
 
     val gameUiState = combine(_numberPadUiState, dialogManager.currentDialog, _checkoutTip, updateRequired) {
         numberPadUiState, dialog, checkoutTip, _ ->
          GameUiState(
-            currentPlayer = gameState.getCurrentPlayerRole(),
+            currentPlayer = gameState.currentPlayerRole,
             checkoutTip = checkoutTip,
             dialogToShow = dialog,
             playerUiStates = getPlayerUiStates(),
@@ -103,11 +106,11 @@ class GameViewModel @Inject constructor(
 
     private fun getPlayerUiStates() : List<PlayerUiState> {
         val playerUiStates = mutableListOf<PlayerUiState>()
-        for ((role, playerGameState) in gameState.playerGameStatesByPlayerRole) {
+        for (playerGameState in gameState.playerGameStates) {
             val leg = playerGameState.currentLeg
             playerUiStates += PlayerUiState(
-                name = gameSetup.getPlayerName(role) ?: "Solo Player",
-                playerRole = role,
+                name = gameSetup.getPlayerName(playerGameState.playerRole) ?: "Solo Player",
+                playerRole = playerGameState.playerRole,
                 score = gameSetup.createPlayerScore(
                     setsWon = playerGameState.setsWonCount,
                     legsWonInCurrentSet = playerGameState.legsWonInCurrentSetCount
@@ -183,22 +186,21 @@ class GameViewModel @Inject constructor(
     }
 
     private suspend fun enterNumberToGame(number: Int) {
-        if (usePerDartNumberPad) {
-            gameState.applyAction(AddDartGameAction(number))
-        } else {
-            gameState.applyAction(AddServeGameAction(number))
-        }
+        gameState.applyAction(
+            action = if (usePerDartNumberPad) AddDartGameAction(number) else AddServeGameAction(number),
+            executeBeforeUpdate = {
+                updateDialogs(number)
+                checkLegFinished()
+            }
+        )
 
         update()
-        updateDialogs(number)
-        checkLegFinished()
     }
 
-    private suspend fun updateDialogs(lastEnteredNumber: Int) {
+    private fun updateDialogs(lastEnteredNumber: Int) {
         dialogManager.determineDialogsToOpen(
             lastNumberEntered = lastEnteredNumber,
             gameState = gameState,
-            settingsRepository = settingsRepository,
             usePerDartNumberPad = usePerDartNumberPad,
         )
     }
@@ -309,6 +311,10 @@ class GameViewModel @Inject constructor(
     fun createLegFinishedDialogViewModel() : SoloGameFinishedDialogViewModel {
         return SoloGameFinishedDialogViewModel(navigationManager, finishedLegDao, settingsRepository,
             this)
+    }
+
+    fun onContinueInDialogClicked() {
+        dialogManager.closeDialog()
     }
 
     fun navigateBack() {

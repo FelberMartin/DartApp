@@ -13,51 +13,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.development_felber.dartapp.data.persistent.database.player.Player
+import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.ui.screens.game.PlayerScore
+import com.development_felber.dartapp.ui.screens.game.PlayerUiState
 import com.development_felber.dartapp.ui.theme.DartAppTheme
-
-data class CombinedScore(
-    val legs1: Int,
-    val legs2: Int,
-    val legsToWin: Int,
-    val sets1: Int,
-    val sets2: Int,
-    val setsToWin: Int,
-) {
-    fun toPlayerScore(isPlayer1: Boolean): PlayerScore {
-        return if (isPlayer1) {
-            PlayerScore(legs1, legsToWin, sets1, setsToWin)
-        } else {
-            PlayerScore(legs2, legsToWin, sets2, setsToWin)
-        }
-    }
-}
 
 @Composable
 fun LegWonDialog(
-    player1: Player,
-    player2: Player,
-    hasPlayer1WonLeg: Boolean,
-    combinedScore: CombinedScore,
+    players: List<PlayerUiState>,
+    playerWon: PlayerRole,
     onContinue: () -> Unit,
 ) {
+    assert(players.size == 2) { "LegWonDialog only supports 2 players" }
+
     AlertDialog(
         onDismissRequest = { /*Nothing*/ },
         title = {
+            val winner = players.first { it.playerRole == playerWon }
             Text(
-                text = if (hasPlayer1WonLeg) {
-                    "${player1.name} won the leg!"
-                } else {
-                    "${player2.name} won the leg!"
-                }
+                text = "${winner.name} won the leg!"
             )
         },
         text = {
             ScoreComparison(
-                player1 = player1,
-                player2 = player2,
-                combinedScore = combinedScore
+                player1 = players[0],
+                player2 = players[1],
             )
         },
         confirmButton = {
@@ -71,18 +51,17 @@ fun LegWonDialog(
 
 @Composable
 fun ScoreComparison(
-    player1: Player,
-    player2: Player,
-    combinedScore: CombinedScore,
+    player1: PlayerUiState,
+    player2: PlayerUiState,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        PlayerScore(
+        PlayerScoreDisplay(
             playerName = player1.name,
-            playerScore = combinedScore.toPlayerScore(true)
+            playerScore = player1.score,
         )
 
         Text(
@@ -90,15 +69,15 @@ fun ScoreComparison(
             style = MaterialTheme.typography.headlineLarge,
         )
 
-        PlayerScore(
+        PlayerScoreDisplay(
             playerName = player2.name,
-            playerScore = combinedScore.toPlayerScore(false)
+            playerScore = player2.score
         )
     }
 }
 
 @Composable
-private fun PlayerScore(
+fun PlayerScoreDisplay(
     playerName: String,
     playerScore: PlayerScore,
 ) {
@@ -123,10 +102,27 @@ private fun PlayerScore(
 private fun LegWonDialogPreview() {
     DartAppTheme() {
         LegWonDialog(
-            player1 = Player("Player 1"),
-            player2 = Player("Player 2"),
-            hasPlayer1WonLeg = true,
-            combinedScore = CombinedScore(1, 0, 3, 1, 2, 3),
+            players = listOf(
+                PlayerUiState(
+                    playerRole = PlayerRole.One,
+                    name = "Player 1",
+                    score = PlayerScore(1, 3, 0, 2),
+                    average = 0.0,
+                    dartCount = 0,
+                    pointsLeft = 0,
+                    last = 0,
+                ),
+                PlayerUiState(
+                    playerRole = PlayerRole.Two,
+                    name = "Player 2",
+                    score = PlayerScore(2, 3, 1, 2),
+                    average = 0.0,
+                    dartCount = 0,
+                    pointsLeft = 0,
+                    last = 0,
+                ),
+            ),
+            playerWon = PlayerRole.One
         ) {
 
         }

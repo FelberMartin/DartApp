@@ -14,27 +14,26 @@ class GameState(
         get() = gameActions.isNotEmpty()
 
     val availablePlayerRoles: List<PlayerRole> = setup.availablePlayerRoles
-    val playerGameStatesByPlayerRole: Map<PlayerRole, PlayerGameState> = availablePlayerRoles.associateWith {
-        PlayerGameState()
-    }
+    val playerGameStates: List<PlayerGameState> = availablePlayerRoles.map { PlayerGameState(it) }
+
+    var currentPlayerRole: PlayerRole = availablePlayerRoles.first()
     val currentPlayerGameState
-        get() = playerGameStatesByPlayerRole[getCurrentPlayerRole()]!!
+        get() = playerGameStates.first { it.playerRole == currentPlayerRole }
     val currentLeg: Leg
         get() = currentPlayerGameState.currentLeg
 
     var gameStatus: GameStatus = GameStatus.LegInProgress
 
 
-    fun getCurrentPlayerRole() : PlayerRole {
-        val sortedByPlayerRole = playerGameStatesByPlayerRole.entries.sortedBy {
-            it.key.ordinal  // Prefer player 1 over player 2
+    fun updateCurrentPlayerRole() {
+        val sortedByPlayerRole = playerGameStates.sortedBy {
+            it.playerRole.ordinal  // Prefer player 1 over player 2
         }
         val entryWithLeastDartsThrown = sortedByPlayerRole.minBy {
-            val playerGameState = it.value
-            val serveCount = playerGameState.currentLeg.dartCount / 3
+            val serveCount = it.currentLeg.dartCount / 3
             serveCount
         }
-        return entryWithLeastDartsThrown.key
+        currentPlayerRole = entryWithLeastDartsThrown.playerRole
     }
 
     fun completeDartsToFullServe() {
@@ -45,27 +44,32 @@ class GameState(
         applyAction(FillServeGameAction(3 - started))
     }
 
-    fun applyAction(action: GameActionBase) {
+    fun applyAction(
+        action: GameActionBase,
+        executeBeforeUpdate: () -> Unit = {},
+    ) {
         gameActions.push(Pair(action, currentLeg))
         action.apply(currentLeg)
         if (currentLeg.isOver) {
-            Log.i("GameState", "Player ${getCurrentPlayerRole()} finished leg")
             gameActions.clear()     // Only allow undo during legs.
-            updateGameStatus()
         }
+
+        gameStatus = currentPlayerGameState.updateAndGetGameStatus(setup)
+        executeBeforeUpdate()
+        updateCurrentPlayerRole()
+        resetIfNecessary()
     }
 
-    private fun updateGameStatus() {
-        gameStatus = currentPlayerGameState.updateAndGetGameStatus(setup)
+    private fun resetIfNecessary() {
         when(gameStatus) {
             GameStatus.LegInProgress -> { /* Do nothing */ }
-            GameStatus.LegJustFinished -> {
-                playerGameStatesByPlayerRole.values.forEach {
+            is GameStatus.LegJustFinished -> {
+                playerGameStates.forEach {
                     it.resetCurrentLeg()
                 }
             }
-            GameStatus.SetJustFinished -> {
-                playerGameStatesByPlayerRole.values.forEach {
+            is GameStatus.SetJustFinished -> {
+                playerGameStates.forEach {
                     it.resetCurrentSet()
                 }
             }
@@ -80,10 +84,12 @@ class GameState(
             val (action, leg) = gameActions.pop()
             action.undo(leg)
         }
+        updateCurrentPlayerRole()
     }
 }
 
 data class PlayerGameState(
+    val playerRole: PlayerRole,
     var legsWonInCurrentSetCount: Int = 0,
     var setsWonCount: Int = 0,
     var currentLeg: Leg = Leg(),
@@ -108,11 +114,11 @@ data class PlayerGameState(
             return GameStatus.LegInProgress
         }
 
-        var status: GameStatus = GameStatus.LegJustFinished
+        var status: GameStatus = GameStatus.LegJustFinished(playerRole)
         legsWonInCurrentSetCount++
 
         if (legsWonInCurrentSetCount >= gameSetup.legsToWinSet) {
-            status = GameStatus.SetJustFinished
+            status = GameStatus.SetJustFinished(playerRole)
             setsWonCount++
         }
         if (setsWonCount >= gameSetup.setsToWin) {
@@ -128,6 +134,7 @@ data class PlayerGameState(
     }
 
     fun resetCurrentSet() {
+        resetCurrentLeg()
         legsWonInCurrentSetCount = 0
     }
 }
@@ -135,8 +142,8 @@ data class PlayerGameState(
 sealed class GameStatus {
     sealed class InProgress : GameStatus()
     object LegInProgress : InProgress()
-    object LegJustFinished : InProgress()
-    object SetJustFinished : InProgress()
+    class LegJustFinished(val winningPlayer: PlayerRole) : InProgress()
+    class SetJustFinished(val winningPlayer: PlayerRole) : InProgress()
 
     object Finished : GameStatus()
 }

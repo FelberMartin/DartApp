@@ -6,5 +6,8 @@
 TODO:
  - Set to normal database and no random data
  - Move graph library to Jetpack Compose
+ - Add separate SetFinished Dialog ?
  - Multiplayer:
     - After finishing a leg as player one, player two still gets to throw
+    - Finished Leg dialog not showing
+    - Change start position after each leg?
