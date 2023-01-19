@@ -7,7 +7,7 @@ TODO:
  - Set to normal database and no random data
  - Move graph library to Jetpack Compose
  - Add separate SetFinished Dialog ?
+ - Fix broken test (save doublerate to leg)
+ - Add tests for setFinishedDialog and GameFinishedDialog
  - Multiplayer:
-    - After finishing a leg as player one, player two still gets to throw
-    - Finished Leg dialog not showing
-    - Change start position after each leg?
+    - Change start position after each leg? (yes, rotate first player)

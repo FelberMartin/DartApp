@@ -51,11 +51,11 @@ class GameDialogManager (
 
     private val askForDoubleSetting = settingsRepository
         .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble)
-        .stateIn(coroutineScope, SharingStarted.WhileSubscribed(), false)
+        .stateIn(coroutineScope, SharingStarted.Eagerly, true)
 
     private val askForCheckoutSetting = settingsRepository
         .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForCheckout)
-        .stateIn(coroutineScope, SharingStarted.WhileSubscribed(), false)
+        .stateIn(coroutineScope, SharingStarted.Eagerly, true)
 
 
     fun openDialog(dialogType: DialogType) {
