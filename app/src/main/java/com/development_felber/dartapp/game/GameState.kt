@@ -31,7 +31,8 @@ class GameState(
         }
         val entryWithLeastDartsThrown = sortedByPlayerRole.minBy {
             val playerGameState = it.value
-            playerGameState.currentLeg.dartCount
+            val serveCount = playerGameState.currentLeg.dartCount / 3
+            serveCount
         }
         return entryWithLeastDartsThrown.key
     }
