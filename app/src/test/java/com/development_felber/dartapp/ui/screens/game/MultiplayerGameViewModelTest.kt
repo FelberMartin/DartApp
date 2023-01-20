@@ -2,6 +2,7 @@ package com.development_felber.dartapp.ui.screens.game
 
 import com.development_felber.dartapp.data.persistent.database.player.Player
 import com.development_felber.dartapp.game.GameSetup
+import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.ui.screens.game.dialog.GameDialogManager
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialogResult
 import com.google.common.truth.Truth.assertThat
@@ -59,5 +60,28 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
         assertThat(dialog).isNull()
+    }
+
+    @Test
+    fun `after finishing leg, it is added to previous legs list`() = runHotFlowTest {
+        endGame()
+        val previousLegs = viewModel.gameState.currentPlayerGameState.previousLegs
+        assertThat(previousLegs.size).isEqualTo(1)
+    }
+
+    private suspend fun endGame() {
+        enterServes(listOf(180, 0, 180, 0, 141))
+        delay(1)
+        viewModel.doubleAttemptsAndCheckoutConfirmed(DoubleAttemptsAndCheckoutDialogResult(1, 3))
+        viewModel.onContinueInDialogClicked()
+    }
+
+    @Test
+    fun `rotate players after each leg`() = runHotFlowTest {
+        assertThat(viewModel.gameState.currentPlayerRole).isEqualTo(PlayerRole.One)
+        endGame()
+        assertThat(viewModel.gameState.currentPlayerRole).isEqualTo(PlayerRole.Two)
+        endGame()
+        assertThat(viewModel.gameState.currentPlayerRole).isEqualTo(PlayerRole.One)
     }
 }

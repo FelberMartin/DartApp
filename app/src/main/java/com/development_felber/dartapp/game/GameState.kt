@@ -9,6 +9,7 @@ import java.util.*
 class GameState(
     private val setup: GameSetup,
 ) {
+
     private val gameActions = Stack<Pair<GameActionBase, Leg>>()
     val undoAvailable: Boolean
         get() = gameActions.isNotEmpty()
@@ -24,10 +25,12 @@ class GameState(
 
     var gameStatus: GameStatus = GameStatus.LegInProgress
 
-
-    fun updateCurrentPlayerRole() {
+    private fun updateCurrentPlayerRole() {
+        val legCount = currentPlayerGameState.previousLegs.size
+        val playerCount = availablePlayerRoles.size
         val sortedByPlayerRole = playerGameStates.sortedBy {
-            it.playerRole.ordinal  // Prefer player 1 over player 2
+            // Rotate the starting player with each Leg.
+            (it.playerRole.ordinal + legCount) % playerCount
         }
         val entryWithLeastDartsThrown = sortedByPlayerRole.minBy {
             val serveCount = it.currentLeg.dartCount / 3
@@ -56,8 +59,8 @@ class GameState(
 
         gameStatus = currentPlayerGameState.updateAndGetGameStatus(setup)
         executeBeforeUpdate()
-        updateCurrentPlayerRole()
         resetIfNecessary()
+        updateCurrentPlayerRole()
     }
 
     private fun resetIfNecessary() {

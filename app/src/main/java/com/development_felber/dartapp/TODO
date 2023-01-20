@@ -10,5 +10,3 @@ TODO:
  - Tests:
     - setFinishedDialog and GameFinishedDialog
     - Save Solo/Multi Games correctly
- - Multiplayer:
-    - Change start position after each leg? (yes, rotate first player)
