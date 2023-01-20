@@ -3,6 +3,7 @@ package com.development_felber.dartapp.ui.screens.game
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.ui.screens.game.dialog.GameDialogManager
+import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialogResult
 import com.development_felber.dartapp.ui.screens.game.testutil.PerDartNumPadEnter
 import com.google.common.truth.Truth
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -147,7 +148,8 @@ class SoloGameViewModelTest : GameViewModelTest() {
     @Test
     fun `enter double attempts, get added to game list`() = runTest {
         enterServes(listOf(180, 180, 141))
-        viewModel.enterDoubleAttempts(2)
+        val result = DoubleAttemptsAndCheckoutDialogResult(doubleAttempts = 2)
+        viewModel.doubleAttemptsAndCheckoutConfirmed(result)
         val doubleAttempts = viewModel.gameState.currentLeg.doubleAttempts
         Truth.assertThat(doubleAttempts).isEqualTo(2)
     }
@@ -159,7 +161,8 @@ class SoloGameViewModelTest : GameViewModelTest() {
             false
         )
         enterServes(listOf(180, 180, 141))
-        viewModel.enterDoubleAttempts(2)
+        val result = DoubleAttemptsAndCheckoutDialogResult(doubleAttempts = 2)
+        viewModel.doubleAttemptsAndCheckoutConfirmed(result)
         delay(1)
         val doubleAttempts = finishedLegDao.getLatestLeg()?.doubleAttempts
         Truth.assertThat(doubleAttempts).isEqualTo(2)
@@ -195,7 +198,8 @@ class SoloGameViewModelTest : GameViewModelTest() {
     fun `enter single checkout dart, do only count one dart for serve`() = runHotFlowTest {
         enterServes(listOf(180, 180, 139))
         enterServe(2)
-        viewModel.enterCheckoutDarts(1)
+        val result = DoubleAttemptsAndCheckoutDialogResult(checkout = 1)
+        viewModel.doubleAttemptsAndCheckoutConfirmed(result)
         delay(1)
         val dartCount = player.dartCount
         Truth.assertThat(dartCount).isEqualTo(10)

@@ -248,19 +248,20 @@ class GameViewModel @Inject constructor(
             enterDoubleAttempts(result.doubleAttempts)
         }
         if (result.checkout != null) {
-            enterCheckoutDarts(result.checkout)
+            enterCheckout(result.checkout)
         }
         dialogManager.closeDialog()
         update()
         checkLegFinished()
     }
 
-    fun enterDoubleAttempts(attempts: Int) {
+    private fun enterDoubleAttempts(attempts: Int) {
         gameState.currentLeg.doubleAttemptsList.add(attempts)
     }
 
-    fun enterCheckoutDarts(darts: Int) {
-        gameState.currentLeg.unusedDartCount += 3- darts
+    private fun enterCheckout(darts: Int) {
+        val unusedDarts = 3 - darts
+        gameState.currentLeg.unusedDartCount += unusedDarts
     }
 
     private fun checkLegFinished() {

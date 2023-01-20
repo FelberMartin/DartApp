@@ -10,8 +10,8 @@ import androidx.compose.ui.unit.dp
 
 
 data class DoubleAttemptsAndCheckoutDialogResult(
-    val doubleAttempts: Int?,
-    val checkout: Int?
+    val doubleAttempts: Int? = null,
+    val checkout: Int? = null
 )
 
 @Composable
