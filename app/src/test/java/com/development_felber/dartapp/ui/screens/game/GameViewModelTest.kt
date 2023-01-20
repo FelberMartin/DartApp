@@ -42,16 +42,21 @@ open class GameViewModelTest {
     protected lateinit var settingsRepository: SettingsRepository
     protected lateinit var finishedLegDao: FinishedLegDao
     protected lateinit var viewModel: GameViewModel
-
-    protected var gameSetup: GameSetup = GameSetup.Solo
     private lateinit var collectJob: Job
 
     @Before
-    fun setup() {
-        settingsRepository = SettingsRepository(InMemoryKeyValueStorage())
-        finishedLegDao = FakeFinishedLegDao()
+    open fun setup() {
+        setupGameViewModel()
+    }
+
+    protected fun setupGameViewModel(
+        navigationManager: NavigationManager = NavigationManager(),
+        settingsRepository: SettingsRepository = SettingsRepository(InMemoryKeyValueStorage()),
+        finishedLegDao: FinishedLegDao = FakeFinishedLegDao(),
+        gameSetup: GameSetup = GameSetup.Solo
+    ) {
         GameSetupHolder.gameSetup = gameSetup
-        viewModel = GameViewModel(NavigationManager(), settingsRepository, finishedLegDao, coroutineRule.dispatcher)
+        viewModel = GameViewModel(navigationManager, settingsRepository, finishedLegDao, coroutineRule.dispatcher)
     }
 
     private val numberPad

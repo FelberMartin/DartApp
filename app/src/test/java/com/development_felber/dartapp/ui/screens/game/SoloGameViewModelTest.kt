@@ -2,10 +2,12 @@ package com.development_felber.dartapp.ui.screens.game
 
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
+import com.development_felber.dartapp.getOrAwaitValueTest
 import com.development_felber.dartapp.ui.screens.game.dialog.GameDialogManager
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialogResult
 import com.development_felber.dartapp.ui.screens.game.testutil.PerDartNumPadEnter
 import com.google.common.truth.Truth
+import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
@@ -217,6 +219,18 @@ class SoloGameViewModelTest : GameViewModelTest() {
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
         Truth.assertThat(dialog).isEqualTo(GameDialogManager.DialogType.GameFinished)
+    }
+
+    @Test
+    fun `after finishing game, leg gets saved to the database`() = runTest {
+        // Make sure that there are no entries in the database before.
+        assertThat(finishedLegDao.getLatestLeg()).isNull()
+        enterServes(listOf(180, 180, 141))
+        delay(1)
+        viewModel.doubleAttemptsAndCheckoutConfirmed(1, 3)
+        delay(1)
+        val allLegs = finishedLegDao.getAllLegs().getOrAwaitValueTest()
+        assertThat(allLegs.size).isEqualTo(1)
     }
 
     // -------------- Enter button enablement -----------------

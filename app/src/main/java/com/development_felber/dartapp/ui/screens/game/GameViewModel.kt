@@ -243,6 +243,13 @@ class GameViewModel @Inject constructor(
         onUndoClicked()
     }
 
+    fun doubleAttemptsAndCheckoutConfirmed(doubleAttempts: Int? = null, checkout: Int? = null) {
+        doubleAttemptsAndCheckoutConfirmed(DoubleAttemptsAndCheckoutDialogResult(
+            doubleAttempts = doubleAttempts,
+            checkout = checkout
+        ))
+    }
+
     fun doubleAttemptsAndCheckoutConfirmed(result: DoubleAttemptsAndCheckoutDialogResult) {
         if (result.doubleAttempts != null) {
             enterDoubleAttempts(result.doubleAttempts)
