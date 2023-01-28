@@ -10,4 +10,5 @@ TODO:
  - Tests:
     - run setFinishedDialog and GameFinishedDialog
     - Save Solo/Multi Games correctly
+    - Test migration from old database schema
  - (?) Dont update the gamestate before closing the LegWonDialog

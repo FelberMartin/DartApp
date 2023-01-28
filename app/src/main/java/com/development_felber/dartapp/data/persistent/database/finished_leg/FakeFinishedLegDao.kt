@@ -24,6 +24,12 @@ class FakeFinishedLegDao(fillWithTestData: Boolean = false) : FinishedLegDao {
         insertBlocking(leg)
     }
 
+    override suspend fun insert(legs: List<FinishedLeg>) {
+        for (leg in legs) {
+            insertBlocking(leg)
+        }
+    }
+
     private fun insertBlocking(leg: FinishedLeg) {
         if (legsById.containsKey(leg.id)) {
             leg.id = legsById.keys.max() + 1

@@ -23,8 +23,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.development_felber.dartapp.data.persistent.database.dart_set.FakeDartSetDao
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
+import com.development_felber.dartapp.data.persistent.database.multiplayer_game.FakeMultiplayerGameDao
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
+import com.development_felber.dartapp.data.repository.GameRepository
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.GameStatus
 import com.development_felber.dartapp.game.PlayerRole
@@ -429,8 +432,9 @@ private fun DialogsOverlay(
 @Composable
 private fun GameScreenPreview() {
     DartAppTheme() {
+        val legDao = FakeFinishedLegDao()
         val viewModel = GameViewModel(NavigationManager(), SettingsRepository(InMemoryKeyValueStorage()),
-            FakeFinishedLegDao(), Dispatchers.Main,
+            GameRepository(legDao, FakeDartSetDao(), FakeMultiplayerGameDao()), legDao, Dispatchers.Main,
         )
         GameScreen(viewModel)
     }

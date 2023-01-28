@@ -6,9 +6,14 @@ package com.development_felber.dartapp.ui.screens.game
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.development_felber.dartapp.MainCoroutineScopeRule
+import com.development_felber.dartapp.data.persistent.database.dart_set.DartSetDao
+import com.development_felber.dartapp.data.persistent.database.dart_set.FakeDartSetDao
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
+import com.development_felber.dartapp.data.persistent.database.multiplayer_game.FakeMultiplayerGameDao
+import com.development_felber.dartapp.data.persistent.database.multiplayer_game.MultiplayerGameDao
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
+import com.development_felber.dartapp.data.repository.GameRepository
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.GameSetup
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
@@ -39,8 +44,11 @@ open class GameViewModelTest {
     @get:Rule
     val coroutineRule = MainCoroutineScopeRule()
 
-    protected lateinit var settingsRepository: SettingsRepository
-    protected lateinit var finishedLegDao: FinishedLegDao
+    protected var settingsRepository: SettingsRepository = SettingsRepository(InMemoryKeyValueStorage())
+    protected var finishedLegDao: FinishedLegDao = FakeFinishedLegDao()
+    protected var dartSetDao: DartSetDao = FakeDartSetDao()
+    protected var multiplayerGameDao: MultiplayerGameDao = FakeMultiplayerGameDao()
+    protected var gameRepository: GameRepository = GameRepository(finishedLegDao, dartSetDao, multiplayerGameDao)
     protected lateinit var viewModel: GameViewModel
     private lateinit var collectJob: Job
 
@@ -50,13 +58,10 @@ open class GameViewModelTest {
     }
 
     protected fun setupGameViewModel(
-        navigationManager: NavigationManager = NavigationManager(),
-        settingsRepository: SettingsRepository = SettingsRepository(InMemoryKeyValueStorage()),
-        finishedLegDao: FinishedLegDao = FakeFinishedLegDao(),
         gameSetup: GameSetup = GameSetup.Solo
     ) {
         GameSetupHolder.gameSetup = gameSetup
-        viewModel = GameViewModel(navigationManager, settingsRepository, finishedLegDao, coroutineRule.dispatcher)
+        viewModel = GameViewModel(NavigationManager(), settingsRepository, gameRepository, finishedLegDao, coroutineRule.dispatcher)
     }
 
     private val numberPad

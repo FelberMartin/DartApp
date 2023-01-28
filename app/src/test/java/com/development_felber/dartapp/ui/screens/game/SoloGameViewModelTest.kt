@@ -27,7 +27,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         delay(1)    // Wait for the state to be updated
         val dartCount = viewModel.gameUiState.value.playerUiStates[0].dartCount
 //        val dartCount = viewModel.gameUiState.asLiveData().getOrAwaitValueTest().playerUiStates[0].dartCount
-        Truth.assertThat(dartCount).isEqualTo(3)
+        assertThat(dartCount).isEqualTo(3)
     }
 
 
@@ -38,7 +38,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServe(69)
         delay(1)
         val avg = player.average
-        Truth.assertThat(avg).isEqualTo(69.0)
+        assertThat(avg).isEqualTo(69.0)
     }
 
     @Test
@@ -47,7 +47,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         viewModel.onSwapNumberPadClicked()
         delay(1)
         val avg = player.average
-        Truth.assertThat(avg).isEqualTo(3.0)
+        assertThat(avg).isEqualTo(3.0)
     }
 
 
@@ -59,7 +59,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServes(listOf(180, 180, 100))
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog.showsDoubleDialog()).isTrue()
+        assertThat(dialog.showsDoubleDialog()).isTrue()
     }
 
     private fun GameDialogManager.DialogType?.showsDoubleDialog() : Boolean {
@@ -75,7 +75,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServe(60)
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog.showsDoubleDialog()).isTrue()
+        assertThat(dialog.showsDoubleDialog()).isTrue()
     }
 
     @Test
@@ -84,7 +84,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServe(41)
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog.showsDoubleDialog()).isTrue()
+        assertThat(dialog.showsDoubleDialog()).isTrue()
     }
 
     @Test
@@ -93,7 +93,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServe(0)
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog.showsDoubleDialog()).isTrue()
+        assertThat(dialog.showsDoubleDialog()).isTrue()
     }
 
     @Test
@@ -104,7 +104,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterDart(PerDartNumPadEnter(12))
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog).isEqualTo(GameDialogManager.DialogType.AskForDoubleSimple)
+        assertThat(dialog).isEqualTo(GameDialogManager.DialogType.AskForDoubleSimple)
     }
 
     // ~~~~~~ Do NOT Show Dialog ~~~~~~~
@@ -115,7 +115,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServes(listOf(180, 180, 100))
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog.showsDoubleDialog()).isFalse()
+        assertThat(dialog.showsDoubleDialog()).isFalse()
     }
 
     @Test
@@ -123,7 +123,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServes(listOf(180, 180))
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog.showsDoubleDialog()).isFalse()
+        assertThat(dialog.showsDoubleDialog()).isFalse()
     }
 
     @Test
@@ -131,7 +131,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServes(listOf(180, 180, 41))
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog.showsDoubleDialog()).isFalse()
+        assertThat(dialog.showsDoubleDialog()).isFalse()
     }
 
     @Test
@@ -142,7 +142,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterDart(PerDartNumPadEnter(12, PerDartNumberPad.Modifier.Double))
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog).isNotInstanceOf(GameDialogManager.DialogType.AskForDoubleSimple::class.java)
+        assertThat(dialog).isNotInstanceOf(GameDialogManager.DialogType.AskForDoubleSimple::class.java)
     }
 
     // ~~~~~~ Misc ~~~~~~~
@@ -153,7 +153,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         val result = DoubleAttemptsAndCheckoutDialogResult(doubleAttempts = 2)
         viewModel.doubleAttemptsAndCheckoutConfirmed(result)
         val doubleAttempts = viewModel.gameState.currentLeg.doubleAttempts
-        Truth.assertThat(doubleAttempts).isEqualTo(2)
+        assertThat(doubleAttempts).isEqualTo(2)
     }
 
     @Test
@@ -167,7 +167,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         viewModel.doubleAttemptsAndCheckoutConfirmed(result)
         delay(1)
         val doubleAttempts = finishedLegDao.getLatestLeg()?.doubleAttempts
-        Truth.assertThat(doubleAttempts).isEqualTo(2)
+        assertThat(doubleAttempts).isEqualTo(2)
     }
 
     // ------------------ Checkout ----------------------------
@@ -177,7 +177,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServes(listOf(180, 180, 141))
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog.showsCheckoutDialog()).isTrue()
+        assertThat(dialog.showsCheckoutDialog()).isTrue()
     }
 
     private fun GameDialogManager.DialogType?.showsCheckoutDialog() : Boolean {
@@ -193,7 +193,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServes(listOf(180, 180, 141))
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog.showsCheckoutDialog()).isFalse()
+        assertThat(dialog.showsCheckoutDialog()).isFalse()
     }
 
     @Test
@@ -204,7 +204,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         viewModel.doubleAttemptsAndCheckoutConfirmed(result)
         delay(1)
         val dartCount = player.dartCount
-        Truth.assertThat(dartCount).isEqualTo(10)
+        assertThat(dartCount).isEqualTo(10)
     }
 
 
@@ -218,7 +218,7 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServes(listOf(180, 180, 141))
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
-        Truth.assertThat(dialog).isEqualTo(GameDialogManager.DialogType.GameFinished)
+        assertThat(dialog).isEqualTo(GameDialogManager.DialogType.GameFinished)
     }
 
     @Test
@@ -240,6 +240,6 @@ class SoloGameViewModelTest : GameViewModelTest() {
         enterServe(180)
         delay(1)
         val enabled = viewModel.gameUiState.value.numberPadUiState.enterEnabled
-        Truth.assertThat(enabled).isTrue()
+        assertThat(enabled).isTrue()
     }
 }

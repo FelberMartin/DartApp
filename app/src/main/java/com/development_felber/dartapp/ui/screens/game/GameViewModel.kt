@@ -187,11 +187,12 @@ class GameViewModel @Inject constructor(
         }
     }
 
-    private suspend fun enterNumberToGame(number: Int) {
+    private fun enterNumberToGame(number: Int) {
         gameState.applyAction(
             action = if (usePerDartNumberPad) AddDartGameAction(number) else AddServeGameAction(number),
             executeBeforeUpdate = {
                 updateDialogs(number)
+                clearNumberPad()
                 checkGameFinished()
             }
         )

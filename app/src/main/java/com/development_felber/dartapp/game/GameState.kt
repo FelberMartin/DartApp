@@ -77,7 +77,9 @@ class GameState(
                 }
             }
             GameStatus.Finished -> {
-                // Don't know yet what to do here.
+                playerGameStates.forEach {
+                    it.finishCurrentLeg()
+                }
             }
         }
     }
@@ -97,7 +99,6 @@ data class PlayerGameState(
     var setsWonCount: Int = 0,
     var currentLeg: Leg = Leg(),
     val previousLegsPerSet: MutableList<MutableList<Leg>> = mutableListOf(mutableListOf()),
-    val legsCountPerFinishedSet: MutableList<Int> = mutableListOf(),
 ) {
 
     fun updateAndGetGameStatus(gameSetup: GameSetup) : GameStatus {
@@ -134,7 +135,7 @@ data class PlayerGameState(
     }
 
     fun resetCurrentLeg() {
-        previousLegsPerSet.last().add(currentLeg)
+        finishCurrentLeg()
         currentLeg = Leg()
     }
 
@@ -143,6 +144,11 @@ data class PlayerGameState(
         previousLegsPerSet.add(mutableListOf())
         legsWonInCurrentSetCount = 0
     }
+
+    fun finishCurrentLeg() {
+        previousLegsPerSet.last().add(currentLeg)
+    }
+
 }
 
 sealed class GameStatus {

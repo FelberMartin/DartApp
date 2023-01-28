@@ -15,5 +15,5 @@ interface MultiplayerGameDao {
     suspend fun get(id: Long): MultiplayerGame?
 
     @Query("SELECT * FROM multiplayer_games_table ORDER BY end_time")
-    fun getAll(): LiveData<List<MultiplayerGame>>
+    fun getAll(): List<MultiplayerGame>
 }

@@ -34,10 +34,10 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
         setsToWin: Int = Companion.setsToWin,
         legsToWinSet: Int = Companion.legsToWinSet,
     ) = GameSetup.Multiplayer(
-        player1 = Companion.player1,
-        player2 = Companion.player2,
-        setsToWin = Companion.setsToWin,
-        legsToWinSet = Companion.legsToWinSet,
+        player1 = player1,
+        player2 = player2,
+        setsToWin = setsToWin,
+        legsToWinSet = legsToWinSet,
     )
 
 
@@ -86,7 +86,7 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
     @Test
     fun `after finishing set, show set finished dialog`() = runHotFlowTest {
         repeat(legsToWinSet) {
-            endGame(winner = PlayerRole.One)
+            endLeg(winner = PlayerRole.One)
             delay(1)
         }
         val dialog = viewModel.gameUiState.value.dialogToShow
@@ -97,7 +97,7 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
     fun `after winning all sets, show game finished dialog`() = runHotFlowTest {
         setupGameViewModel(gameSetup = createGameSetup(setsToWin = 1))
         repeat(legsToWinSet) {
-            endGame(winner = PlayerRole.One)
+            endLeg(winner = PlayerRole.One)
             delay(1)
         }
         val dialog = viewModel.gameUiState.value.dialogToShow
@@ -114,10 +114,10 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
             legsToWinSet = 1,
             setsToWin = 1,
         ))
-        endGame()
+        endLeg()
         delay(1)
         val legs = finishedLegDao.getAllLegs().getOrAwaitValueTest()
-        val player1Leg = legs.firstOrNull { it.playerName == Companion.player1.name }
+        val player1Leg = legs.firstOrNull { it.playerName == player1.name }
         assertThat(player1Leg).isNotNull()
         val player2Leg = legs.firstOrNull { it.playerName == player2.name }
         assertThat(player2Leg).isNotNull()
@@ -125,25 +125,46 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
 
     @Test
     fun `do not save legs, if the game is still in progress`() = runTest {
-        endGame()
+        endLeg()
         delay(1)
         val savedLegs = finishedLegDao.getAllLegs().getOrAwaitValueTest()
         assertThat(savedLegs).isEmpty()
     }
 
-    // TODO: Save Sets and Multiplayer entries
+    @Test
+    fun `after finishing a game, save the game`() = runTest {
+        endGame()
+        val savedGames = multiplayerGameDao.getAll()
+        assertThat(savedGames).hasSize(1)
+    }
+
+    @Test
+    fun `after finishing a game, save the sets`() = runTest {
+        endGame()
+        val savedSets = dartSetDao.getAll()
+        assertThat(savedSets).hasSize(setsToWin)
+    }
+
+    @Test
+    fun `saved sets have distinct leg ids`() = runTest {
+        endGame()
+        val savedSets = dartSetDao.getAll()
+        val legIds = savedSets.map { it.legIds }.flatten()
+        assertThat(legIds).containsNoDuplicates()
+    }
+
 
 
     // ------------ Others ---------------
 
     @Test
     fun `after finishing leg, it is added to previous legs list`() = runHotFlowTest {
-        endGame()
+        endLeg()
         val previousLegs = viewModel.gameState.currentPlayerGameState.previousLegsPerSet.flatten()
         assertThat(previousLegs).hasSize(1)
     }
 
-    private suspend fun endGame(winner: PlayerRole = PlayerRole.One) {
+    private suspend fun endLeg(winner: PlayerRole = PlayerRole.One) {
         var serves = mutableListOf(180, 0, 180, 0, 141)
         val startingPlayer = viewModel.gameState.currentPlayerRole
         if (startingPlayer != winner) {
@@ -155,12 +176,26 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
         viewModel.onContinueInDialogClicked()
     }
 
+    private fun endSet(winner: PlayerRole = PlayerRole.One) = runTest {
+        repeat(legsToWinSet) {
+            endLeg(winner = winner)
+            delay(1)
+        }
+    }
+
+    private fun endGame(winner: PlayerRole = PlayerRole.One) = runTest {
+        repeat(setsToWin) {
+            endSet(winner = winner)
+            delay(1)
+        }
+    }
+
     @Test
     fun `rotate players after each leg`() = runHotFlowTest {
         assertThat(viewModel.gameState.currentPlayerRole).isEqualTo(PlayerRole.One)
-        endGame()
+        endLeg()
         assertThat(viewModel.gameState.currentPlayerRole).isEqualTo(PlayerRole.Two)
-        endGame()
+        endLeg()
         assertThat(viewModel.gameState.currentPlayerRole).isEqualTo(PlayerRole.One)
     }
 
