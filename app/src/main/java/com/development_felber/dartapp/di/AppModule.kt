@@ -4,9 +4,13 @@ import android.content.Context
 import androidx.room.Room
 import com.development_felber.dartapp.data.persistent.database.AppDatabase
 import com.development_felber.dartapp.data.persistent.database.TestLegData
+import com.development_felber.dartapp.data.persistent.database.dart_set.DartSetDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
+import com.development_felber.dartapp.data.persistent.database.multiplayer_game.MultiplayerGameDao
 import com.development_felber.dartapp.data.persistent.database.player.PlayerDao
 import com.development_felber.dartapp.data.persistent.keyvalue.IKeyValueStorage
 import com.development_felber.dartapp.data.persistent.keyvalue.KeyValueStorage
+import com.development_felber.dartapp.data.repository.GameRepository
 import com.development_felber.dartapp.data.repository.PlayerRepository
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.ui.navigation.NavigationManager

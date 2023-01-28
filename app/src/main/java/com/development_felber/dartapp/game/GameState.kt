@@ -7,7 +7,7 @@ import com.development_felber.dartapp.game.gameaction.GameActionBase
 import java.util.*
 
 class GameState(
-    private val setup: GameSetup,
+    val setup: GameSetup,
 ) {
 
     private val gameActions = Stack<Pair<GameActionBase, Leg>>()
@@ -26,7 +26,7 @@ class GameState(
     var gameStatus: GameStatus = GameStatus.LegInProgress
 
     private fun updateCurrentPlayerRole() {
-        val legCount = currentPlayerGameState.previousLegs.size
+        val legCount = currentPlayerGameState.previousLegsPerSet.last().size
         val playerCount = availablePlayerRoles.size
         val sortedByPlayerRole = playerGameStates.sortedBy {
             // Rotate the starting player with each Leg.
@@ -96,8 +96,10 @@ data class PlayerGameState(
     var legsWonInCurrentSetCount: Int = 0,
     var setsWonCount: Int = 0,
     var currentLeg: Leg = Leg(),
-    val previousLegs: MutableList<FinishedLeg> = mutableListOf(),
+    val previousLegsPerSet: MutableList<MutableList<Leg>> = mutableListOf(mutableListOf()),
+    val legsCountPerFinishedSet: MutableList<Int> = mutableListOf(),
 ) {
+
     fun updateAndGetGameStatus(gameSetup: GameSetup) : GameStatus {
         return when(gameSetup) {
             is GameSetup.Solo -> updateForSoloAndGetStatus(gameSetup)
@@ -132,12 +134,13 @@ data class PlayerGameState(
     }
 
     fun resetCurrentLeg() {
-        previousLegs.add(currentLeg.toFinishedLeg())
+        previousLegsPerSet.last().add(currentLeg)
         currentLeg = Leg()
     }
 
     fun resetCurrentSet() {
         resetCurrentLeg()
+        previousLegsPerSet.add(mutableListOf())
         legsWonInCurrentSetCount = 0
     }
 }

@@ -1,8 +1,10 @@
 package com.development_felber.dartapp.game
 
+import com.development_felber.dartapp.data.PlayerOption
 import com.development_felber.dartapp.data.persistent.database.Converters
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.util.CheckoutTip
+import com.development_felber.dartapp.util.Constants
 import com.development_felber.dartapp.util.GameUtil
 import java.time.Duration
 import java.time.LocalDateTime
@@ -105,10 +107,15 @@ class Leg() {
         return serves
     }
 
-    fun toFinishedLeg() : FinishedLeg {
+    fun toFinishedLeg(
+        playerOption: PlayerOption,
+        playerName: String,
+    ) : FinishedLeg {
         val now = LocalDateTime.now()
         val serves = getServes()
         return FinishedLeg(
+            playerOption = playerOption,
+            playerName = playerName,
             endTime = Converters.fromLocalDateTime(now),
             durationSeconds = Converters.fromDuration(Duration.between(startDateTime, now)),
             dartCount = dartCount,

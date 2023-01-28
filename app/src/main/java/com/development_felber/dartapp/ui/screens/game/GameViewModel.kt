@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
+import com.development_felber.dartapp.data.repository.GameRepository
 import com.development_felber.dartapp.data.repository.SettingsRepository
 import com.development_felber.dartapp.game.GameSetup
 import com.development_felber.dartapp.game.GameState
@@ -60,6 +61,7 @@ data class NumberPadUiState(
 class GameViewModel @Inject constructor(
     private val navigationManager: NavigationManager,
     private val settingsRepository: SettingsRepository,
+    private val gameRepository: GameRepository,
     private val finishedLegDao: FinishedLegDao,
     private val dispatcher: CoroutineDispatcher,
 ) : ViewModel() {
@@ -190,7 +192,7 @@ class GameViewModel @Inject constructor(
             action = if (usePerDartNumberPad) AddDartGameAction(number) else AddServeGameAction(number),
             executeBeforeUpdate = {
                 updateDialogs(number)
-                checkLegFinished()
+                checkGameFinished()
             }
         )
 
@@ -259,7 +261,7 @@ class GameViewModel @Inject constructor(
         }
         dialogManager.closeDialog()
         update()
-        checkLegFinished()
+        checkGameFinished()
     }
 
     private fun enterDoubleAttempts(attempts: Int) {
@@ -271,18 +273,18 @@ class GameViewModel @Inject constructor(
         gameState.currentLeg.unusedDartCount += unusedDarts
     }
 
-    private fun checkLegFinished() {
+    private fun checkGameFinished() {
         val anyEnterDataToGameDialogOpen = when (dialogManager.currentDialog.value) {
             is GameDialogManager.DialogType.AskForDoubleSimple,
             is GameDialogManager.DialogType.AskForDoubleAndOrCheckout -> true
             else -> false
         }
         if (gameState.gameStatus == GameStatus.Finished && !anyEnterDataToGameDialogOpen) {
-            legFinished()
+            gameFinished()
         }
     }
 
-    private fun legFinished() {
+    private fun gameFinished() {
         viewModelScope.launch(dispatcher) {
             if (gameSaved) {
                 return@launch
@@ -295,9 +297,7 @@ class GameViewModel @Inject constructor(
                 enterDoubleAttempts(1)
             }
 
-            Log.d("GameViewModel", "Saving game to legDatabase...")
-            val leg = gameState.currentLeg.toFinishedLeg()
-            finishedLegDao.insert(leg = leg)
+            gameRepository.saveGame(gameState)
         }
     }
 

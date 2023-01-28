@@ -12,6 +12,9 @@ interface FinishedLegDao {
     @Insert
     suspend fun insert(leg: FinishedLeg)
 
+    @Insert
+    suspend fun insert(legs: List<FinishedLeg>)
+
     @Update
     fun update(leg: FinishedLeg)
 

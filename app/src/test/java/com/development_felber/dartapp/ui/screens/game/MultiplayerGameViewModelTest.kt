@@ -139,7 +139,7 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
     @Test
     fun `after finishing leg, it is added to previous legs list`() = runHotFlowTest {
         endGame()
-        val previousLegs = viewModel.gameState.currentPlayerGameState.previousLegs
+        val previousLegs = viewModel.gameState.currentPlayerGameState.previousLegsPerSet.flatten()
         assertThat(previousLegs).hasSize(1)
     }
 
