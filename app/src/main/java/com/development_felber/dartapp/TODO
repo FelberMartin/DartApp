@@ -8,7 +8,5 @@ TODO:
  - Move graph library to Jetpack Compose
  - Add separate SetFinished Dialog ?
  - Tests:
-    - run setFinishedDialog and GameFinishedDialog
-    - Save Solo/Multi Games correctly
-    - Test migration from old database schema
+    - setFinishedDialog and GameFinishedDialog
  - (?) Dont update the gamestate before closing the LegWonDialog
