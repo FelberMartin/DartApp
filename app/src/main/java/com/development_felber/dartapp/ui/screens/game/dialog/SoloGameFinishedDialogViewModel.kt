@@ -45,7 +45,7 @@ class SoloGameFinishedDialogViewModel(
     }
 
     fun onMoreDetailsClicked() {
-        callingViewModel.dismissLegFinishedDialog(temporary = true)
+        callingViewModel.dismissGameFinishedDialog(temporary = true)
         navigationManager.navigate(NavigationCommand.ToHistoryDetails(leg.value!!.id))
     }
 }

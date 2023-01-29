@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.development_felber.dartapp.game.PlayerRole
+import com.development_felber.dartapp.ui.screens.game.dialog.multi.GameOverallStatistics
 import com.development_felber.dartapp.ui.shared.MyCard
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
@@ -200,6 +201,7 @@ private fun CombinedMultiplayerPlayerStatsPreview() {
             last = 66,
             average = 20.0,
             dartCount = 12,
+            gameOverallStatistics = GameOverallStatistics(0.0, 0.0),
         )
         val playerStatsRight = PlayerUiState(
             name = "Player 2",
@@ -214,7 +216,8 @@ private fun CombinedMultiplayerPlayerStatsPreview() {
             last = 20,
             average = 54.2,
             dartCount = 11,
-        )
+            gameOverallStatistics = GameOverallStatistics(0.0, 0.0),
+            )
         CombinedMultiplayerPlayerCounter(
             playerStateLeft = playerStatsLeft,
             playerStateRight = playerStatsRight,

@@ -11,48 +11,55 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.development_felber.dartapp.data.persistent.database.multiplayer_game.MultiplayerGame
+import com.development_felber.dartapp.game.GameStatus
+import com.development_felber.dartapp.game.Leg
 import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.ui.screens.game.PlayerScore
 import com.development_felber.dartapp.ui.screens.game.PlayerUiState
 import com.development_felber.dartapp.ui.screens.game.dialog.GameFinishedDialog
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
-data class MultiplayerGamePlayerStats(
+data class GameOverallStatistics(
     val overallAverage: Double,
     val overallDoubleRate: Double,
-)
+) {
+    companion object {
+        fun fromLegs(legs: Collection<Leg>) = GameOverallStatistics(
+            overallAverage = legs.map { it.getAverage() ?: 0.0 }.average(),
+            overallDoubleRate = legs.filter { it.doubleAttempts > 0 }.map { 1.0 / it.doubleAttempts }.average()
+        )
+    }
+}
 
 @Composable
 fun MultiplayerGameFinishedDialog(
     players: List<PlayerUiState>,
-    stats: List<MultiplayerGamePlayerStats>,
     onMenuClicked: () -> Unit,
     onPlayAgainClicked: () -> Unit,
 ) {
-    assert(players.size == stats.size && players.size == 2) {
+    assert(players.size == 2) {
         "MultiplayerGameFinishedDialog only supports 2 players"
     }
 
     GameFinishedDialog(
         title = "Game finished!",
-        onMoreDetailsClicked = { /*TODO*/ },
+        onMoreDetailsClicked = { /* TODO: Not supported yet. */ },
         moreDetailsEnabled = false,
         onMenuClicked = onMenuClicked,
         onPlayAgainClicked = onPlayAgainClicked
     ) {
+
         MultiplayerStatsContent(
             players = players,
-            stats = stats,
         )
     }
 }
 
 @Composable
 fun MultiplayerStatsContent(
-   players: List<PlayerUiState>,
-   stats: List<MultiplayerGamePlayerStats>,
+    players: List<PlayerUiState>,
 ) {
+    val stats = players.map { it.gameOverallStatistics }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -120,6 +127,7 @@ private fun MultiplayerGameFinishedDialogPreview() {
                     dartCount = 0,
                     pointsLeft = 0,
                     last = 0,
+                    gameOverallStatistics = GameOverallStatistics(50.0, .6),
                 ),
                 PlayerUiState(
                     playerRole = PlayerRole.Two,
@@ -129,16 +137,7 @@ private fun MultiplayerGameFinishedDialogPreview() {
                     dartCount = 0,
                     pointsLeft = 0,
                     last = 0,
-                ),
-            ),
-            stats = listOf(
-                MultiplayerGamePlayerStats(
-                    overallAverage = 50.0,
-                    overallDoubleRate = 0.6,
-                ),
-                MultiplayerGamePlayerStats(
-                    overallAverage = 61.2,
-                    overallDoubleRate = 0.1,
+                    gameOverallStatistics = GameOverallStatistics(61.2, .1),
                 ),
             ),
             onMenuClicked = { },

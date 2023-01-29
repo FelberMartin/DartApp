@@ -18,20 +18,23 @@ import com.development_felber.dartapp.ui.screens.game.PlayerScore
 import com.development_felber.dartapp.ui.screens.game.PlayerUiState
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
+
+
 @Composable
-fun LegWonDialog(
+fun LegOrSetWonDialog(
+    setOver: Boolean,
     players: List<PlayerUiState>,
     playerWon: PlayerRole,
     onContinue: () -> Unit,
 ) {
-    assert(players.size == 2) { "LegWonDialog only supports 2 players" }
+    assert(players.size == 2) { "LegOrLegWonDialog only supports 2 players" }
 
     AlertDialog(
         onDismissRequest = { /*Nothing*/ },
         title = {
             val winner = players.first { it.playerRole == playerWon }
             Text(
-                text = "${winner.name} won the leg!"
+                text = "${winner.name} won the ${if (setOver) "set" else "leg"}!"
             )
         },
         text = {
@@ -101,7 +104,8 @@ fun PlayerScoreDisplay(
 @Composable
 private fun LegWonDialogPreview() {
     DartAppTheme() {
-        LegWonDialog(
+        LegOrSetWonDialog(
+            setOver = false,
             players = listOf(
                 PlayerUiState(
                     playerRole = PlayerRole.One,
@@ -122,9 +126,8 @@ private fun LegWonDialogPreview() {
                     last = 0,
                 ),
             ),
-            playerWon = PlayerRole.One
-        ) {
-
-        }
+            playerWon = PlayerRole.One,
+            onContinue = {}
+        )
     }
 }

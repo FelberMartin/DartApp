@@ -27,7 +27,7 @@ import com.development_felber.dartapp.ui.theme.DartAppTheme
 import kotlinx.coroutines.delay
 
 @Composable
-fun LegFinishedDialogEntryPoint(
+fun SoloGameFinishedDialog(
     viewModel: SoloGameFinishedDialogViewModel,
     onPlayAgainClicked: () -> Unit,
     onMenuClicked: () -> Unit
@@ -35,12 +35,12 @@ fun LegFinishedDialogEntryPoint(
     val showStats by viewModel.showStats.collectAsState()
     val leg by viewModel.leg.collectAsState()
     val last10GamesAverage by viewModel.last10GamesAverage.collectAsState()
-    LegFinishedDialog(showStats, leg ?: TestLegData.createRandomLeg(), last10GamesAverage,
+    SoloGameFinishedDialogContent(showStats, leg ?: TestLegData.createRandomLeg(), last10GamesAverage,
         viewModel::onMoreDetailsClicked, onMenuClicked, onPlayAgainClicked)
 }
 
 @Composable
-private fun LegFinishedDialog(
+private fun SoloGameFinishedDialogContent(
     showStats: Boolean,
     leg: FinishedLeg,
     last10GamesAverage: Double,
@@ -254,8 +254,8 @@ private fun RowScope.SmallStatsCard(
 
 @Preview
 @Composable
-private fun LegFinishedDialogPreview() {
-    LegFinishedDialog(
+private fun SoloGameFinishedDialogPreview() {
+    SoloGameFinishedDialogContent(
         showStats = true,
         leg = TestLegData.createRandomLeg(),
         last10GamesAverage = 42.0,

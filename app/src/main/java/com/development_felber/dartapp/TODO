@@ -6,7 +6,6 @@
 TODO:
  - Set to normal database and no random data
  - Move graph library to Jetpack Compose
- - Add separate SetFinished Dialog ?
- - Tests:
-    - setFinishedDialog and GameFinishedDialog
  - (?) Dont update the gamestate before closing the LegWonDialog
+ - Exclude multi games from stats sections
+ - Numbers in AskForDoubleCheckout Dialog are not correct (e.g. option to use only one dart for 141 finish)

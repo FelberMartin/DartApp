@@ -13,7 +13,6 @@ import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -22,21 +21,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.viewModelFactory
 import com.development_felber.dartapp.data.persistent.database.dart_set.FakeDartSetDao
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.data.persistent.database.multiplayer_game.FakeMultiplayerGameDao
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.development_felber.dartapp.data.repository.GameRepository
 import com.development_felber.dartapp.data.repository.SettingsRepository
+import com.development_felber.dartapp.game.GameSetup
 import com.development_felber.dartapp.game.GameStatus
 import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.game.dialog.*
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialog
-import com.development_felber.dartapp.ui.screens.game.dialog.multi.LegWonDialog
-import com.development_felber.dartapp.ui.screens.game.dialog.solo.LegFinishedDialogEntryPoint
+import com.development_felber.dartapp.ui.screens.game.dialog.multi.LegOrSetWonDialog
+import com.development_felber.dartapp.ui.screens.game.dialog.multi.MultiplayerGameFinishedDialog
+import com.development_felber.dartapp.ui.screens.game.dialog.multi.GameOverallStatistics
+import com.development_felber.dartapp.ui.screens.game.dialog.solo.SoloGameFinishedDialog
 import com.development_felber.dartapp.ui.shared.Background
 import com.development_felber.dartapp.ui.shared.KeepScreenOn
 import com.development_felber.dartapp.ui.shared.MyCard
@@ -389,14 +390,27 @@ private fun DialogsOverlay(
         GameDialogManager.DialogType.AskForDoubleSimple -> SimpleDoubleAttemptsDialog(
             onAttemptClicked = gameViewModel::simpleDoubleAttemptsEntered
         )
-        GameDialogManager.DialogType.GameFinished -> LegFinishedDialogEntryPoint(
-            viewModel = gameViewModel.createLegFinishedDialogViewModel(),
-            onPlayAgainClicked = gameViewModel::onPlayAgainClicked,
-            onMenuClicked = {
-                gameViewModel.dismissLegFinishedDialog()
-                gameViewModel.navigateBack()
+        GameDialogManager.DialogType.GameFinished -> {
+            when (gameViewModel.gameState.setup) {
+                is GameSetup.Solo -> SoloGameFinishedDialog(
+                    viewModel = gameViewModel.createLegFinishedDialogViewModel(),
+                    onPlayAgainClicked = gameViewModel::onPlayAgainClicked,
+                    onMenuClicked = {
+                        gameViewModel.dismissGameFinishedDialog()
+                        gameViewModel.navigateBack()
+                    }
+                )
+                is GameSetup.Multiplayer -> MultiplayerGameFinishedDialog(
+                    players = gameUiState.playerUiStates,
+                    onPlayAgainClicked = gameViewModel::onPlayAgainClicked,
+                    onMenuClicked = {
+                        gameViewModel.dismissGameFinishedDialog()
+                        gameViewModel.navigateBack()
+                    },
+                )
             }
-        )
+
+        }
         is GameDialogManager.DialogType.AskForDoubleAndOrCheckout -> {
             DoubleAttemptsAndCheckoutDialog(
                 askForDoubleAttempts = dialogToShow.askForDouble,
@@ -407,14 +421,16 @@ private fun DialogsOverlay(
             )
         }
         GameDialogManager.DialogType.LegJustFinished -> {
-            LegWonDialog(
+            LegOrSetWonDialog(
+                setOver = false,
                 players = gameUiState.playerUiStates,
                 playerWon = (gameStatus as GameStatus.LegJustFinished).winningPlayer,
                 onContinue = gameViewModel::onContinueInDialogClicked
             )
         }
         GameDialogManager.DialogType.SetJustFinished -> {
-            LegWonDialog(
+            LegOrSetWonDialog(
+                setOver = true,
                 players = gameUiState.playerUiStates,
                 playerWon = (gameStatus as GameStatus.SetJustFinished).winningPlayer,
                 onContinue = gameViewModel::onContinueInDialogClicked

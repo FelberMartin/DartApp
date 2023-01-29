@@ -85,21 +85,14 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
 
     @Test
     fun `after finishing set, show set finished dialog`() = runHotFlowTest {
-        repeat(legsToWinSet) {
-            endLeg(winner = PlayerRole.One)
-            delay(1)
-        }
+        endSet(keepDialog = true)
         val dialog = viewModel.gameUiState.value.dialogToShow
         assertThat(dialog).isEqualTo(GameDialogManager.DialogType.SetJustFinished)
     }
 
     @Test
     fun `after winning all sets, show game finished dialog`() = runHotFlowTest {
-        setupGameViewModel(gameSetup = createGameSetup(setsToWin = 1))
-        repeat(legsToWinSet) {
-            endLeg(winner = PlayerRole.One)
-            delay(1)
-        }
+        endGame(keepDialog = true)
         val dialog = viewModel.gameUiState.value.dialogToShow
         assertThat(dialog).isEqualTo(GameDialogManager.DialogType.GameFinished)
     }
@@ -164,8 +157,8 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
         assertThat(previousLegs).hasSize(1)
     }
 
-    private suspend fun endLeg(winner: PlayerRole = PlayerRole.One) {
-        var serves = mutableListOf(180, 0, 180, 0, 141)
+    private suspend fun endLeg(winner: PlayerRole = PlayerRole.One, keepDialog: Boolean = true) {
+        val serves = mutableListOf(180, 0, 180, 0, 141)
         val startingPlayer = viewModel.gameState.currentPlayerRole
         if (startingPlayer != winner) {
             serves.add(0, 0)
@@ -173,19 +166,23 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
         enterServes(serves)
         delay(1)
         viewModel.doubleAttemptsAndCheckoutConfirmed(1, 3)
-        viewModel.onContinueInDialogClicked()
+        if (!keepDialog) {
+            viewModel.onContinueInDialogClicked()
+        }
     }
 
-    private fun endSet(winner: PlayerRole = PlayerRole.One) = runTest {
+    private fun endSet(winner: PlayerRole = PlayerRole.One, keepDialog: Boolean = false) = runTest {
         repeat(legsToWinSet) {
-            endLeg(winner = winner)
+            val lastRound = it == (legsToWinSet - 1)
+            endLeg(winner = winner, keepDialog = !lastRound || keepDialog)
             delay(1)
         }
     }
 
-    private fun endGame(winner: PlayerRole = PlayerRole.One) = runTest {
+    private fun endGame(winner: PlayerRole = PlayerRole.One, keepDialog: Boolean = false) = runTest {
         repeat(setsToWin) {
-            endSet(winner = winner)
+            val lastRound = it == legsToWinSet - 1
+            endSet(winner = winner, keepDialog = !lastRound || keepDialog)
             delay(1)
         }
     }

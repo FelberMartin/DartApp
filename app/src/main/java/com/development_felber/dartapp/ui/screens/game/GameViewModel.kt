@@ -1,6 +1,5 @@
 package com.development_felber.dartapp.ui.screens.game
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
@@ -21,6 +20,7 @@ import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.game.dialog.GameDialogManager
 import com.development_felber.dartapp.ui.screens.game.dialog.SoloGameFinishedDialogViewModel
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialogResult
+import com.development_felber.dartapp.ui.screens.game.dialog.multi.GameOverallStatistics
 import com.development_felber.dartapp.util.CheckoutTip
 import com.development_felber.dartapp.util.GameUtil
 import com.development_felber.dartapp.util.WhileUiSubscribed
@@ -39,6 +39,7 @@ data class PlayerUiState(
     val last: Int?,
     val average: Double?,
     val dartCount: Int,
+    val gameOverallStatistics: GameOverallStatistics,
 )
 
 data class GameUiState(
@@ -121,6 +122,7 @@ class GameViewModel @Inject constructor(
                 last = leg.getLast(perDart = usePerDartNumberPad),
                 average = leg.getAverage(perDart = usePerDartNumberPad),
                 dartCount = leg.dartCount,
+                gameOverallStatistics = playerGameState.overallStatistics,
             )
         }
         return playerUiStates
@@ -219,7 +221,7 @@ class GameViewModel @Inject constructor(
         dialogManager.closeDialog()
     }
 
-    fun dismissLegFinishedDialog(temporary: Boolean = false) {
+    fun dismissGameFinishedDialog(temporary: Boolean = false) {
         dialogManager.closeDialog()
         if (temporary) {
             viewModelScope.launch(dispatcher) {
