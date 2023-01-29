@@ -115,7 +115,8 @@ private fun LegWonDialogPreview() {
                     dartCount = 0,
                     pointsLeft = 0,
                     last = 0,
-                ),
+                    gameOverallStatistics = GameOverallStatistics(0.0, 0.0),
+                    ),
                 PlayerUiState(
                     playerRole = PlayerRole.Two,
                     name = "Player 2",
@@ -124,6 +125,7 @@ private fun LegWonDialogPreview() {
                     dartCount = 0,
                     pointsLeft = 0,
                     last = 0,
+                    gameOverallStatistics = GameOverallStatistics(0.0, 0.0),
                 ),
             ),
             playerWon = PlayerRole.One,
