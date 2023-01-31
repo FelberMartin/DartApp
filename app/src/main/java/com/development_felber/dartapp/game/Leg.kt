@@ -114,7 +114,7 @@ class Leg() {
         val now = LocalDateTime.now()
         val serves = getServes()
         return FinishedLeg(
-            playerOption = playerOption,
+            _playerOption = playerOption.ordinal,
             playerName = playerName,
             endTime = Converters.fromLocalDateTime(now),
             durationSeconds = Converters.fromDuration(Duration.between(startDateTime, now)),

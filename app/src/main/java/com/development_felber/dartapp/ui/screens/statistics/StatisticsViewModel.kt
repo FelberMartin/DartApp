@@ -41,7 +41,7 @@ class StatisticsViewModel @Inject constructor(
     init {
         _statisticType.value = AverageStatistic
         viewModelScope.launch {
-            finishedLegDao.getAllLegs().asFlow().collect {
+            finishedLegDao.getAllSoloLegs().collect {
                 println("Collected legs (size = ${it.size})")
                 legs = it
                 _noLegDataAvailable.value = legs.isEmpty()

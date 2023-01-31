@@ -30,7 +30,7 @@ class TableViewModel @Inject constructor(
         updateItems()
 
         viewModelScope.launch {
-            finishedLegDao.getAllLegs().asFlow().collect {
+            finishedLegDao.getAllSoloLegs().collect {
                 legs = it
                 updateItems()
             }

@@ -6,6 +6,7 @@ import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.development_felber.dartapp.data.PlayerOption
 import com.development_felber.dartapp.data.persistent.database.Converters
+import com.development_felber.dartapp.game.GameSetup
 import com.development_felber.dartapp.util.Constants
 
 @Entity(tableName = "legs_table")
@@ -14,11 +15,8 @@ data class FinishedLeg(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
 
-    @Ignore
-    val playerOption: PlayerOption = PlayerOption.Solo,
-
     @ColumnInfo(name = "player_option", defaultValue = "0")
-    var _playerOption: Int = playerOption.ordinal,
+    var _playerOption: Int = PlayerOption.Solo.ordinal,
 
     @ColumnInfo(name = "player_name", defaultValue = "Solo Game")
     var playerName: String = Constants.SOLO_GAME_PLACEHOLDER_NAME,
@@ -47,6 +45,10 @@ data class FinishedLeg(
     @ColumnInfo(name = "double_attempts_list")
     var doubleAttemptsList: String = "",
 ) {
+
+    @get:Ignore
+    val playerOption: PlayerOption
+        get() = PlayerOption.values()[_playerOption]
 
     fun nineDartsAverage() : Double {
         val serves = Converters.toListOfInts(servesList)

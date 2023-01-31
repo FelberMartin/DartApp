@@ -31,7 +31,7 @@ class HistoryViewModel @Inject constructor(
         setSelectedSortType(DateCategorizedSortType)
 
         viewModelScope.launch {
-            finishedLegDao.getAllLegs().asFlow().collect {
+            finishedLegDao.getAllSoloLegs().collect {
                 legs = it
                 sortLegs()
             }
