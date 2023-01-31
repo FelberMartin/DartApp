@@ -2,7 +2,6 @@ package com.development_felber.dartapp.game
 
 import com.development_felber.dartapp.game.gameaction.FillServeGameAction
 import com.development_felber.dartapp.game.gameaction.GameActionBase
-import com.development_felber.dartapp.ui.screens.game.dialog.multi.GameOverallStatistics
 import java.util.*
 
 class GameState(
@@ -24,7 +23,7 @@ class GameState(
 
     var gameStatus: GameStatus = GameStatus.LegInProgress
 
-    private fun updateCurrentPlayerRole() {
+    fun updateCurrentPlayerRole() {
         val legCount = currentPlayerGameState.previousLegsPerSet.last().size
         val playerCount = availablePlayerRoles.size
         val sortedByPlayerRole = playerGameStates.sortedBy {
@@ -46,10 +45,7 @@ class GameState(
         applyAction(FillServeGameAction(3 - started))
     }
 
-    fun applyAction(
-        action: GameActionBase,
-        executeBeforeUpdate: () -> Unit = {},
-    ) {
+    fun applyAction(action: GameActionBase, ) {
         gameActions.push(Pair(action, currentLeg))
         action.apply(currentLeg)
         if (currentLeg.isOver) {
@@ -57,12 +53,9 @@ class GameState(
         }
 
         gameStatus = currentPlayerGameState.updateAndGetGameStatus(setup)
-        executeBeforeUpdate()
-        resetIfNecessary()
-        updateCurrentPlayerRole()
     }
 
-    private fun resetIfNecessary() {
+    fun resetAfterLegOrSetJustFinished() {
         when(gameStatus) {
             GameStatus.LegInProgress -> { /* Do nothing */ }
             is GameStatus.LegJustFinished -> {
@@ -75,11 +68,17 @@ class GameState(
                     it.resetCurrentSet()
                 }
             }
-            GameStatus.Finished -> {
-                playerGameStates.forEach {
-                    it.finishCurrentLeg()
-                }
-            }
+            GameStatus.Finished -> { /* Do nothing */ }
+        }
+        updateCurrentPlayerRole()
+    }
+
+    fun finishFinalLeg() {
+        if (gameStatus != GameStatus.Finished) {
+            return
+        }
+        playerGameStates.forEach {
+            it.finishCurrentLeg()
         }
     }
 

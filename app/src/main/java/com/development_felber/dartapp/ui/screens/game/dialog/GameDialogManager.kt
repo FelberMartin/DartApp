@@ -156,4 +156,10 @@ class GameDialogManager (
         return gameState.currentLeg.pointsLeft == 0
     }
 
+    fun isAnyEnterDataToGameDialogOpen() = when (currentDialog.value) {
+        is GameDialogManager.DialogType.AskForDoubleSimple,
+        is GameDialogManager.DialogType.AskForDoubleAndOrCheckout -> true
+        else -> false
+    }
+
 }

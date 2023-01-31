@@ -60,7 +60,7 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
         viewModel.doubleAttemptsAndCheckoutConfirmed(
             DoubleAttemptsAndCheckoutDialogResult(1, 3)
         )
-        viewModel.onContinueInDialogClicked()
+        viewModel.onContinueToNextLegClicked()
         enterServes(listOf(21, 42))
         delay(1)
         val dialog = viewModel.gameUiState.value.dialogToShow
@@ -157,36 +157,6 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
         assertThat(previousLegs).hasSize(1)
     }
 
-    private suspend fun endLeg(winner: PlayerRole = PlayerRole.One, keepDialog: Boolean = true) {
-        val serves = mutableListOf(180, 0, 180, 0, 141)
-        val startingPlayer = viewModel.gameState.currentPlayerRole
-        if (startingPlayer != winner) {
-            serves.add(0, 0)
-        }
-        enterServes(serves)
-        delay(1)
-        viewModel.doubleAttemptsAndCheckoutConfirmed(1, 3)
-        if (!keepDialog) {
-            viewModel.onContinueInDialogClicked()
-        }
-    }
-
-    private fun endSet(winner: PlayerRole = PlayerRole.One, keepDialog: Boolean = false) = runTest {
-        repeat(legsToWinSet) {
-            val lastRound = it == (legsToWinSet - 1)
-            endLeg(winner = winner, keepDialog = !lastRound || keepDialog)
-            delay(1)
-        }
-    }
-
-    private fun endGame(winner: PlayerRole = PlayerRole.One, keepDialog: Boolean = false) = runTest {
-        repeat(setsToWin) {
-            val lastRound = it == legsToWinSet - 1
-            endSet(winner = winner, keepDialog = !lastRound || keepDialog)
-            delay(1)
-        }
-    }
-
     @Test
     fun `rotate players after each leg`() = runHotFlowTest {
         assertThat(viewModel.gameState.currentPlayerRole).isEqualTo(PlayerRole.One)
@@ -196,4 +166,79 @@ class MultiplayerGameViewModelTest : GameViewModelTest() {
         assertThat(viewModel.gameState.currentPlayerRole).isEqualTo(PlayerRole.One)
     }
 
+    @Test
+    fun `after finishing the first leg, show the right minDarts requirement in double attempts dialog`() = runHotFlowTest {
+        enterServes(listOf(180, 0, 180, 0, 141))
+        delay(1)
+        val minDarts = viewModel.getMinimumDartCount()
+        assertThat(minDarts).isEqualTo(3)
+    }
+
+    @Test
+    fun `entered double attempts without finish, get applied to right leg`() = runHotFlowTest {
+        enterServes(listOf(180, 0, 180, 0, 100))
+        viewModel.doubleAttemptsAndCheckoutConfirmed(
+            DoubleAttemptsAndCheckoutDialogResult(1, null)
+        )
+        delay(1)
+        val player1PlayerGameState = viewModel.gameState.playerGameStates.first { it.playerRole == PlayerRole.One }
+        val leg = player1PlayerGameState.currentLeg
+        assertThat(leg.doubleAttempts).isEqualTo(1)
+    }
+
+    @Test
+    fun `entered double attempts and checkout, get applied to the right leg`() = runHotFlowTest {
+        enterServes(listOf(180, 0, 180, 0, 100))
+        viewModel.doubleAttemptsAndCheckoutConfirmed(1, null)
+        delay(1)
+        enterServes(listOf(0, 41))
+        viewModel.doubleAttemptsAndCheckoutConfirmed(
+            DoubleAttemptsAndCheckoutDialogResult(1, 2)
+        )
+        delay(1)
+        viewModel.onContinueToNextLegClicked()
+        delay(1)
+        val player1PlayerGameState = viewModel.gameState.playerGameStates.first { it.playerRole == PlayerRole.One }
+        val player1Leg = player1PlayerGameState.previousLegsPerSet.flatten().first()
+        assertThat(player1Leg.doubleAttempts).isEqualTo(2)
+        assertThat(player1Leg.dartCount).isEqualTo(3 * 3 + 2)
+    }
+
+
+    // -------------- Helpers ---------------
+
+    private suspend fun endLeg(
+        winner: PlayerRole = PlayerRole.One,
+        keepDialog: Boolean = false,
+        doubleAndCheckout: DoubleAttemptsAndCheckoutDialogResult =
+            DoubleAttemptsAndCheckoutDialogResult(1, 3)
+    ) {
+        val serves = mutableListOf(180, 0, 180, 0, 141)
+        val startingPlayer = viewModel.gameState.currentPlayerRole
+        if (startingPlayer != winner) {
+            serves.add(0, 0)
+        }
+        enterServes(serves)
+        delay(1)
+        viewModel.doubleAttemptsAndCheckoutConfirmed(doubleAndCheckout)
+        if (!keepDialog) {
+            viewModel.onContinueToNextLegClicked()
+        }
+    }
+
+    private fun endSet(winner: PlayerRole = PlayerRole.One, keepDialog: Boolean = false) = runTest {
+        repeat(legsToWinSet) {
+            val lastRound = it == (legsToWinSet - 1)
+            endLeg(winner = winner, keepDialog = lastRound && keepDialog)
+            delay(1)
+        }
+    }
+
+    private fun endGame(winner: PlayerRole = PlayerRole.One, keepDialog: Boolean = false) = runTest {
+        repeat(setsToWin) {
+            val lastRound = it == legsToWinSet - 1
+            endSet(winner = winner, keepDialog = lastRound && keepDialog)
+            delay(1)
+        }
+    }
 }

@@ -78,7 +78,7 @@ fun MultiplayerStatsContent(
 
         MultiplayerStatsRow(
             name = "Double Rate",
-                leftValueString = "%.0f%%".format(stats[0].overallDoubleRate * 100),
+            leftValueString = "%.0f%%".format(stats[0].overallDoubleRate * 100),
             rightValueString = "%.0f%%".format(stats[1].overallDoubleRate * 100),
         )
     }

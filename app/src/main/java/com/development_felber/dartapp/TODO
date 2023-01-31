@@ -6,6 +6,5 @@
 TODO:
  - Set to normal database and no random data
  - Move graph library to Jetpack Compose
- - (?) Dont update the gamestate before closing the LegWonDialog
- - Numbers in AskForDoubleCheckout Dialog are not correct (e.g. option to use only one dart for 141 finish)
  - Show Update card when first opening the app
+ - Make undo for double attempts ?

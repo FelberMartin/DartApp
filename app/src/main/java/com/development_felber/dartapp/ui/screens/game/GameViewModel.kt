@@ -192,13 +192,14 @@ class GameViewModel @Inject constructor(
     private fun enterNumberToGame(number: Int) {
         gameState.applyAction(
             action = if (usePerDartNumberPad) AddDartGameAction(number) else AddServeGameAction(number),
-            executeBeforeUpdate = {
-                updateDialogs(number)
-                clearNumberPad()
-                checkGameFinished()
-            }
         )
 
+        updateDialogs(number)
+        clearNumberPad()
+        checkGameFinished()
+        if (!dialogManager.isAnyEnterDataToGameDialogOpen()) {
+            gameState.updateCurrentPlayerRole()
+        }
         update()
     }
 
@@ -209,7 +210,6 @@ class GameViewModel @Inject constructor(
             usePerDartNumberPad = usePerDartNumberPad,
         )
     }
-
 
     private fun update() {
         _checkoutTip.value = CheckoutTip.checkoutTips[gameState.currentLeg.pointsLeft]
@@ -236,6 +236,7 @@ class GameViewModel @Inject constructor(
             gameState.currentLeg.doubleAttemptsList.add(1)
         }
         dialogManager.closeDialog()
+        gameState.updateCurrentPlayerRole()
     }
 
     fun getMinimumDartCount() : Int? {
@@ -263,6 +264,7 @@ class GameViewModel @Inject constructor(
             enterCheckout(result.checkout)
         }
         dialogManager.closeDialog()
+        gameState.updateCurrentPlayerRole()
         update()
         checkGameFinished()
     }
@@ -277,12 +279,8 @@ class GameViewModel @Inject constructor(
     }
 
     private fun checkGameFinished() {
-        val anyEnterDataToGameDialogOpen = when (dialogManager.currentDialog.value) {
-            is GameDialogManager.DialogType.AskForDoubleSimple,
-            is GameDialogManager.DialogType.AskForDoubleAndOrCheckout -> true
-            else -> false
-        }
-        if (gameState.gameStatus == GameStatus.Finished && !anyEnterDataToGameDialogOpen) {
+        if (gameState.gameStatus == GameStatus.Finished &&
+            !dialogManager.isAnyEnterDataToGameDialogOpen()) {
             gameFinished()
         }
     }
@@ -292,6 +290,7 @@ class GameViewModel @Inject constructor(
             if (gameSaved) {
                 return@launch
             }
+            gameState.finishFinalLeg()
             gameSaved = true
 
             val setDefaultDoubleAttempt = !settingsRepository
@@ -324,8 +323,10 @@ class GameViewModel @Inject constructor(
             this)
     }
 
-    fun onContinueInDialogClicked() {
+    fun onContinueToNextLegClicked() {
         dialogManager.closeDialog()
+        gameState.resetAfterLegOrSetJustFinished()
+        update()
     }
 
     fun navigateBack() {

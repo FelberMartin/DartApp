@@ -36,7 +36,6 @@ import com.development_felber.dartapp.ui.screens.game.dialog.*
 import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialog
 import com.development_felber.dartapp.ui.screens.game.dialog.multi.LegOrSetWonDialog
 import com.development_felber.dartapp.ui.screens.game.dialog.multi.MultiplayerGameFinishedDialog
-import com.development_felber.dartapp.ui.screens.game.dialog.multi.GameOverallStatistics
 import com.development_felber.dartapp.ui.screens.game.dialog.solo.SoloGameFinishedDialog
 import com.development_felber.dartapp.ui.shared.Background
 import com.development_felber.dartapp.ui.shared.KeepScreenOn
@@ -425,7 +424,7 @@ private fun DialogsOverlay(
                 setOver = false,
                 players = gameUiState.playerUiStates,
                 playerWon = (gameStatus as GameStatus.LegJustFinished).winningPlayer,
-                onContinue = gameViewModel::onContinueInDialogClicked
+                onContinue = gameViewModel::onContinueToNextLegClicked
             )
         }
         GameDialogManager.DialogType.SetJustFinished -> {
@@ -433,7 +432,7 @@ private fun DialogsOverlay(
                 setOver = true,
                 players = gameUiState.playerUiStates,
                 playerWon = (gameStatus as GameStatus.SetJustFinished).winningPlayer,
-                onContinue = gameViewModel::onContinueInDialogClicked
+                onContinue = gameViewModel::onContinueToNextLegClicked
             )
         }
         null -> {
