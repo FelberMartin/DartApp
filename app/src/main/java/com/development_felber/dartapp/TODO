@@ -4,7 +4,6 @@
 ===========================================
 
 TODO:
- - Set to normal database and no random data
  - Move graph library to Jetpack Compose
  - Show Update card when first opening the app
  - Make undo for double attempts ?
