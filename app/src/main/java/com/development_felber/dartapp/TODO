@@ -5,5 +5,9 @@
 
 TODO:
  - Move graph library to Jetpack Compose
- - Show Update card when first opening the app
+ - For multiplayer:
+     - Show Update card when first opening the app
+     - Add animation to Multiplayer finished dialog
+     - Try score comparison with dots and dashes
+     - Merge multiplayer branch into main
  - Make undo for double attempts ?

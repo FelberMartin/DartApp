@@ -52,10 +52,12 @@ class StartMultiplayerDialogViewModel @Inject constructor(
             PlayerRole.One -> _player1.value = player
             PlayerRole.Two -> _player2.value = player
         }
-        viewModelScope.launch {
-            when (playerPosition) {
-                PlayerRole.One -> playerRepository.setLastPlayer1(player!!)
-                PlayerRole.Two -> playerRepository.setLastPlayer2(player!!)
+        if (player != null) {
+            viewModelScope.launch {
+                when (playerPosition) {
+                    PlayerRole.One -> playerRepository.setLastPlayer1(player)
+                    PlayerRole.Two -> playerRepository.setLastPlayer2(player)
+                }
             }
         }
     }
