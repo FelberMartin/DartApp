@@ -58,6 +58,11 @@ data class PlayerGameState(
     }
 
     fun finishCurrentLeg() {
+        if (currentLeg.isOver && currentLeg.doubleAttempts == 0) {
+            // This may happen if the double attempts get not added by the player, because
+            // it is disabled in the settings.
+            currentLeg.doubleAttemptsList.add(1)
+        }
         previousLegsPerSet.last().add(currentLeg)
     }
 }

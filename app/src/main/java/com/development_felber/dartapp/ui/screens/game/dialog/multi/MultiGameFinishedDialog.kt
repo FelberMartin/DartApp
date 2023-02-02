@@ -1,5 +1,6 @@
 package com.development_felber.dartapp.ui.screens.game.dialog.multi
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -7,17 +8,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.development_felber.dartapp.game.GameStatus
 import com.development_felber.dartapp.game.Leg
 import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.ui.screens.game.PlayerScore
 import com.development_felber.dartapp.ui.screens.game.PlayerUiState
 import com.development_felber.dartapp.ui.screens.game.dialog.GameFinishedDialog
 import com.development_felber.dartapp.ui.theme.DartAppTheme
+import java.lang.Double.max
+import java.lang.Double.min
 
 data class GameOverallStatistics(
     val overallAverage: Double,
@@ -72,14 +76,16 @@ fun MultiplayerStatsContent(
 
         MultiplayerStatsRow(
             name = "Avg",
-            leftValueString = "%.1f".format(stats[0].overallAverage),
-            rightValueString = "%.1f".format(stats[1].overallAverage),
+            leftValue = stats[0].overallAverage,
+            rightValue = stats[1].overallAverage,
+            stringFormat = "%.1f",
         )
 
         MultiplayerStatsRow(
             name = "Double Rate",
-            leftValueString = "%.0f%%".format(stats[0].overallDoubleRate * 100),
-            rightValueString = "%.0f%%".format(stats[1].overallDoubleRate * 100),
+            leftValue = stats[0].overallDoubleRate * 100,
+            rightValue = stats[1].overallDoubleRate * 100,
+            stringFormat = "%.0f%%",
         )
     }
 }
@@ -87,16 +93,34 @@ fun MultiplayerStatsContent(
 @Composable
 private fun MultiplayerStatsRow(
     name: String,
-    leftValueString: String,
-    rightValueString: String,
+    leftValue: Double,
+    rightValue: Double,
+    stringFormat: String,
 ) {
+    val maxValue = remember { Animatable(0f) }
+    LaunchedEffect(key1 = leftValue, key2 = rightValue) {
+        val target = maxIgnoreNan(leftValue, rightValue).toFloat()
+        maxValue.animateTo(
+            targetValue = target,
+            animationSpec = tween(
+                durationMillis = 3000,
+                easing = LinearOutSlowInEasing
+            )
+        )
+    }
+
     Row(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth(),
     ) {
+        val leftText = if (leftValue.isNaN()) {
+            "-"
+        } else {
+            stringFormat.format(min(leftValue, maxValue.value.toDouble()))
+        }
         Text(
-            text = leftValueString,
+            text = leftText,
             style = MaterialTheme.typography.titleLarge,
         )
 
@@ -106,10 +130,25 @@ private fun MultiplayerStatsRow(
             color = MaterialTheme.colorScheme.secondary,
         )
 
+        val rightText = if (rightValue.isNaN()) {
+            "-"
+        } else {
+            stringFormat.format(min(rightValue, maxValue.value.toDouble()))
+        }
         Text(
-            text = rightValueString,
+            text = rightText,
             style = MaterialTheme.typography.titleLarge,
         )
+    }
+}
+
+private fun maxIgnoreNan(a: Double, b: Double) : Double {
+    return if (a.isNaN()) {
+        b
+    } else if (b.isNaN()) {
+        a
+    } else {
+        max(a, b)
     }
 }
 
@@ -127,7 +166,7 @@ private fun MultiplayerGameFinishedDialogPreview() {
                     dartCount = 0,
                     pointsLeft = 0,
                     last = 0,
-                    gameOverallStatistics = GameOverallStatistics(50.0, .6),
+                    gameOverallStatistics = GameOverallStatistics(50.0, Double.NaN),
                 ),
                 PlayerUiState(
                     playerRole = PlayerRole.Two,
