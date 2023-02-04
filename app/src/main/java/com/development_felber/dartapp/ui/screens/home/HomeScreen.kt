@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.R
 import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.ui.navigation.NavigationManager
+import com.development_felber.dartapp.ui.screens.home.dialogs.new_feature.MultiplayerAddedDialog
 import com.development_felber.dartapp.ui.screens.statistics.StatisticsChart
 import com.development_felber.dartapp.ui.screens.statistics.StatisticsViewModel
 import com.development_felber.dartapp.ui.shared.Background
@@ -65,6 +66,8 @@ fun HomeScreen(
             )
         }
     }
+
+    MultiplayerAddedDialog(viewModel = hiltViewModel())
 }
 
 @Composable

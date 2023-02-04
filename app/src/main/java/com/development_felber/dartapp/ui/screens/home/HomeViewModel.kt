@@ -11,12 +11,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val navigationManager: NavigationManager
+    private val navigationManager: NavigationManager,
 ) : ViewModel() {
 
     private val _isMultiplayer = MutableStateFlow(false)
     val isMultiplayer = _isMultiplayer.asStateFlow()
-
 
     fun setMultiplayer(isMultiplayer: Boolean) {
         _isMultiplayer.value = isMultiplayer
