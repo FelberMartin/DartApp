@@ -289,11 +289,26 @@ private fun SoloModeInformation() {
 
 @Preview(showBackground = true, widthDp = 380, heightDp = 780)
 @Composable
-fun DefaultPreview() {
-    DartAppTheme {
-        val navManager = NavigationManager()
-        val homeViewModel = HomeViewModel(navManager)
-        val statisticsViewModel = StatisticsViewModel(navManager, FakeFinishedLegDao(fillWithTestData = true))
-        HomeScreen(homeViewModel, statisticsViewModel)
+fun HomeScreenPreview() {
+    DartAppTheme(useDarkTheme = false) {
+        PreviewContent()
+    }
+}
+
+@Composable
+private fun PreviewContent() {
+    val navManager = NavigationManager()
+    val homeViewModel = HomeViewModel(navManager)
+    val statisticsViewModel =
+        StatisticsViewModel(navManager, FakeFinishedLegDao(fillWithTestData = true))
+    HomeScreen(homeViewModel, statisticsViewModel)
+}
+
+
+@Preview(showBackground = true, widthDp = 380, heightDp = 780)
+@Composable
+private fun HomeScreenPreviewDark() {
+    DartAppTheme(useDarkTheme = true) {
+        PreviewContent()
     }
 }

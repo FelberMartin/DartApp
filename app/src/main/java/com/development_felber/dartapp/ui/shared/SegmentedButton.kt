@@ -81,7 +81,7 @@ private fun SegmentSelectButton(
             .fillMaxHeight()
             .clickable { onClick() }
             .background(
-                color = if (isSelected) MaterialTheme.colorScheme.primaryContainer else
+                color = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else
                     MaterialTheme.colorScheme.surface
             )
     ) {
