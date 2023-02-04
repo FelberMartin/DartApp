@@ -12,8 +12,8 @@ import java.time.LocalDateTime
 
 class TimeLegFilter private constructor(
     name: String,
-    val timeUnitCount: Int,
-    val timeUnit: TimeUnit
+    private val timeUnitCount: Int,
+    private val timeUnit: TimeUnit
 ) : LegFilterBase(
     name = name,
     partitioner = TimeLegPartitioner(timeUnit, timeUnitCount)
