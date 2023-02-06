@@ -65,6 +65,7 @@ fun Stepper(
             Text(
                 text = "$targetCount",
                 style = MaterialTheme.typography.headlineSmall,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 

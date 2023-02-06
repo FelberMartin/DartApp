@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.development_felber.dartapp.data.persistent.database.player.Player
@@ -115,11 +116,13 @@ private fun DialogTitle() {
             imageVector = Icons.Outlined.Group,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
+            tint = MaterialTheme.colorScheme.onBackground,
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = "Multiplayer Game",
-            style = MaterialTheme.typography.headlineLarge
+            style = MaterialTheme.typography.headlineLarge,
+            color = MaterialTheme.colorScheme.onBackground,
         )
     }
 }
@@ -207,7 +210,8 @@ private fun PlayersSelection(
 private fun HeaderText(text: String) = Text(
     text = text,
     style = MaterialTheme.typography.headlineSmall,
-    modifier = Modifier.padding(bottom = 16.dp)
+    modifier = Modifier.padding(bottom = 16.dp),
+    color = MaterialTheme.colorScheme.onBackground,
 )
 
 
@@ -404,7 +408,8 @@ private fun PlayerSwap(
         Icon(
             imageVector = Icons.Default.SwapVert,
             contentDescription = "Swap players",
-            modifier = Modifier.rotate(animatedRotation)
+            modifier = Modifier.rotate(animatedRotation),
+            tint = MaterialTheme.colorScheme.onBackground,
         )
     }
 }
@@ -471,32 +476,45 @@ fun StepperRow(
 @Composable
 private fun StartMultiplayerDialogPreview() {
     DartAppTheme() {
-        val allPlayers  = listOf(
-            Player(name = "Player 1"),
-            Player(name = "Player 2"),
-            Player(name = "Player 3"),
-            Player(name = "Player 4"),
-        )
-
-        var player1 by remember { mutableStateOf<Player?>(null) }
-        var player2 by remember { mutableStateOf<Player?>(allPlayers[1]) }
-        var legCount by remember { mutableStateOf(3) }
-        var setCount by remember { mutableStateOf(2) }
-
-        StartMultiplayerDialog(
-            allPlayers = allPlayers,
-            player1 = player1,
-            player2 = player2,
-            onPlayer1Changed = { player1 = it },
-            onPlayer2Changed = { player2 = it },
-            legCount =  legCount,
-            onLegCountChanged = { legCount = it },
-            setCount = setCount,
-            onSetCountChanged = { setCount = it },
-            onNewPlayerCreated = { _, _ ->},
-            onStartClick = {},
-            onCancel = {},
-            validateNewPlayerName = { Result.success(Unit) },
-        )
+        PreviewContent()
     }
+}
+
+@Preview(showBackground = true, device = Devices.PIXEL_4)
+@Composable
+private fun StartMultiplayerDialogPreviewDark() {
+    DartAppTheme(useDarkTheme = true) {
+        PreviewContent()
+    }
+}
+
+@Composable
+private fun PreviewContent() {
+    val allPlayers = listOf(
+        Player(name = "Player 1"),
+        Player(name = "Player 2"),
+        Player(name = "Player 3"),
+        Player(name = "Player 4"),
+    )
+
+    var player1 by remember { mutableStateOf<Player?>(null) }
+    var player2 by remember { mutableStateOf<Player?>(allPlayers[1]) }
+    var legCount by remember { mutableStateOf(3) }
+    var setCount by remember { mutableStateOf(2) }
+
+    StartMultiplayerDialog(
+        allPlayers = allPlayers,
+        player1 = player1,
+        player2 = player2,
+        onPlayer1Changed = { player1 = it },
+        onPlayer2Changed = { player2 = it },
+        legCount = legCount,
+        onLegCountChanged = { legCount = it },
+        setCount = setCount,
+        onSetCountChanged = { setCount = it },
+        onNewPlayerCreated = { _, _ -> },
+        onStartClick = {},
+        onCancel = {},
+        validateNewPlayerName = { Result.success(Unit) },
+    )
 }
