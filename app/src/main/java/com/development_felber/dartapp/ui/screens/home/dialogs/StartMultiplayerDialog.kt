@@ -65,14 +65,18 @@ fun StartMultiplayerDialog(
     onCancel: () -> Unit,
 ) {
     Column(
-        verticalArrangement = Arrangement.SpaceBetween,
         modifier = Modifier
             .background(color = MaterialTheme.colorScheme.background)
             .fillMaxSize()
             .padding(32.dp),
     ) {
-        DialogTitle()
-        Column {
+        Column(
+            verticalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        ) {
+            DialogTitle()
             PlayersSelection(
                 allPlayers = allPlayers,
                 player1 = player1,
@@ -82,7 +86,6 @@ fun StartMultiplayerDialog(
                 onNewPlayerCreated = onNewPlayerCreated,
                 validateNewPlayerName = validateNewPlayerName,
             )
-            Spacer(modifier = Modifier.height(48.dp))
             LegAndSetSelection(
                 legCount = legCount,
                 onLegCountChanged = onLegCountChanged,
@@ -106,7 +109,7 @@ private fun DialogTitle() {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 50.dp)
+            .padding(vertical = 16.dp)
     ) {
         Icon(
             imageVector = Icons.Outlined.Group,
@@ -147,7 +150,7 @@ private fun CancelConfirmButtonRow(
 }
 
 @Composable
-private fun ColumnScope.PlayersSelection(
+private fun PlayersSelection(
     allPlayers: List<Player>,
     player1: Player?,
     player2: Player?,
@@ -155,7 +158,7 @@ private fun ColumnScope.PlayersSelection(
     onPlayer2Changed: (Player?) -> Unit,
     onNewPlayerCreated: (String, PlayerRole) -> Unit,
     validateNewPlayerName:(String) -> Result<Unit>,
-    ) {
+) = Column() {
     HeaderText(text = "Players")
 
     Row(
@@ -197,8 +200,8 @@ private fun ColumnScope.PlayersSelection(
             )
         }
     }
-
 }
+
 
 @Composable
 private fun HeaderText(text: String) = Text(
@@ -408,12 +411,12 @@ private fun PlayerSwap(
 
 
 @Composable
-private fun ColumnScope.LegAndSetSelection(
+private fun LegAndSetSelection(
     legCount: Int,
     onLegCountChanged: (Int) -> Unit,
     setCount: Int,
     onSetCountChanged: (Int) -> Unit,
-) {
+) = Column() {
     HeaderText(text = "Game Settings")
 
     StepperRow(
