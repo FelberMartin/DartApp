@@ -43,7 +43,10 @@ class StartMultiplayerDialogViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             _player1.value = playerRepository.getLastPlayer1()
-            _player2.value = playerRepository.getLastPlayer2()
+            val player2Stored = playerRepository.getLastPlayer2()
+            if (player2Stored != _player1.value) {
+                _player2.value = player2Stored
+            }
         }
     }
 

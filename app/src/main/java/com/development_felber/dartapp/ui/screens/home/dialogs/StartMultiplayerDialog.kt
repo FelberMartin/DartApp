@@ -93,7 +93,7 @@ fun StartMultiplayerDialog(
 
         Spacer(Modifier.height(12.dp))
         CancelConfirmButtonRow(
-            enabled = player1 != null && player2 != null,
+            enabled = player1 != null && player2 != null && player1 != player2,
             onCancel = onCancel,
             onConfirm = onStartClick,
         )
