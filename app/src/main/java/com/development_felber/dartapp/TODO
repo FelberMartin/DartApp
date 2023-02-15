@@ -6,6 +6,5 @@
 TODO:
  - Move graph library to Jetpack Compose
  - For multiplayer:
-     - Try score comparison with dots and dashes
      - Merge multiplayer branch into main
  - Make undo for double attempts ?

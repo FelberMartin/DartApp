@@ -1,9 +1,7 @@
 package com.development_felber.dartapp.ui.screens.game.dialog.multi
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -93,10 +91,57 @@ fun PlayerScoreDisplay(
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.secondary,
         )
+        Spacer(modifier = Modifier.height(4.dp))
+        LegsInSetIndicator(score = playerScore)
         Text(
             text = "${playerScore.legsWon}-${playerScore.setsWon}",
             style = MaterialTheme.typography.headlineLarge,
         )
+        SetsInGameIndicator(score = playerScore)
+    }
+}
+
+@Composable
+private fun LegsInSetIndicator(score: PlayerScore) {
+    if (score.legsToWin == 1 || score.setsToWin > 5) {
+        return
+    }
+    Row() {
+        for (i in 0 until score.legsToWin) {
+            val color = if (i < score.legsWon) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.primaryContainer
+            }
+            Box(
+                modifier = Modifier
+                    .size(20.dp)
+                    .padding(4.dp)
+                    .background(color = color, shape = MaterialTheme.shapes.extraLarge)
+            )
+        }
+    }
+}
+
+@Composable
+private fun SetsInGameIndicator(score: PlayerScore) {
+    if (score.setsToWin == 1 || score.setsToWin > 3) {
+        return
+    }
+    Row() {
+        for (i in 0 until score.setsToWin) {
+            val color = if (i < score.setsWon) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.primaryContainer
+            }
+            Box(
+                modifier = Modifier
+                    .size(height = 20.dp, width = 32.dp)
+                    .padding(4.dp)
+                    .background(color = color, shape = MaterialTheme.shapes.extraLarge)
+            )
+        }
     }
 }
 
