@@ -14,6 +14,7 @@ class SettingsRepository @Inject constructor(
         AskForDouble,
         AskForCheckout,
         ShowStatsAfterLegFinished,
+        HasShownMultiplayerAddedDialog(false),
     }
 
     private val APPEARANCE_KEY = "appearance"

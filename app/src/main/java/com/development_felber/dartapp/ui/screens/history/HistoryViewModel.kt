@@ -1,13 +1,10 @@
 package com.development_felber.dartapp.ui.screens.history
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewModelScope
-import com.development_felber.dartapp.data.persistent.database.Leg
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import androidx.lifecycle.*
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import com.development_felber.dartapp.util.categorized_sort.DateCategorizedSortType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -15,9 +12,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
-    navigationManager: NavigationManager,
-    private val legDatabaseDao: LegDatabaseDao
-) : NavigationViewModel(navigationManager){
+    private val navigationManager: NavigationManager,
+    private val finishedLegDao: FinishedLegDao
+) : ViewModel(){
 
     private val _categorizedLegsResult = MutableLiveData(CategorizedSortTypeBase.Result())
     val categorizedLegsResult: LiveData<CategorizedSortTypeBase.Result> = _categorizedLegsResult
@@ -28,13 +25,13 @@ class HistoryViewModel @Inject constructor(
     private val _sortDescending = MutableLiveData<Boolean>(CategorizedSortTypeBase.PlaceHolder.byDefaultDescending)
     val sortDescending: LiveData<Boolean> = _sortDescending
 
-    private var legs: List<Leg> = listOf()
+    private var legs: List<FinishedLeg> = listOf()
 
     init {
         setSelectedSortType(DateCategorizedSortType)
 
         viewModelScope.launch {
-            legDatabaseDao.getAllLegs().asFlow().collect {
+            finishedLegDao.getAllSoloLegs().collect {
                 legs = it
                 sortLegs()
             }
@@ -56,5 +53,12 @@ class HistoryViewModel @Inject constructor(
         _categorizedLegsResult.value = result
     }
 
+    fun navigateBack() {
+        navigationManager.navigate(NavigationCommand.Back)
+    }
+
+    fun navigateToLegDetails(leg: FinishedLeg) {
+        navigationManager.navigate(NavigationCommand.ToHistoryDetails(leg.id))
+    }
 
 }

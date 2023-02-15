@@ -1,8 +1,8 @@
 package com.development_felber.dartapp.util.graphs.filter
 
-import com.development_felber.dartapp.util.graphs.partitioner.TimeLegPartitioner
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
+import com.development_felber.dartapp.util.graphs.partitioner.TimeLegPartitioner
 import com.development_felber.dartapp.util.time.TimeUnit
 import com.development_felber.dartapp.util.time.units.Day
 import com.development_felber.dartapp.util.time.units.Month
@@ -12,14 +12,14 @@ import java.time.LocalDateTime
 
 class TimeLegFilter private constructor(
     name: String,
-    val timeUnitCount: Int,
-    val timeUnit: TimeUnit
+    private val timeUnitCount: Int,
+    private val timeUnit: TimeUnit
 ) : LegFilterBase(
     name = name,
     partitioner = TimeLegPartitioner(timeUnit, timeUnitCount)
 ) {
 
-    override fun filterLegs(legs: List<Leg>): List<Leg> {
+    override fun filterLegs(legs: List<FinishedLeg>): List<FinishedLeg> {
         if (timeUnitCount == Int.MAX_VALUE) {
             return legs
         }

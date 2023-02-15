@@ -1,13 +1,10 @@
 package com.development_felber.dartapp.ui.screens.statistics
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewModelScope
-import com.development_felber.dartapp.data.persistent.database.Leg
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import androidx.lifecycle.*
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import com.development_felber.dartapp.util.graphs.filter.GamesLegFilter
 import com.development_felber.dartapp.util.graphs.filter.LegFilterBase
 import com.development_felber.dartapp.util.graphs.statistics.StatisticTypeBase
@@ -19,9 +16,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StatisticsViewModel @Inject constructor(
-    navigationManager: NavigationManager,
-    private val legDatabaseDao: LegDatabaseDao
-): NavigationViewModel(navigationManager) {
+    private val navigationManager: NavigationManager,
+    private val finishedLegDao: FinishedLegDao
+): ViewModel() {
 
     private val _statisticType = MutableLiveData<StatisticTypeBase>(StatisticTypeBase.PlaceHolderStatistic)
     val statisticType: LiveData<StatisticTypeBase> = _statisticType
@@ -35,7 +32,7 @@ class StatisticsViewModel @Inject constructor(
     private val _dataSet = MutableLiveData<DataSet>(DataSet())
     val dataSet: LiveData<DataSet> = _dataSet
 
-    private var legs: List<Leg> = listOf()
+    private var legs: List<FinishedLeg> = listOf()
 
     private val _noLegDataAvailable = MutableLiveData(true)
     val noLegDataAvailable: LiveData<Boolean> = _noLegDataAvailable
@@ -44,7 +41,7 @@ class StatisticsViewModel @Inject constructor(
     init {
         _statisticType.value = AverageStatistic
         viewModelScope.launch {
-            legDatabaseDao.getAllLegs().asFlow().collect {
+            finishedLegDao.getAllSoloLegs().collect {
                 println("Collected legs (size = ${it.size})")
                 legs = it
                 _noLegDataAvailable.value = legs.isEmpty()
@@ -78,6 +75,18 @@ class StatisticsViewModel @Inject constructor(
 
     private fun rebuildDataSet() {
         _dataSet.value = statisticType.value!!.buildDataSet(legs, legFilter.value!!)
+    }
+
+    fun navigateBack() {
+        navigationManager.navigate(NavigationCommand.Back)
+    }
+
+    fun navigateToTable() {
+        navigationManager.navigate(NavigationCommand.ToTable)
+    }
+
+    fun navigateToHistory() {
+        navigationManager.navigate(NavigationCommand.ToHistory)
     }
 
 }

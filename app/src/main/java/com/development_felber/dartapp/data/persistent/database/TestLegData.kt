@@ -1,5 +1,6 @@
 package com.development_felber.dartapp.data.persistent.database
 
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import java.time.Duration
 import java.time.LocalDateTime
 import kotlin.random.Random
@@ -23,8 +24,8 @@ object TestLegData {
 //        return database
 //    }
 
-    fun createExampleLegs(random: Random = Random, daysBack: Int = 120, maxPerDay: Int = 3) : List<Leg> {
-        val legs = ArrayList<Leg>()
+    fun createExampleLegs(random: Random = Random, daysBack: Int = 120, maxPerDay: Int = 3) : List<FinishedLeg> {
+        val legs = ArrayList<FinishedLeg>()
         for (currentDaysBack in 0..daysBack) {
             if (random.nextDouble(0.0, 1.0) < 0.6) {
                 val legCount = random.nextInt(maxPerDay)
@@ -37,12 +38,12 @@ object TestLegData {
         return legs
     }
 
-    fun createRandomLeg(random: Random = Random, daysBack: Int = 0): Leg {
+    fun createRandomLeg(random: Random = Random, daysBack: Int = 0): FinishedLeg {
         val now = LocalDateTime.now()
         val serves = createRandomServes(random)
         val doubleAttempts = createRandomDoubleAttempts(random)
 
-        return Leg(
+        return FinishedLeg(
             id = random.nextLong(),
             endTime = Converters.fromLocalDateTime(now.minusDays(daysBack.toLong())),
             durationSeconds = Converters.fromDuration(Duration.ofSeconds(random.nextLong(20) * 60)),

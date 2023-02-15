@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.graphs.statistics.barchart
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.util.graphs.filter.LegFilterBase
 import com.development_felber.dartapp.util.graphs.partitioner.LegPartitioner
 import com.development_felber.dartapp.util.graphs.statistics.StatisticTypeBase
@@ -20,9 +20,9 @@ abstract class BarStatistic(
     statisticSpecificPartitioner = statisticSpecificPartitioner
 ){
 
-    abstract fun reduceLegsToNumber(legs: List<Leg>) : Number
+    abstract fun reduceLegsToNumber(legs: List<FinishedLeg>) : Number
 
-    override fun buildDataSet(legs: List<Leg>, filter: LegFilterBase) : DataSet {
+    override fun buildDataSet(legs: List<FinishedLeg>, filter: LegFilterBase) : DataSet {
         val filteredLegs = filter.filterLegs(legs)
         val partitioner = statisticSpecificPartitioner ?: filter.partitioner
         val partitioned = partitioner.partitionLegs(filteredLegs)

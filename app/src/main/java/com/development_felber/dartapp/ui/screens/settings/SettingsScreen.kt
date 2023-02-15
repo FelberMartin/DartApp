@@ -14,6 +14,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.data.AppearanceOption
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
 import com.development_felber.dartapp.data.repository.SettingsRepository
@@ -25,7 +26,7 @@ import com.development_felber.dartapp.ui.values.Padding
 
 @Composable
 fun SettingsScreen(
-    viewModel: SettingsViewModel
+    viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val appearanceOption = viewModel.appearanceOption.observeAsState(AppearanceOption.SYSTEM)
     val askForDouble = viewModel.askForDouble.observeAsState(true)
@@ -38,7 +39,7 @@ fun SettingsScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { BackTopAppBar(
             title = "Settings",
-            navigationViewModel = viewModel,
+            onBackClicked = viewModel::navigateBack,
             scrollBehavior = scrollBehavior
         )},
         content = { innerPadding ->
@@ -135,8 +136,9 @@ private fun AppearanceOption(
             )
         }
     }
-
 }
+
+
 
 
 @Composable

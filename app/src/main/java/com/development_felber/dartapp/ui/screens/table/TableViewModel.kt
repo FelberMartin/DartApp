@@ -1,24 +1,21 @@
 package com.development_felber.dartapp.ui.screens.table
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewModelScope
-import com.development_felber.dartapp.data.persistent.database.Leg
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import androidx.lifecycle.*
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.shared.NavigationViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class TableViewModel @Inject constructor(
-    navigationManager: NavigationManager,
-    private val legDatabaseDao: LegDatabaseDao
-) : NavigationViewModel(navigationManager) {
+    private val navigationManager: NavigationManager,
+    private val finishedLegDao: FinishedLegDao
+) : ViewModel() {
 
-    private var legs: List<Leg> = listOf()
+    private var legs: List<FinishedLeg> = listOf()
 
     private val _totalItems = MutableLiveData<List<Pair<String, String>>>(listOf())
     val totalItems: LiveData<List<Pair<String, String>>> = _totalItems
@@ -33,7 +30,7 @@ class TableViewModel @Inject constructor(
         updateItems()
 
         viewModelScope.launch {
-            legDatabaseDao.getAllLegs().asFlow().collect {
+            finishedLegDao.getAllSoloLegs().collect {
                 legs = it
                 updateItems()
             }
@@ -50,5 +47,9 @@ class TableViewModel @Inject constructor(
         _distributionItems.value = TableItem.distribution.map {
                 item -> Pair(item.name, item.getValue(legs))
         }
+    }
+
+    fun navigateBack() {
+        navigationManager.navigate(NavigationCommand.Back)
     }
 }

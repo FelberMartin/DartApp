@@ -1,8 +1,8 @@
 package com.development_felber.dartapp.util.graphs.partitioner
 
-import com.development_felber.dartapp.util.graphs.filter.TimeLegFilter
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
+import com.development_felber.dartapp.util.graphs.filter.TimeLegFilter
 import com.development_felber.dartapp.util.time.TimeUnit
 import com.development_felber.dartapp.util.time.units.Day
 import com.development_felber.dartapp.util.time.units.Quarter
@@ -15,12 +15,12 @@ class TimeLegPartitioner(
 ) : LegPartitioner {
 
 
-    override fun partitionLegs(sortedLegs: List<Leg>): Map<String, List<Leg>> {
+    override fun partitionLegs(sortedLegs: List<FinishedLeg>): Map<String, List<FinishedLeg>> {
         if (timeUnitCount == TimeLegFilter.ALL_TIME_COUNT) {
             handleAllTimeOption(sortedLegs)
         }
         val oneForEachPartition = getOneForEachPartition()
-        val legsByUiKeys = mutableMapOf<String, ArrayList<Leg>>()
+        val legsByUiKeys = mutableMapOf<String, ArrayList<FinishedLeg>>()
         oneForEachPartition.forEach { legsByUiKeys[timeUnit.toUiString(it)] = ArrayList() }
         for (leg in sortedLegs) {
             val timeUnitKey = timeUnit.toUiString(Converters.toLocalDateTime(leg.endTime))
@@ -37,7 +37,7 @@ class TimeLegPartitioner(
         return legsByUiKeys
     }
 
-    private fun handleAllTimeOption(sortedLegs: List<Leg>) {
+    private fun handleAllTimeOption(sortedLegs: List<FinishedLeg>) {
         timeUnit = Quarter
         val minimumQuarters = 2
         timeUnitCount = minimumQuarters

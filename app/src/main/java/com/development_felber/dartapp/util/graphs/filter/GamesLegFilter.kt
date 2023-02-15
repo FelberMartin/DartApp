@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.graphs.filter
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.util.graphs.partitioner.PartitionCountLegPartitioner
 
 class GamesLegFilter constructor(
@@ -11,7 +11,7 @@ class GamesLegFilter constructor(
     partitioner = PartitionCountLegPartitioner(10)
 ) {
 
-    override fun filterLegs(legs: List<Leg>): List<Leg> {
+    override fun filterLegs(legs: List<FinishedLeg>): List<FinishedLeg> {
         var start = legs.size - legCount
         if (start < 0) {
             start = 0

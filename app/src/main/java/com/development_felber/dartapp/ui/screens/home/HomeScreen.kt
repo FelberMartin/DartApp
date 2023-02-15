@@ -23,43 +23,51 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.R
-import com.development_felber.dartapp.data.persistent.database.FakeLegDatabaseDao
-import com.development_felber.dartapp.ui.navigation.NavigationDirections
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.ui.navigation.NavigationManager
+import com.development_felber.dartapp.ui.screens.home.dialogs.new_feature.MultiplayerAddedDialog
 import com.development_felber.dartapp.ui.screens.statistics.StatisticsChart
 import com.development_felber.dartapp.ui.screens.statistics.StatisticsViewModel
 import com.development_felber.dartapp.ui.shared.Background
 import com.development_felber.dartapp.ui.shared.MyCard
+import com.development_felber.dartapp.ui.shared.TowSegmentSingleSelectButton
 import com.development_felber.dartapp.ui.shared.extensions.withDropShadow
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 
 @Composable
 fun HomeScreen(
-    homeViewModel: HomeViewModel,
-    statisticsViewModel: StatisticsViewModel
+    viewModel: HomeViewModel = hiltViewModel(),
+    statisticsViewModel: StatisticsViewModel = hiltViewModel(),
 ) {
     var easterEggActivated by remember { mutableStateOf(false) }
+    val isMultiplayer by viewModel.isMultiplayer.collectAsState()
+
     Background {
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .padding(top = 24.dp, bottom = 12.dp)
+                .padding(24.dp)
+//                .padding(top = 24.dp, bottom = 12.dp)
                 .fillMaxSize(),
         ) {
-            SettingsRow(onSettingsClicked = { homeViewModel.navigate(NavigationDirections.Settings) })
-            StatisticsCard(homeViewModel, statisticsViewModel)
+            SettingsRow(onSettingsClicked = viewModel::navigateToSettings)
+            StatisticsCard(viewModel, statisticsViewModel)
             AppIconAndName(
                 onToggleEasterEgg = { easterEggActivated = !easterEggActivated }
             )
             PlayButtonAndModeSelection(
-                onTrainClicked = { homeViewModel.navigate(NavigationDirections.Game) },
-                easterEggActivated = easterEggActivated
+                onTrainClicked = viewModel::onTrainClicked,
+                easterEggActivated = easterEggActivated,
+                isMultiplayer = isMultiplayer,
+                onMultiplayerChange = viewModel::setMultiplayer
             )
         }
     }
+
+    MultiplayerAddedDialog(viewModel = hiltViewModel())
 }
 
 @Composable
@@ -85,7 +93,7 @@ private fun SettingsRow(
 
 @Composable
 private fun StatisticsCard(
-    homeViewModel: HomeViewModel,
+    viewModel: HomeViewModel,
     statisticsViewModel: StatisticsViewModel
 ) {
     MyCard {
@@ -99,7 +107,7 @@ private fun StatisticsCard(
             StatisticsPreview(statisticsViewModel)
 
             FilledTonalButton(
-                onClick = { homeViewModel.navigate(NavigationDirections.Statistics) }
+                onClick = viewModel::navigateToStatistics
             ) {
                 Icon(
                     imageVector = Icons.Filled.StackedLineChart,
@@ -175,7 +183,9 @@ private fun AppIconAndName(
 @Composable
 private fun PlayButtonAndModeSelection(
     onTrainClicked: () -> Unit,
-    easterEggActivated: Boolean
+    easterEggActivated: Boolean,
+    isMultiplayer: Boolean,
+    onMultiplayerChange: (Boolean) -> Unit
 ) {
     val trainEmojis = listOf("🚆", "🚅", "🚄", "🚂", "🚉")
     Column(
@@ -194,10 +204,27 @@ private fun PlayButtonAndModeSelection(
             )
         }
 
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(2.dp))
 
-        SoloModeInformation()
+        SoloMultiplayerSelection(
+            isSolo = !isMultiplayer, onChange = { onMultiplayerChange(!it) }
+        )
+//        SoloModeInformation()
     }
+}
+
+@Composable
+fun SoloMultiplayerSelection(
+    isSolo: Boolean,
+    onChange: (Boolean) -> Unit,
+) {
+    TowSegmentSingleSelectButton(
+        text1 = "Solo",
+        text2 = "Multi",
+        selectedIndex = if (isSolo) 0 else 1,
+        onSelectedIndexChange =  { onChange(it == 0) },
+        modifier = Modifier.scale(0.8f)
+    )
 }
 
 @Composable
@@ -244,7 +271,9 @@ private fun SoloModeInformation() {
                 onDismissRequest = { showInfo = false; lastDismissTime = System.currentTimeMillis() },
             ) {
                 Box(Modifier
-                    .clickable { showInfo = false; lastDismissTime = System.currentTimeMillis() }
+                    .clickable {
+                        showInfo = false; lastDismissTime = System.currentTimeMillis()
+                    }
                     .background(
                         color = MaterialTheme.colorScheme.inverseSurface,
                         shape = MaterialTheme.shapes.medium
@@ -263,11 +292,26 @@ private fun SoloModeInformation() {
 
 @Preview(showBackground = true, widthDp = 380, heightDp = 780)
 @Composable
-fun DefaultPreview() {
-    DartAppTheme {
-        val navManager = NavigationManager()
-        val homeViewModel = HomeViewModel(navManager)
-        val statisticsViewModel = StatisticsViewModel(navManager, FakeLegDatabaseDao(fillWithTestData = true))
-        HomeScreen(homeViewModel, statisticsViewModel)
+fun HomeScreenPreview() {
+    DartAppTheme(useDarkTheme = false) {
+        PreviewContent()
+    }
+}
+
+@Composable
+private fun PreviewContent() {
+    val navManager = NavigationManager()
+    val homeViewModel = HomeViewModel(navManager)
+    val statisticsViewModel =
+        StatisticsViewModel(navManager, FakeFinishedLegDao(fillWithTestData = true))
+    HomeScreen(homeViewModel, statisticsViewModel)
+}
+
+
+@Preview(showBackground = true, widthDp = 380, heightDp = 780)
+@Composable
+private fun HomeScreenPreviewDark() {
+    DartAppTheme(useDarkTheme = true) {
+        PreviewContent()
     }
 }

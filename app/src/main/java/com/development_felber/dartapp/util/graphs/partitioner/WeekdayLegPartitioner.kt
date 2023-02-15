@@ -1,14 +1,14 @@
 package com.development_felber.dartapp.util.graphs.partitioner
 
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class WeekdayLegPartitioner : LegPartitioner {
 
 
-    override fun partitionLegs(sortedLegs: List<Leg>): Map<String, List<Leg>> {
+    override fun partitionLegs(sortedLegs: List<FinishedLeg>): Map<String, List<FinishedLeg>> {
         val map = emptyWeekDayListMap()
 
         for (leg in sortedLegs) {
@@ -22,8 +22,8 @@ class WeekdayLegPartitioner : LegPartitioner {
     companion object {
         private val weekdayFormatter = DateTimeFormatter.ofPattern("EEE")
 
-        private fun emptyWeekDayListMap() : Map<String, ArrayList<Leg>> {
-            val map = mutableMapOf<String, ArrayList<Leg>>()
+        private fun emptyWeekDayListMap() : Map<String, ArrayList<FinishedLeg>> {
+            val map = mutableMapOf<String, ArrayList<FinishedLeg>>()
             for (i in 0 until 7) {
                 val then = LocalDateTime.now().minusDays(i.toLong())
                 val weekdayKey = then.format(weekdayFormatter)

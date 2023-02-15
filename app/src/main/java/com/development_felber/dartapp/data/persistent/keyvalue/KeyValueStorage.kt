@@ -21,7 +21,8 @@ class KeyValueStorage(
         val dataStoreKey = stringPreferencesKey(key)
         context.dataStore.edit { settings ->
             settings[dataStoreKey] = value
-        }    }
+        }
+    }
 
     override fun getFlow(key: String): Flow<String?> {
         val dataStoreKey = stringPreferencesKey(key)

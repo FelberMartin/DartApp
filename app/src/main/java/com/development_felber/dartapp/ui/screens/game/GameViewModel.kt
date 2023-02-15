@@ -1,267 +1,259 @@
 package com.development_felber.dartapp.ui.screens.game
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.development_felber.dartapp.data.persistent.database.Leg
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
+import com.development_felber.dartapp.data.repository.GameRepository
 import com.development_felber.dartapp.data.repository.SettingsRepository
-import com.development_felber.dartapp.game.Game
+import com.development_felber.dartapp.game.GameSetup
+import com.development_felber.dartapp.game.GameState
+import com.development_felber.dartapp.game.GameStatus
+import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.game.gameaction.AddDartGameAction
 import com.development_felber.dartapp.game.gameaction.AddServeGameAction
 import com.development_felber.dartapp.game.numberpad.NumberPadBase
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
 import com.development_felber.dartapp.game.numberpad.PerServeNumberPad
+import com.development_felber.dartapp.ui.navigation.GameSetupHolder
+import com.development_felber.dartapp.ui.navigation.NavigationCommand
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.screens.game.dialog.DialogUiState
-import com.development_felber.dartapp.ui.screens.game.dialog.DoubleAttemptsAndCheckoutDialogResult
-import com.development_felber.dartapp.ui.screens.game.dialog.LegFinishedDialogViewModel
-import com.development_felber.dartapp.ui.shared.NavigationViewModel
+import com.development_felber.dartapp.ui.screens.game.dialog.GameDialogManager
+import com.development_felber.dartapp.ui.screens.game.dialog.SoloGameFinishedDialogViewModel
+import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialogResult
+import com.development_felber.dartapp.ui.screens.game.dialog.multi.GameOverallStatistics
 import com.development_felber.dartapp.util.CheckoutTip
 import com.development_felber.dartapp.util.GameUtil
+import com.development_felber.dartapp.util.WhileUiSubscribed
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-const val PLACEHOLDER_STRING = "--"
+data class PlayerUiState(
+    val name: String,
+    val playerRole: PlayerRole,
+    val score: PlayerScore,
+    val pointsLeft: Int,
+    val last: Int?,
+    val average: Double?,
+    val dartCount: Int,
+    val gameOverallStatistics: GameOverallStatistics,
+)
+
+data class GameUiState(
+    val currentPlayer: PlayerRole = PlayerRole.One,
+    val checkoutTip: String? = null,
+    val dialogToShow: GameDialogManager.DialogType? = null,
+    val playerUiStates: List<PlayerUiState> = emptyList(),
+    val numberPadUiState: NumberPadUiState = NumberPadUiState(),
+)
+
+data class NumberPadUiState(
+    val numberPad: NumberPadBase = PerServeNumberPad(),
+    val enterEnabled: Boolean = true,
+    val disabledNumbers: List<Int> = emptyList(),
+    val undoEnabled: Boolean = false,
+)
+
 
 @HiltViewModel
 class GameViewModel @Inject constructor(
-    val navigationManager: NavigationManager,
-    val settingsRepository: SettingsRepository,
-    private val legDatabaseDao: LegDatabaseDao
-) : NavigationViewModel(navigationManager) {
+    private val navigationManager: NavigationManager,
+    private val settingsRepository: SettingsRepository,
+    private val gameRepository: GameRepository,
+    private val finishedLegDao: FinishedLegDao,
+    private val dispatcher: CoroutineDispatcher,
+) : ViewModel() {
 
-    private val _numberPad: MutableLiveData<NumberPadBase> = MutableLiveData(PerServeNumberPad())
-    val numberPad: LiveData<NumberPadBase> = _numberPad
+    private val gameSetup: GameSetup
+        get() = GameSetupHolder.gameSetup!!
 
-    private val _pointsLeft: MutableLiveData<Int> = MutableLiveData(501)
-    val pointsLeft: LiveData<Int> = _pointsLeft
+    var gameState: GameState = GameState(gameSetup)
 
-    private val _dartCount = MutableLiveData(0)
-    val dartCount: LiveData<Int> = _dartCount
-
-    private val _average = MutableLiveData<String>(PLACEHOLDER_STRING)
-    val average: LiveData<String> = _average
-
-    private val _last = MutableLiveData(PLACEHOLDER_STRING)
-    val last: LiveData<String> = _last
-
-    private val _checkoutTip: MutableLiveData<String?> = MutableLiveData(null)
-    val checkoutTip: LiveData<String?> = _checkoutTip
-
-    private val _enterDisabled = MutableLiveData(false)
-    val enterDisabled: LiveData<Boolean> = _enterDisabled
-
-    private val _legFinished = MutableLiveData(false)
-    val legFinished: LiveData<Boolean> = _legFinished
-
+    private val _numberPadUiState = MutableStateFlow(NumberPadUiState())
+    private val numberPad: NumberPadBase
+        get() = _numberPadUiState.value.numberPad
     val usePerDartNumberPad
-        get() = numberPad.value is PerDartNumberPad
+        get() = numberPad is PerDartNumberPad
 
-    private val _dialogUiState = MutableStateFlow(DialogUiState())
-    val dialogUiState: LiveData<DialogUiState> = _dialogUiState.asLiveData()
+    private val _checkoutTip = MutableStateFlow<String?>(null)
 
-    private val _dartOrServeEnteredFlow = MutableSharedFlow<Int>(replay = 0)
-    val dartOrServeEnteredFlow: SharedFlow<Int> = _dartOrServeEnteredFlow
+    private val _dartOrServeEnteredFlow = MutableSharedFlow<Int?>(replay = 0)
+    val dartOrServeEnteredFlow: SharedFlow<Int?> = _dartOrServeEnteredFlow
 
-    var game = Game()
-        private set
+    private val updateRequired: MutableStateFlow<Int> = MutableStateFlow(0)
 
-    private var lastFinishedLeg: Leg? = null
+    private val dialogManager = GameDialogManager(
+        coroutineScope = viewModelScope,
+        settingsRepository = settingsRepository,
+    )
+
+    val gameUiState = combine(_numberPadUiState, dialogManager.currentDialog, _checkoutTip, updateRequired) {
+        numberPadUiState, dialog, checkoutTip, _ ->
+         GameUiState(
+            currentPlayer = gameState.currentPlayerRole,
+            checkoutTip = checkoutTip,
+            dialogToShow = dialog,
+            playerUiStates = getPlayerUiStates(),
+            numberPadUiState = numberPadUiState,
+        )
+    }.stateIn(viewModelScope, WhileUiSubscribed, GameUiState())
+
+    private var gameSaved = false
 
     init {
-        updateUi()
+        update()
     }
 
-    fun closeClicked() {
-        _dialogUiState.update { currentState ->
-            currentState.copy(exitDialogOpen = true)
+    private fun getPlayerUiStates() : List<PlayerUiState> {
+        val playerUiStates = mutableListOf<PlayerUiState>()
+        for (playerGameState in gameState.playerGameStates) {
+            val leg = playerGameState.currentLeg
+            playerUiStates += PlayerUiState(
+                name = gameSetup.getPlayerName(playerGameState.playerRole) ?: "Solo Player",
+                playerRole = playerGameState.playerRole,
+                score = gameSetup.createPlayerScore(
+                    setsWon = playerGameState.setsWonCount,
+                    legsWonInCurrentSet = playerGameState.legsWonInCurrentSetCount
+                ),
+                pointsLeft = leg.pointsLeft,
+                last = leg.getLast(perDart = usePerDartNumberPad),
+                average = leg.getAverage(perDart = usePerDartNumberPad),
+                dartCount = leg.dartCount,
+                gameOverallStatistics = playerGameState.overallStatistics,
+            )
         }
+        return playerUiStates
+    }
+
+    fun onCloseClicked() {
+        dialogManager.openDialog(GameDialogManager.DialogType.ExitGame)
     }
 
     fun onUndoClicked() {
-        viewModelScope.launch {
-            game.undo()
-            numberPad.value!!.clear()
-            updateUi()
+        viewModelScope.launch(dispatcher) {
+            gameState.undo()
+            numberPad.clear()
+            update()
         }
     }
 
     fun onSwapNumberPadClicked() {
         if (usePerDartNumberPad) {
-            _numberPad.value = PerServeNumberPad()
-            game.completeDartsToFullServe()
+            gameState.completeDartsToFullServe()
+            _numberPadUiState.update { it.copy(numberPad = PerServeNumberPad()) }
         } else {
-            _numberPad.value = PerDartNumberPad()
+            _numberPadUiState.update { it.copy(numberPad = PerDartNumberPad()) }
         }
-        updateUi()
+        update()
     }
 
     fun onNumberTyped(number: Int) {
-        if (numberPad.value!!.number.value >= 100) {
-            return
-        }
-        viewModelScope.launch {
-            numberPad.value!!.numberTyped(number)
-            updateEnterButton()
+        viewModelScope.launch(dispatcher) {
+            numberPad.numberTyped(number)
+            disableInvalidInputs()
             if (usePerDartNumberPad) {
                 onEnterClicked()
             }
         }
     }
 
-    private fun updateEnterButton() {
-        val number = numberPad.value!!.number.value
-        val valid = game.isNumberValid(number, usePerDartNumberPad)
-        _enterDisabled.value = !valid
-    }
-
-    /** Returns disabled numbers for the PerDartNumberPad. */
-    fun getDisabledNumbers(modifier: PerDartNumberPad.Modifier) : List<Int> {
-        val disabledNumbers = mutableListOf<Int>()
-        val numbersToCheck = (1..20).toMutableList()
-        numbersToCheck.add(25)
-        for (i in numbersToCheck) {
-            val dart = i * modifier.multiplier
-            val doubleModifierEnabled =  modifier == PerDartNumberPad.Modifier.Double
-            val valid = game.isNumberValid(dart, true, doubleModifierEnabled)
-            if (!valid) {
-                disabledNumbers.add(i)
-            }
+    private fun disableInvalidInputs() {
+        if (usePerDartNumberPad) {
+            _numberPadUiState.update { it.copy(
+                disabledNumbers = (numberPad as PerDartNumberPad).getDisabledNumbers(gameState.currentLeg)
+            ) }
+        } else {
+            val number = numberPad.number.value
+            val valid = gameState.currentLeg.isNumberValid(number, singleDart = usePerDartNumberPad)
+            _numberPadUiState.update { it.copy(enterEnabled = valid) }
         }
-        if (modifier == PerDartNumberPad.Modifier.Triple) {
-            disabledNumbers.add(25)
-        }
-        return disabledNumbers
+        _numberPadUiState.update { it.copy(undoEnabled = gameState.undoAvailable) }
     }
 
     fun clearNumberPad() {
-        viewModelScope.launch {
-            numberPad.value!!.clear()
-            updateEnterButton()
+        viewModelScope.launch(dispatcher) {
+            numberPad.clear()
+            disableInvalidInputs()
         }
     }
 
     fun onEnterClicked() {
-        viewModelScope.launch {
-            val number = numberPad.value!!.number.value
-            _dartOrServeEnteredFlow.emit(number)
-            numberPad.value!!.clear()
+        viewModelScope.launch(dispatcher) {
+            val number = numberPad.number.value
+            numberPad.clear()
             enterNumberToGame(number)
+            _dartOrServeEnteredFlow.emit(number)
         }
     }
 
-    private suspend fun enterNumberToGame(number: Int) {
-        if (usePerDartNumberPad) {
-            game.applyAction(AddDartGameAction(number))
-        } else {
-            game.applyAction(AddServeGameAction(number))
-        }
+    private fun enterNumberToGame(number: Int) {
+        gameState.applyAction(
+            action = if (usePerDartNumberPad) AddDartGameAction(number) else AddServeGameAction(number),
+        )
 
-        updateUi()
-        _dialogUiState.update { state ->
-            state.copy(
-                simpleDoubleAttemptsDialogOpen = shouldShowSimpleDoubleAttemptDialog(number),
-                doubleAttemptsDialogOpen = shouldShowDoubleAttemptsDialog(number),
-                checkoutDialogOpen = shouldShowCheckoutDialog()
-            )
+        updateDialogs(number)
+        clearNumberPad()
+        checkGameFinished()
+        if (!dialogManager.isAnyEnterDataToGameDialogOpen()) {
+            gameState.updateCurrentPlayerRole()
         }
-
-        checkLegFinished()
+        update()
     }
 
-    private suspend fun shouldShowSimpleDoubleAttemptDialog(lastDart: Int) : Boolean {
-        if (!usePerDartNumberPad) {
-            return false
-        }
-        val askForDouble = settingsRepository
-            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
-        if (!askForDouble) {
-            return false
-        }
-        if (game.pointsLeft == 0) {
-            // The game was finished with a double, so do not ask, but automatically add a double attempt.
-            game.doubleAttemptsList.add(1)
-            return false
-        }
-        val points = game.pointsLeft + lastDart
-        val couldFinishWithDouble = points % 2 == 0 && (points == 50 || points <= 40)
-        return couldFinishWithDouble
+    private fun updateDialogs(lastEnteredNumber: Int) {
+        dialogManager.determineDialogsToOpen(
+            lastNumberEntered = lastEnteredNumber,
+            gameState = gameState,
+            usePerDartNumberPad = usePerDartNumberPad,
+        )
     }
 
-    private suspend fun shouldShowDoubleAttemptsDialog(lastServe: Int) : Boolean {
-        if (usePerDartNumberPad) {
-            return false
-        }
-        val askForDouble = settingsRepository
-            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
-        if (!askForDouble) {
-            return false
-        }
-        if (game.pointsLeft > 50 && lastServe > 0) {
-            return false
-        }
-        val pointsBeforeServe = game.pointsLeft + lastServe
-        return CheckoutTip.checkoutTips.contains(pointsBeforeServe)
-    }
-
-    private fun updateUi() {
-        _pointsLeft.value = game.pointsLeft
-        _dartCount.value = game.dartCount
-        val average = game.getAverage(usePerDartNumberPad)
-        _average.value = if (average != null) String.format("%.2f", average) else PLACEHOLDER_STRING
-        val lastString = game.getLast(usePerDartNumberPad)?.toString()
-        _last.value = lastString ?: PLACEHOLDER_STRING
-
-        _checkoutTip.value = CheckoutTip.checkoutTips[game.pointsLeft]
-        updateEnterButton()
+    private fun update() {
+        _checkoutTip.value = CheckoutTip.checkoutTips[gameState.currentLeg.pointsLeft]
+        disableInvalidInputs()
+        updateRequired.update { it + 1 }
     }
 
     fun dismissExitDialog() {
-        _dialogUiState.update { state -> state.copy(exitDialogOpen = false) }
+        dialogManager.closeDialog()
     }
 
-    fun dismissLegFinishedDialog(temporary: Boolean = false) {
-        _legFinished.value = false
+    fun dismissGameFinishedDialog(temporary: Boolean = false) {
+        dialogManager.closeDialog()
         if (temporary) {
-            viewModelScope.launch {
+            viewModelScope.launch(dispatcher) {
                 delay(1000)
-                _legFinished.value = true
+                dialogManager.openDialog(GameDialogManager.DialogType.GameFinished)
             }
         }
     }
 
     fun simpleDoubleAttemptsEntered(attempt: Boolean) {
         if (attempt) {
-            game.doubleAttemptsList.add(1)
+            gameState.currentLeg.doubleAttemptsList.add(1)
         }
-        _dialogUiState.update { state -> state.copy(simpleDoubleAttemptsDialogOpen = false) }
-    }
-
-    private suspend fun shouldShowCheckoutDialog() : Boolean {
-        if (usePerDartNumberPad) {
-            return false
-        }
-        val askForCheckout = settingsRepository
-            .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForCheckout).first()
-        if (!askForCheckout) {
-            return false
-        }
-        return game.pointsLeft == 0
+        dialogManager.closeDialog()
+        gameState.updateCurrentPlayerRole()
     }
 
     fun getMinimumDartCount() : Int? {
-        return GameUtil.minDartCountRequiredToFinishWithinServe(game.pointsLeftBeforeLastServe())
+        val pointsBefore = gameState.currentLeg.pointsLeftBeforeLastServe()
+        return GameUtil.minDartCountRequiredToFinishWithinServe(pointsBefore)
     }
 
     fun onDoubleAttemptsAndCheckoutCancelled() {
-        _dialogUiState.update { state -> state.copy(doubleAttemptsDialogOpen = false, checkoutDialogOpen = false) }
+        dialogManager.closeDialog()
         onUndoClicked()
+    }
+
+    fun doubleAttemptsAndCheckoutConfirmed(doubleAttempts: Int? = null, checkout: Int? = null) {
+        doubleAttemptsAndCheckoutConfirmed(DoubleAttemptsAndCheckoutDialogResult(
+            doubleAttempts = doubleAttempts,
+            checkout = checkout
+        ))
     }
 
     fun doubleAttemptsAndCheckoutConfirmed(result: DoubleAttemptsAndCheckoutDialogResult) {
@@ -269,64 +261,76 @@ class GameViewModel @Inject constructor(
             enterDoubleAttempts(result.doubleAttempts)
         }
         if (result.checkout != null) {
-            enterCheckoutDarts(result.checkout)
+            enterCheckout(result.checkout)
+        }
+        dialogManager.closeDialog()
+        gameState.updateCurrentPlayerRole()
+        update()
+        checkGameFinished()
+    }
+
+    private fun enterDoubleAttempts(attempts: Int) {
+        gameState.currentLeg.doubleAttemptsList.add(attempts)
+    }
+
+    private fun enterCheckout(darts: Int) {
+        val unusedDarts = 3 - darts
+        gameState.currentLeg.unusedDartCount += unusedDarts
+    }
+
+    private fun checkGameFinished() {
+        if (gameState.gameStatus == GameStatus.Finished &&
+            !dialogManager.isAnyEnterDataToGameDialogOpen()) {
+            gameFinished()
         }
     }
 
-    fun enterDoubleAttempts(attempts: Int) {
-        game.doubleAttemptsList.add(attempts)
-        _dialogUiState.update { state -> state.copy(doubleAttemptsDialogOpen = false) }
-        checkLegFinished()
-    }
+    private fun gameFinished() {
+        viewModelScope.launch(dispatcher) {
+            if (gameSaved) {
+                return@launch
+            }
+            gameState.finishFinalLeg()
+            gameSaved = true
 
-    fun enterCheckoutDarts(darts: Int) {
-        game.unusedDartCount += 3- darts
-        _dialogUiState.update { state -> state.copy(checkoutDialogOpen = false) }
-        updateUi()
-        checkLegFinished()
-    }
-
-    private fun checkLegFinished() {
-        if (game.pointsLeft == 0 && !_dialogUiState.value.anyDialogOpen()) {
-            legFinished()
-        }
-    }
-
-    private fun legFinished() {
-        if (legFinished.value == true) {
-            return
-        }
-        viewModelScope.launch {
             val setDefaultDoubleAttempt = !settingsRepository
                 .getBooleanSettingFlow(SettingsRepository.BooleanSetting.AskForDouble).first()
             if (setDefaultDoubleAttempt) {
                 enterDoubleAttempts(1)
             }
 
-            Log.d("GameViewModel", "Saving game to legDatabase...")
-            val leg = game.toLeg()
-            legDatabaseDao.insert(leg = leg)
-            lastFinishedLeg = legDatabaseDao.getLatestLeg()
-            _legFinished.value = true   // Shows Leg Finished Dialog
+            gameRepository.saveGame(gameState)
         }
     }
 
     fun onPlayAgainClicked() {
-        _legFinished.value = false
-        game = Game()
-        updateUi()
+        gameSaved = false
+        gameState = GameState(gameSetup)
+        dialogManager.closeDialog()
+        update()
     }
 
     fun onModifierToggled(modifier: PerDartNumberPad.Modifier) {
-        viewModelScope.launch {
-            val perDartNumberPad = numberPad.value as PerDartNumberPad
+        viewModelScope.launch(dispatcher) {
+            val perDartNumberPad = numberPad as PerDartNumberPad
             perDartNumberPad.toggleModifier(modifier)
+            update()
         }
     }
 
-    fun createLegFinishedDialogViewModel() : LegFinishedDialogViewModel {
-        return LegFinishedDialogViewModel(navigationManager, lastFinishedLeg!!, legDatabaseDao, settingsRepository,
+    fun createLegFinishedDialogViewModel() : SoloGameFinishedDialogViewModel {
+        return SoloGameFinishedDialogViewModel(navigationManager, finishedLegDao, settingsRepository,
             this)
+    }
+
+    fun onContinueToNextLegClicked() {
+        dialogManager.closeDialog()
+        gameState.resetAfterLegOrSetJustFinished()
+        update()
+    }
+
+    fun navigateBack() {
+        navigationManager.navigate(NavigationCommand.Back)
     }
 
 }

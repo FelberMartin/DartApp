@@ -13,7 +13,8 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.development_felber.dartapp.data.persistent.database.FakeLegDatabaseDao
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
 import com.development_felber.dartapp.ui.shared.MyCard
@@ -22,7 +23,7 @@ import com.development_felber.dartapp.util.extensions.observeAsStateNonOptional
 
 @Composable
 fun TableScreen(
-    viewModel: TableViewModel
+    viewModel: TableViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -30,7 +31,7 @@ fun TableScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { BackTopAppBar(
             title = "Table",
-            navigationViewModel = viewModel,
+            onBackClicked = viewModel::navigateBack,
             scrollBehavior = scrollBehavior
         )},
         content = { innerPadding ->
@@ -132,7 +133,7 @@ private fun TableItem(
 @Composable
 fun PreviewTableScreen() {
     DartAppTheme() {
-        TableScreen(viewModel = TableViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true)))
+        TableScreen(viewModel = TableViewModel(NavigationManager(), FakeFinishedLegDao(fillWithTestData = true)))
     }
 }
 

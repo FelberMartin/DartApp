@@ -26,8 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.children
-import com.development_felber.dartapp.data.persistent.database.FakeLegDatabaseDao
-import com.development_felber.dartapp.ui.navigation.NavigationDirections
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
 import com.development_felber.dartapp.ui.shared.MyCard
@@ -43,7 +43,7 @@ import com.development_felber.dartapp.views.chart.util.DataSet
 
 @Composable
 fun StatisticsScreen(
-    viewModel: StatisticsViewModel
+    viewModel: StatisticsViewModel = hiltViewModel()
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
 
@@ -51,7 +51,7 @@ fun StatisticsScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { BackTopAppBar(
             title = "Statistics",
-            navigationViewModel = viewModel,
+            onBackClicked = viewModel::navigateBack,
             scrollBehavior = scrollBehavior
         )},
         content = { innerPadding ->
@@ -471,7 +471,7 @@ private fun OtherStatistics(
             BigIconButton(
                 title = "History",
                 icon = Icons.Default.History,
-                onClick = { viewModel.navigate(NavigationDirections.History) }
+                onClick = viewModel::navigateToHistory
             )
 
             Spacer(Modifier.width(50.dp))
@@ -479,7 +479,7 @@ private fun OtherStatistics(
             BigIconButton(
                 title = "Table",
                 icon = Icons.Default.Toc,
-                onClick = { viewModel.navigate(NavigationDirections.Table) }
+                onClick = viewModel::navigateToTable
             )
         }
     }
@@ -521,7 +521,7 @@ private fun BigIconButton(
 @Composable
 private fun StatisticsScreenPreview() {
     DartAppTheme() {
-        val viewModel = StatisticsViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true))
+        val viewModel = StatisticsViewModel(NavigationManager(), FakeFinishedLegDao(fillWithTestData = true))
         StatisticsScreen(viewModel)
     }
 }

@@ -16,6 +16,16 @@ object Converters {
     }
 
     @TypeConverter
+    fun fromListOfLongs(list: List<Long>?): String {
+        return list?.joinToString(separator = ",") { it.toString() } ?: ""
+    }
+
+    @TypeConverter
+    fun toListOfLongs(string: String?): List<Long> {
+        return ArrayList(string?.split(",")?.mapNotNull { it.toLongOrNull() } ?: emptyList())
+    }
+
+    @TypeConverter
     fun fromLocalDateTime(dateTime: LocalDateTime): String {
         return dateTime.toString()
     }

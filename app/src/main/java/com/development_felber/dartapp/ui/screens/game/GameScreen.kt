@@ -13,58 +13,113 @@ import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.development_felber.dartapp.data.persistent.database.FakeLegDatabaseDao
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.development_felber.dartapp.data.persistent.database.dart_set.FakeDartSetDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
+import com.development_felber.dartapp.data.persistent.database.multiplayer_game.FakeMultiplayerGameDao
 import com.development_felber.dartapp.data.persistent.keyvalue.InMemoryKeyValueStorage
+import com.development_felber.dartapp.data.repository.GameRepository
 import com.development_felber.dartapp.data.repository.SettingsRepository
-import com.development_felber.dartapp.game.numberpad.NumberPadBase
+import com.development_felber.dartapp.game.GameSetup
+import com.development_felber.dartapp.game.GameStatus
+import com.development_felber.dartapp.game.PlayerRole
 import com.development_felber.dartapp.game.numberpad.PerDartNumberPad
-import com.development_felber.dartapp.game.numberpad.PerServeNumberPad
 import com.development_felber.dartapp.ui.navigation.NavigationManager
-import com.development_felber.dartapp.ui.navigation.command.NavigationCommand
 import com.development_felber.dartapp.ui.screens.game.dialog.*
+import com.development_felber.dartapp.ui.screens.game.dialog.during_leg.DoubleAttemptsAndCheckoutDialog
+import com.development_felber.dartapp.ui.screens.game.dialog.multi.LegOrSetWonDialog
+import com.development_felber.dartapp.ui.screens.game.dialog.multi.MultiplayerGameFinishedDialog
+import com.development_felber.dartapp.ui.screens.game.dialog.solo.SoloGameFinishedDialog
 import com.development_felber.dartapp.ui.shared.Background
 import com.development_felber.dartapp.ui.shared.KeepScreenOn
 import com.development_felber.dartapp.ui.shared.MyCard
 import com.development_felber.dartapp.ui.theme.DartAppTheme
 import com.development_felber.dartapp.ui.values.Padding
-import com.development_felber.dartapp.util.extensions.observeAsStateNonOptional
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 
 
 @Composable
 fun GameScreen(
-    viewModel: GameViewModel
+    viewModel: GameViewModel = hiltViewModel()
 ) {
     KeepScreenOn()
     BackHandler() {
-        viewModel.closeClicked()
+        viewModel.onCloseClicked()
     }
+
+    val gameUiState by viewModel.gameUiState.collectAsState()
+
+    GameScreenContent(
+        gameUiState = gameUiState,
+        dartOrServeEnteredFlow = viewModel.dartOrServeEnteredFlow,
+        onCloseClicked = viewModel::onCloseClicked,
+        onUndoClicked = viewModel::onUndoClicked,
+        onSwapNumberPadClicked = viewModel::onSwapNumberPadClicked,
+        onNumberTyped = viewModel::onNumberTyped,
+        onModifierToggled = viewModel::onModifierToggled,
+        clearNumberPad = viewModel::clearNumberPad,
+        onEnterClicked = viewModel::onEnterClicked,
+    )
+
+    val dialog = gameUiState.dialogToShow
+    DialogsOverlay(
+        dialogToShow = dialog,
+        gameViewModel = viewModel,
+    )
+}
+
+@Composable
+private fun GameScreenContent(
+    gameUiState: GameUiState,
+    dartOrServeEnteredFlow: Flow<Int?>,
+    onCloseClicked: () -> Unit,
+    onUndoClicked: () -> Unit,
+    onSwapNumberPadClicked: () -> Unit,
+    onNumberTyped: (Int) -> Unit,
+    onModifierToggled: (PerDartNumberPad.Modifier) -> Unit,
+    clearNumberPad: () -> Unit,
+    onEnterClicked: () -> Unit,
+) {
     Background {
         Column(Modifier.fillMaxSize()) {
-            TopRow(onCloseClicked = viewModel::closeClicked)
+            TopRow(onCloseClicked = onCloseClicked)
+
             Column(
                 modifier = Modifier
                     .padding(Padding.MediumPadding)
                     .fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                PlayerStats(viewModel)
+
+                PlayerStats(
+                    currentPlayerRole = gameUiState.currentPlayer,
+                    playerUiStates = gameUiState.playerUiStates,
+                )
+
                 Spacer(Modifier.height(20.dp))
-                BottomElements(viewModel)
+                BottomElements(
+                    numberPadUiState = gameUiState.numberPadUiState,
+                    checkoutTip = gameUiState.checkoutTip,
+                    dartOrServeEnteredFlow = dartOrServeEnteredFlow,
+                    onUndoClicked = onUndoClicked,
+                    onSwapNumberPadClicked = onSwapNumberPadClicked,
+                    onNumberTyped = onNumberTyped,
+                    onModifierToggled = onModifierToggled,
+                    clearNumberPad = clearNumberPad,
+                    onEnterClicked = onEnterClicked,
+                )
             }
         }
     }
-
-    DialogsOverlay(viewModel)
 }
 
 @Composable
@@ -88,80 +143,34 @@ private fun TopRow(
 
 @Composable
 private fun PlayerStats(
-    viewModel: GameViewModel
+    currentPlayerRole: PlayerRole,
+    playerUiStates: List<PlayerUiState>,
 ) {
-    val pointsLeft by viewModel.pointsLeft.observeAsState(0)
-    val dartCount by viewModel.dartCount.observeAsState(0)
-    val last by viewModel.last.observeAsState("")
-    val average by viewModel.average.observeAsState("")
-
-    MyCard(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp)
-        ) {
-            Text(
-                text = pointsLeft.toString(),
-                style = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.Medium),
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.padding(vertical = 20.dp)
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                PlayerGameStatistic(
-                    name = "Darts: ",
-                    valueString = dartCount.toString()
-                )
-
-                PlayerGameStatistic(
-                    name = "Last: ",
-                    valueString = last
-                )
-
-                PlayerGameStatistic(
-                    name = "Ø ",
-                    valueString = average
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun PlayerGameStatistic(
-    name: String,
-    valueString: String
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = name,
-            color = MaterialTheme.colorScheme.secondary,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+    if (playerUiStates.size == 1) {
+        SoloPlayerStatsCard(
+            playerState = playerUiStates[0]
         )
-
-        Text(
-            text = valueString,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
+    } else if (playerUiStates.size == 2) {
+        CombinedMultiplayerPlayerCounter(
+            playerStateLeft = playerUiStates[0],
+            playerStateRight = playerUiStates[1],
+            currentPlayerRole = currentPlayerRole,
         )
     }
 }
 
 @Composable
 private fun BottomElements(
-    viewModel: GameViewModel
+    numberPadUiState: NumberPadUiState,
+    checkoutTip: String?,
+    dartOrServeEnteredFlow: Flow<Int?>,
+    onUndoClicked: () -> Unit,
+    onSwapNumberPadClicked: () -> Unit,
+    onNumberTyped: (Int) -> Unit,
+    onModifierToggled: (PerDartNumberPad.Modifier) -> Unit,
+    clearNumberPad: () -> Unit,
+    onEnterClicked: () -> Unit,
 ) {
-    val numberPad by viewModel.numberPad.observeAsState(PerServeNumberPad())
-
     Column() {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -169,49 +178,57 @@ private fun BottomElements(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            CheckoutInfo(viewModel.checkoutTip.observeAsState().value)
+            CheckoutInfo(checkoutTip)
 
             NumPadInfoAndActionsRow(
-                onUndoClicked = viewModel::onUndoClicked,
-                numberState = numberPad.number.collectAsState(),
-                onSwapNumberPadClicked = viewModel::onSwapNumberPadClicked,
-                viewModel
+                onUndoClicked = onUndoClicked,
+                undoEnabled = numberPadUiState.undoEnabled,
+                numberState = numberPadUiState.numberPad.number.collectAsState(),
+                onSwapNumberPadClicked = onSwapNumberPadClicked,
+                isEnterDisabled = !numberPadUiState.enterEnabled,
+                dartOrServeEnteredFlow = dartOrServeEnteredFlow
             )
 
-            PickNumberPadVersion(viewModel, numberPad)
+            PickNumberPadVersion(
+                numberPadUiState = numberPadUiState,
+                onNumberTyped = onNumberTyped,
+                onModifierToggled = onModifierToggled,
+                clearNumberPad = clearNumberPad,
+                onEnterClicked = onEnterClicked,
+            )
         }
     }
 }
 
 @Composable
 private fun PickNumberPadVersion(
-    viewModel: GameViewModel,
-    numberPad: NumberPadBase,
+    numberPadUiState: NumberPadUiState,
+    onNumberTyped: (Int) -> Unit,
+    onModifierToggled: (PerDartNumberPad.Modifier) -> Unit,
+    clearNumberPad: () -> Unit,
+    onEnterClicked: () -> Unit,
 ) {
-    val enterDisabled by viewModel.enterDisabled.observeAsState(false)
-
     Column(
         Modifier
             .fillMaxWidth()
             .height(380.dp)) {
-        if (viewModel.usePerDartNumberPad && numberPad is PerDartNumberPad) {
-            val perDartNumberPad = numberPad as PerDartNumberPad
-            val modifier by perDartNumberPad.modifier.collectAsState()
+        if (numberPadUiState.numberPad is PerDartNumberPad) {
+            val modifier by numberPadUiState.numberPad.modifier.collectAsState()
 
             PerDartNumPad(
-                onNumberClicked = viewModel::onNumberTyped,
+                onNumberClicked = onNumberTyped,
                 doubleModifierEnabled = modifier == PerDartNumberPad.Modifier.Double,
-                onDoubleModifierClicked = { viewModel.onModifierToggled(PerDartNumberPad.Modifier.Double) },
+                onDoubleModifierClicked = { onModifierToggled(PerDartNumberPad.Modifier.Double) },
                 tripleModifierEnabled = modifier == PerDartNumberPad.Modifier.Triple,
-                onTripleModifierClicked = { viewModel.onModifierToggled(PerDartNumberPad.Modifier.Triple) },
-                disabledNumbers = viewModel.getDisabledNumbers(modifier)
+                onTripleModifierClicked = { onModifierToggled(PerDartNumberPad.Modifier.Triple) },
+                disabledNumbers = numberPadUiState.disabledNumbers
             )
         } else {
             PerServeNumPad(
-                onDigitClicked = viewModel::onNumberTyped,
-                onClearClicked = viewModel::clearNumberPad,
-                onEnterClicked = viewModel::onEnterClicked,
-                enterDisabled = enterDisabled
+                onDigitClicked = onNumberTyped,
+                onClearClicked = clearNumberPad,
+                onEnterClicked = onEnterClicked,
+                enterDisabled = !numberPadUiState.enterEnabled
             )
         }
     }
@@ -248,13 +265,14 @@ private fun CheckoutInfo(
 @Composable
 private fun NumPadInfoAndActionsRow(
     onUndoClicked: () -> Unit,
+    undoEnabled: Boolean,
     numberState: State<Int>,
+    isEnterDisabled: Boolean,
     onSwapNumberPadClicked: () -> Unit,
-    viewModel: GameViewModel
+    dartOrServeEnteredFlow: Flow<Int?>,
 ) {
     // Shake animation
     var wasEnterDisabledPreviously = remember { false }
-    val isEnterDisabled by viewModel.enterDisabled.observeAsStateNonOptional()
     var targetXOffset by remember { mutableStateOf(0.0) }
 
     val animatedXOffset: Dp by animateDpAsState(targetValue = targetXOffset.dp)
@@ -286,7 +304,8 @@ private fun NumPadInfoAndActionsRow(
     indexedNumberHolder.number = number
 
     LaunchedEffect(key1 = true) {
-        viewModel.dartOrServeEnteredFlow.collect {
+        dartOrServeEnteredFlow.collect {
+            it ?: return@collect
             indexedNumberHolder.number = it
             indexedNumberHolder = indexedNumberHolder.next()
         }
@@ -298,6 +317,7 @@ private fun NumPadInfoAndActionsRow(
     ) {
         SmallIconButton(
             icon = Icons.Default.Undo,
+            enabled = undoEnabled,
             onClick = onUndoClicked
         )
 
@@ -331,62 +351,92 @@ private fun NumPadInfoAndActionsRow(
 @Composable
 private fun SmallIconButton(
     icon: ImageVector,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     ElevatedButton(
         onClick = onClick,
+        enabled = enabled,
+        colors = ButtonDefaults.elevatedButtonColors(
+            disabledContainerColor = MaterialTheme.colorScheme.surface,
+        ),
         contentPadding = PaddingValues(vertical = 4.dp),
         elevation = ButtonDefaults.elevatedButtonElevation(pressedElevation = 0.dp)
     ) {
         Icon(
             imageVector = icon,
             contentDescription = "Change NumPad Layout",
-            tint = MaterialTheme.colorScheme.onSurface
+            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = if (enabled) 1f else 0.6f)
         )
     }
 }
 
 @Composable
-private fun DialogsOverlay(viewModel: GameViewModel) {
-    val uiState by viewModel.dialogUiState.observeAsState(DialogUiState())
-    val legFinished by viewModel.legFinished.observeAsState(false)
+private fun DialogsOverlay(
+    dialogToShow: GameDialogManager.DialogType?,
+    gameViewModel: GameViewModel
+) {
+    val gameUiState by gameViewModel.gameUiState.collectAsState()
+    val gameStatus = gameViewModel.gameState.gameStatus
 
-    // The upper dialogs are hidden behind the dialogs listed later
-
-    if (legFinished) {
-        LegFinishedDialogEntryPoint(
-            viewModel = viewModel.createLegFinishedDialogViewModel(),
-            onPlayAgainClicked = viewModel::onPlayAgainClicked,
-            onMenuClicked = {
-                viewModel.dismissLegFinishedDialog()
-                viewModel.navigate(NavigationCommand.NAVIGATE_UP)
+    when (dialogToShow) {
+        GameDialogManager.DialogType.ExitGame -> ExitDialog(
+            onDismissDialog = gameViewModel::dismissExitDialog
+        ) {
+            gameViewModel.dismissExitDialog()
+            gameViewModel.navigateBack()
+        }
+        GameDialogManager.DialogType.AskForDoubleSimple -> SimpleDoubleAttemptsDialog(
+            onAttemptClicked = gameViewModel::simpleDoubleAttemptsEntered
+        )
+        GameDialogManager.DialogType.GameFinished -> {
+            when (gameViewModel.gameState.setup) {
+                is GameSetup.Solo -> SoloGameFinishedDialog(
+                    viewModel = gameViewModel.createLegFinishedDialogViewModel(),
+                    onPlayAgainClicked = gameViewModel::onPlayAgainClicked,
+                    onMenuClicked = {
+                        gameViewModel.dismissGameFinishedDialog()
+                        gameViewModel.navigateBack()
+                    }
+                )
+                is GameSetup.Multiplayer -> MultiplayerGameFinishedDialog(
+                    players = gameUiState.playerUiStates,
+                    onPlayAgainClicked = gameViewModel::onPlayAgainClicked,
+                    onMenuClicked = {
+                        gameViewModel.dismissGameFinishedDialog()
+                        gameViewModel.navigateBack()
+                    },
+                )
             }
-        )
-    }
 
-    val doubleAttempts = uiState.doubleAttemptsDialogOpen
-    val checkout = uiState.checkoutDialogOpen
-    if (doubleAttempts || checkout) {
-        DoubleAttemptsAndCheckoutDialog(
-            askForDoubleAttempts = doubleAttempts,
-            askForCheckout = checkout,
-            minDartCount = viewModel.getMinimumDartCount(),
-            onDialogCancelled = viewModel::onDoubleAttemptsAndCheckoutCancelled,
-            onDialogConfirmed = viewModel::doubleAttemptsAndCheckoutConfirmed
-        )
-    }
-
-    if (uiState.simpleDoubleAttemptsDialogOpen) {
-        SimpleDoubleAttemptsDialog(
-            onAttemptClicked = viewModel::simpleDoubleAttemptsEntered
-        )
-    }
-
-    if (uiState.exitDialogOpen) {
-        ExitDialog(
-            onDismissDialog = viewModel::dismissExitDialog) {
-            viewModel.dismissExitDialog()
-            viewModel.navigate(NavigationCommand.NAVIGATE_UP)
+        }
+        is GameDialogManager.DialogType.AskForDoubleAndOrCheckout -> {
+            DoubleAttemptsAndCheckoutDialog(
+                askForDoubleAttempts = dialogToShow.askForDouble,
+                askForCheckout = dialogToShow.askForCheckout,
+                minDartCount = gameViewModel.getMinimumDartCount(),
+                onDialogCancelled = gameViewModel::onDoubleAttemptsAndCheckoutCancelled,
+                onDialogConfirmed = gameViewModel::doubleAttemptsAndCheckoutConfirmed
+            )
+        }
+        GameDialogManager.DialogType.LegJustFinished -> {
+            LegOrSetWonDialog(
+                setOver = false,
+                players = gameUiState.playerUiStates,
+                playerWon = (gameStatus as GameStatus.LegJustFinished).winningPlayer,
+                onContinue = gameViewModel::onContinueToNextLegClicked
+            )
+        }
+        GameDialogManager.DialogType.SetJustFinished -> {
+            LegOrSetWonDialog(
+                setOver = true,
+                players = gameUiState.playerUiStates,
+                playerWon = (gameStatus as GameStatus.SetJustFinished).winningPlayer,
+                onContinue = gameViewModel::onContinueToNextLegClicked
+            )
+        }
+        null -> {
+            // No dialog to show
         }
     }
 }
@@ -397,8 +447,10 @@ private fun DialogsOverlay(viewModel: GameViewModel) {
 @Composable
 private fun GameScreenPreview() {
     DartAppTheme() {
+        val legDao = FakeFinishedLegDao()
         val viewModel = GameViewModel(NavigationManager(), SettingsRepository(InMemoryKeyValueStorage()),
-            FakeLegDatabaseDao())
+            GameRepository(legDao, FakeDartSetDao(), FakeMultiplayerGameDao()), legDao, Dispatchers.Main,
+        )
         GameScreen(viewModel)
     }
 }

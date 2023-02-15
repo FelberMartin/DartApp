@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.graphs.statistics.piechart
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.util.GameUtil
 import com.development_felber.dartapp.util.graphs.filter.LegFilterBase
 import com.development_felber.dartapp.util.graphs.statistics.StatisticTypeBase
@@ -14,7 +14,7 @@ object CheckoutDistributionStatistic : StatisticTypeBase(
 ){
     val DEFAULT_CHECKOUT_CATEGORIES = listOf(0, 40, 60, 100)
 
-    override fun buildDataSet(legs: List<Leg>, filter: LegFilterBase): DataSet {
+    override fun buildDataSet(legs: List<FinishedLeg>, filter: LegFilterBase): DataSet {
         val filteredLegs = filter.filterLegs(legs)
         val checkouts = filteredLegs.map { leg -> leg.checkout }
         val partitionSizes = GameUtil.partitionSizeForLowerLimits(checkouts, DEFAULT_CHECKOUT_CATEGORIES)

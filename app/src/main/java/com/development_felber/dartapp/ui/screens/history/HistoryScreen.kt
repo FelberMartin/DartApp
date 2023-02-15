@@ -21,11 +21,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.development_felber.dartapp.data.persistent.database.Converters
-import com.development_felber.dartapp.data.persistent.database.FakeLegDatabaseDao
-import com.development_felber.dartapp.data.persistent.database.Leg
 import com.development_felber.dartapp.data.persistent.database.TestLegData
-import com.development_felber.dartapp.ui.navigation.NavigationDirections
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FakeFinishedLegDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.ui.navigation.NavigationManager
 import com.development_felber.dartapp.ui.screens.statistics.NoDataWarning
 import com.development_felber.dartapp.ui.shared.BackTopAppBar
@@ -38,7 +38,9 @@ import java.time.format.DateTimeFormatter
 
 
 @Composable
-fun HistoryScreenEntry(viewModel: HistoryViewModel) {
+fun HistoryScreenEntry(
+    viewModel: HistoryViewModel = hiltViewModel()
+) {
     val result by viewModel.categorizedLegsResult.observeAsStateNonOptional()
     HistoryScreen(categorizedLegsResult = result, viewModel = viewModel)
 }
@@ -54,7 +56,7 @@ fun HistoryScreen(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = { BackTopAppBar(
             title = "History",
-            navigationViewModel = viewModel,
+            onBackClicked = viewModel::navigateBack,
             scrollBehavior = scrollBehavior
         )},
         content = { innerPadding ->
@@ -95,9 +97,7 @@ private fun HistoryScreenContent(
             items(legs, key = { it.id }) { leg ->
                 HistoryItem(
                     leg = leg,
-                    onSeeMorePressed = {
-                        viewModel.navigate(NavigationDirections.HistoryDetails.navigationCommand(leg.id))
-                    }
+                    onSeeMorePressed = viewModel::navigateToLegDetails
                 )
             }
         }
@@ -160,8 +160,8 @@ private fun LazyItemScope.CategoryTitle(category: CategorizedSortTypeBase.Catego
 
 @Composable
 private fun LazyItemScope.HistoryItem(
-    leg: Leg,
-    onSeeMorePressed: (Leg) -> Unit
+    leg: FinishedLeg,
+    onSeeMorePressed: (FinishedLeg) -> Unit
 ) {
     MyCard(
         onClick = { onSeeMorePressed(leg) },
@@ -238,7 +238,7 @@ private fun DateAndTimeLabels(
 
 @Composable
 private fun LegShortInfo(
-    leg: Leg
+    leg: FinishedLeg
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -279,7 +279,7 @@ fun SeeMoreIconButton(
 @Composable
 fun PreviewTableScreen() {
     DartAppTheme() {
-        val viewModel = HistoryViewModel(NavigationManager(), FakeLegDatabaseDao(fillWithTestData = true))
+        val viewModel = HistoryViewModel(NavigationManager(), FakeFinishedLegDao(fillWithTestData = true))
         val legs = TestLegData.createExampleLegs()
         val categorizedLegs = DateCategorizedSortType.sortLegsCategorized(legs, true)
         HistoryScreen(categorizedLegs, viewModel)

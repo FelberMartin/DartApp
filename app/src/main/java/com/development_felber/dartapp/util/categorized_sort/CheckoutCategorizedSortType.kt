@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.categorized_sort
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.ui.screens.history.CategorizedSortTypeBase
 
 object CheckoutCategorizedSortType : CategorizedSortTypeBase(name = "Checkout", byDefaultDescending = true) {
@@ -12,7 +12,7 @@ object CheckoutCategorizedSortType : CategorizedSortTypeBase(name = "Checkout", 
             Category("40 or less", 40),
         )
 
-    override fun valueForLeg(leg: Leg): Number {
+    override fun valueForLeg(leg: FinishedLeg): Number {
         return leg.checkout
     }
 }

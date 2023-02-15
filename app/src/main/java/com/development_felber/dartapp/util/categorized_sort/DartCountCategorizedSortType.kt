@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.categorized_sort
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.ui.screens.history.CategorizedSortTypeBase
 
 
@@ -13,7 +13,7 @@ object DartCountCategorizedSortType : CategorizedSortTypeBase(name = "Dart Count
             Category("more than 30", 31),
         )
 
-    override fun valueForLeg(leg: Leg): Number {
+    override fun valueForLeg(leg: FinishedLeg): Number {
         return leg.dartCount
     }
 }

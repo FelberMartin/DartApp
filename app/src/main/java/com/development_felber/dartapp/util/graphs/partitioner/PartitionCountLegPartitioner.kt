@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.util.graphs.partitioner
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import kotlin.math.ceil
 
 class PartitionCountLegPartitioner(
@@ -8,8 +8,8 @@ class PartitionCountLegPartitioner(
     val startCountingAtOne: Boolean = true
 ) : LegPartitioner {
 
-    override fun partitionLegs(sortedLegs: List<Leg>): Map<String, List<Leg>> {
-        val map = mutableMapOf<String, List<Leg>>()
+    override fun partitionLegs(sortedLegs: List<FinishedLeg>): Map<String, List<FinishedLeg>> {
+        val map = mutableMapOf<String, List<FinishedLeg>>()
         val partitionSize = calculatePartitionSize(sortedLegs)
         var index = 0
         while (index < sortedLegs.size) {
@@ -35,7 +35,7 @@ class PartitionCountLegPartitioner(
         return "$from-$to"
     }
 
-    private fun calculatePartitionSize(legs: List<Leg>): Int {
+    private fun calculatePartitionSize(legs: List<FinishedLeg>): Int {
         var partitionSize = legs.size.toDouble() / partitionCount.toDouble()
         if (partitionSize <= 0.0) {
             partitionSize = 1.0

@@ -2,9 +2,9 @@ package com.development_felber.dartapp.database
 
 
 import androidx.test.filters.SmallTest
-import com.development_felber.dartapp.data.persistent.database.Leg
-import com.development_felber.dartapp.data.persistent.database.LegDatabase
-import com.development_felber.dartapp.data.persistent.database.LegDatabaseDao
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
+import com.development_felber.dartapp.data.persistent.database.AppDatabase
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLegDao
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Assert.assertEquals
@@ -17,28 +17,28 @@ import javax.inject.Named
 
 @SmallTest
 @HiltAndroidTest
-class LegDatabaseDaoTest {
+class FinishedLegDaoTest {
 
     @get:Rule
     var hiltRule = HiltAndroidRule(this)
 
     @Inject
     @Named("in_memory_db")
-    lateinit var legDatabase: LegDatabase
-    private lateinit var legDao: LegDatabaseDao
+    lateinit var appDatabase: AppDatabase
+    private lateinit var finishedLegDao: FinishedLegDao
 
     @Before
     fun setup() {
         hiltRule.inject()
-        legDao = legDatabase.legDatabaseDao()
+        finishedLegDao = appDatabase.getLegDao()
     }
 
     @Test
     @Throws(Exception::class)
     suspend fun insertAndGetLeg() {
-        val leg = Leg()
-        legDao.insert(leg)
-        val returnedLeg = legDao.getLatestLeg()
+        val leg = FinishedLeg()
+        finishedLegDao.insert(leg)
+        val returnedLeg = finishedLegDao.getLatestLeg()
 
         assertEquals(returnedLeg?.endTime, leg.endTime)
     }

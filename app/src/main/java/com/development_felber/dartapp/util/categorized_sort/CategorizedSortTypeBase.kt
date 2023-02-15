@@ -1,6 +1,6 @@
 package com.development_felber.dartapp.ui.screens.history
 
-import com.development_felber.dartapp.data.persistent.database.Leg
+import com.development_felber.dartapp.data.persistent.database.finished_leg.FinishedLeg
 import com.development_felber.dartapp.util.categorized_sort.CheckoutCategorizedSortType
 import com.development_felber.dartapp.util.categorized_sort.DartCountCategorizedSortType
 import com.development_felber.dartapp.util.categorized_sort.DateCategorizedSortType
@@ -11,10 +11,10 @@ abstract class CategorizedSortTypeBase(
 ) {
 
     class Result() {
-        private val map = mutableMapOf<Category, ArrayList<Leg>>()
+        private val map = mutableMapOf<Category, ArrayList<FinishedLeg>>()
         private val orderedCategories = mutableListOf<Category>()
 
-        operator fun set(category: Category, leg: Leg) {
+        operator fun set(category: Category, leg: FinishedLeg) {
             if (map.containsKey(category)) {
                 map[category]!!.add(leg)
             } else {
@@ -23,7 +23,7 @@ abstract class CategorizedSortTypeBase(
             }
         }
 
-        operator fun get(category: Category) : List<Leg> {
+        operator fun get(category: Category) : List<FinishedLeg> {
             return map[category]!!
         }
 
@@ -37,7 +37,7 @@ abstract class CategorizedSortTypeBase(
     data class Category(val name: String, val lowerInclusiveLimit: Number)
     abstract val categories: List<Category>
 
-    fun sortLegsCategorized(legs: List<Leg>, descending: Boolean) : Result {
+    fun sortLegsCategorized(legs: List<FinishedLeg>, descending: Boolean) : Result {
         val sorted = sortLegs(legs, descending)
         val result = Result()
         for (leg in sorted) {
@@ -46,7 +46,7 @@ abstract class CategorizedSortTypeBase(
         return result
     }
 
-    private fun categorizeLeg(leg: Leg) : Category {
+    private fun categorizeLeg(leg: FinishedLeg) : Category {
         val value = valueForLeg(leg).toDouble()
         val categoriesWithAscendingLimits = categories.sortedBy { category -> category.lowerInclusiveLimit.toDouble() }
         for ((index, category) in categoriesWithAscendingLimits.withIndex()) {
@@ -67,7 +67,7 @@ abstract class CategorizedSortTypeBase(
         return categories.last()
     }
 
-    private fun sortLegs(legs: List<Leg>, descending: Boolean) : List<Leg> {
+    private fun sortLegs(legs: List<FinishedLeg>, descending: Boolean) : List<FinishedLeg> {
         val sorted = legs.sortedBy { leg -> valueForLeg(leg).toDouble() }
         if (descending) {
             return sorted.reversed()
@@ -75,7 +75,7 @@ abstract class CategorizedSortTypeBase(
         return sorted
     }
 
-    abstract fun valueForLeg(leg: Leg) : Number
+    abstract fun valueForLeg(leg: FinishedLeg) : Number
 
 
 
@@ -83,7 +83,7 @@ abstract class CategorizedSortTypeBase(
         override val categories: List<Category>
             get() = listOf(Category("", 0))
 
-        override fun valueForLeg(leg: Leg): Number {
+        override fun valueForLeg(leg: FinishedLeg): Number {
             return 0
         }
     }
