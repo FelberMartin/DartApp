@@ -8,10 +8,10 @@ My Dart Stats is the perfect app for training the classic 501 mode. It offers a 
 <p float="left">
   <img src="./pictures/home_screen.png" width="200" />
   <img src="./pictures/dark_theme_showcase.png" width="200" />
+  <img src="./pictures/multiplayer_ingame.png" width="200" />
   <img src="./pictures/leg_finished_dialog.png" width="200" />
   <img src="./pictures/history.png" width="200" />
   <img src="./pictures/history_details.png" width="200" />
-  <img src="./pictures/average_9_darts.png" width="200" />
   <img src="./pictures/serve_distribution.png" width="200" />
   <img src="./pictures/training_count.png" width="200" />
 </p>
