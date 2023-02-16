@@ -20,7 +20,9 @@ My Dart Stats is the perfect app for training the classic 501 mode. It offers a 
 You’re able to view your **average**, **average for the first 9 darts**, **average darts per leg**, your **training count** as well as **serve and checkout distribution**. All stats can be filtered by different numbers of games or across several timespans, which allows for tracking your progress over time and analysing your strength and weaknesses. Furthermore, there’s a complete history of all practice games available, which can be sorted by date, dart count or checkout to see your best (or worst) moments at a glance. For each game a detailed page with statistics is available to analyse what happened. 
 Lastly there’s an extra table which offers overall stats about using the app and a complete serve distribution history. 
 
-For the time being the app solely focuses on 501 training in single player mode, although different game modes and multiplayer may be added in the future.
+With the latest update you are now also able to play **multiplayer** games against your friend to determine once and for all who is the king!
+
+For the time being the app solely focuses on 501 training, although different game modes may be added in the future.
 
 The app is available for **Android** in the Google Play Store. [Check it out](https://play.google.com/store/apps/details?id=com.development_felber.dartapp)
 
