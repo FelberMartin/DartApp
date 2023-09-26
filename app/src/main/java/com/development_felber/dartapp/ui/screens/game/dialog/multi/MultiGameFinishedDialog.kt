@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.development_felber.dartapp.game.Leg
@@ -122,13 +123,17 @@ private fun MultiplayerStatsRow(
         Text(
             text = leftText,
             style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center,
         )
 
         Text(
             text = name,
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.secondary,
-        )
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center,
+            )
 
         val rightText = if (rightValue.isNaN()) {
             "-"
@@ -138,7 +143,9 @@ private fun MultiplayerStatsRow(
         Text(
             text = rightText,
             style = MaterialTheme.typography.titleLarge,
-        )
+            modifier = Modifier.weight(1f),
+            textAlign = TextAlign.Center,
+            )
     }
 }
 
