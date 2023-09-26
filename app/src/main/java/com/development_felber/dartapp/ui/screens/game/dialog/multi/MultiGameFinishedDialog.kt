@@ -101,6 +101,9 @@ private fun MultiplayerStatsRow(
     val maxValue = remember { Animatable(0f) }
     LaunchedEffect(key1 = leftValue, key2 = rightValue) {
         val target = maxIgnoreNan(leftValue, rightValue).toFloat()
+        if (target.isNaN()) {
+            return@LaunchedEffect
+        }
         maxValue.animateTo(
             targetValue = target,
             animationSpec = tween(

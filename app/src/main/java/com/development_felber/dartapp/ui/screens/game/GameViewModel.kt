@@ -291,6 +291,7 @@ class GameViewModel @Inject constructor(
                 return@launch
             }
             gameState.finishFinalLeg()
+            updateRequired.update { it + 1 }
             gameSaved = true
 
             val setDefaultDoubleAttempt = !settingsRepository
