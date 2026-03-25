@@ -133,10 +133,6 @@ dependencies {
     // Instrumented Unit Tests
     kaptAndroidTest "androidx.hilt:hilt-compiler:1.2.0"
 
-
-    // Advanced Seekbars
-//    implementation 'com.github.warkiz.widget:indicatorseekbar:2.1.2'
-
     // Integration with activities
     implementation 'androidx.activity:activity-compose:1.8.2'
     // Animations
