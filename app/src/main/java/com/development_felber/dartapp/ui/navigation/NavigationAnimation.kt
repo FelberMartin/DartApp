@@ -5,12 +5,11 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.navigation.NavBackStackEntry
 
-@OptIn(ExperimentalAnimationApi::class)
 object NavigationAnimation {
 
-    val DEFAULT_DURATION = 500
+    const val DEFAULT_DURATION = 500
 
-    val defaultEnter: AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition = {
+    val defaultEnter: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
         slideInHorizontally(
             initialOffsetX = { it / 2 },
             animationSpec = tween(
@@ -20,7 +19,7 @@ object NavigationAnimation {
         ) + fadeIn(animationSpec = tween(DEFAULT_DURATION))
     }
 
-    val defaultExit: AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition = {
+    val defaultExit: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
         slideOutHorizontally(
             targetOffsetX = { -it/2 },
             animationSpec = tween(
@@ -30,7 +29,7 @@ object NavigationAnimation {
         ) + fadeOut(animationSpec = tween(DEFAULT_DURATION))
     }
 
-    val defaultPopEnter: AnimatedContentScope<NavBackStackEntry>.() -> EnterTransition = {
+    val defaultPopEnter: AnimatedContentTransitionScope<NavBackStackEntry>.() -> EnterTransition = {
         slideInHorizontally(
             initialOffsetX = { -it/2 },
             animationSpec = tween(
@@ -40,7 +39,7 @@ object NavigationAnimation {
         ) + fadeIn(animationSpec = tween(DEFAULT_DURATION))
     }
 
-    val defaultPopExit: AnimatedContentScope<NavBackStackEntry>.() -> ExitTransition = {
+    val defaultPopExit: AnimatedContentTransitionScope<NavBackStackEntry>.() -> ExitTransition = {
         slideOutHorizontally(
             targetOffsetX = { it/2 },
             animationSpec = tween(
@@ -49,6 +48,4 @@ object NavigationAnimation {
             )
         ) + fadeOut(animationSpec = tween(DEFAULT_DURATION))
     }
-
-
 }

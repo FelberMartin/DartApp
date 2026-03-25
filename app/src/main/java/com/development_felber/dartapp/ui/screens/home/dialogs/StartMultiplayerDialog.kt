@@ -303,9 +303,6 @@ private fun PlayerSelection(
                 containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 labelColor = MaterialTheme.colorScheme.onSecondaryContainer,
             ),
-            border = SuggestionChipDefaults.suggestionChipBorder(
-                borderColor = MaterialTheme.colorScheme.secondaryContainer,
-            )
         )
 
         PlayerSelectionDropDownMenu(
