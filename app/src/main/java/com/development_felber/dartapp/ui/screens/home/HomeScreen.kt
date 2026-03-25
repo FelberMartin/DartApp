@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3Api::class)
 
 package com.development_felber.dartapp.ui.screens.home
 
@@ -50,7 +50,7 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(24.dp)
-//                .padding(top = 24.dp, bottom = 12.dp)
+                .safeDrawingPadding()
                 .fillMaxSize(),
         ) {
             SettingsRow(onSettingsClicked = viewModel::navigateToSettings)

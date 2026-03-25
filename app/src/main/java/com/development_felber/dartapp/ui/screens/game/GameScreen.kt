@@ -90,7 +90,11 @@ private fun GameScreenContent(
     onEnterClicked: () -> Unit,
 ) {
     Background {
-        Column(Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .safeDrawingPadding()
+        ) {
             TopRow(onCloseClicked = onCloseClicked)
 
             Column(

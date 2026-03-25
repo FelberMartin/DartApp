@@ -69,6 +69,7 @@ fun StartMultiplayerDialog(
         modifier = Modifier
             .background(color = MaterialTheme.colorScheme.background)
             .fillMaxSize()
+            .safeDrawingPadding()
             .padding(32.dp),
     ) {
         Column(
