@@ -16,8 +16,8 @@ android {
         applicationId "com.development_felber.dartapp"
         minSdkVersion 21
         targetSdk 36
-        versionCode 8
-        versionName "2.0.4"
+        versionCode 9
+        versionName "2.0.5"
 
         testInstrumentationRunner "com.development_felber.dartapp.HiltTestRunner"
         vectorDrawables {
