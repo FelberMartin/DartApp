@@ -8,14 +8,14 @@ plugins {
 }
 
 android {
-    compileSdk 35
+    compileSdk 36
 
     namespace "com.development_felber.dartapp"
 
     defaultConfig {
         applicationId "com.development_felber.dartapp"
         minSdkVersion 21
-        targetSdk 35
+        targetSdk 36
         versionCode 8
         versionName "2.0.4"
 
